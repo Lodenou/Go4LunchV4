@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <TextView
+        android:id="@+id/restaurant_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="7dp"
+        android:layout_marginTop="7dp"
+        android:text="dddddddddd"
+        android:textAppearance="?attr/textAppearanceListItem"
+        android:textSize="10sp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/restaurant_address"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="7dp"
+        android:layout_marginTop="9dp"
+        android:layout_marginBottom="7dp"
+        android:text="ffffffffffffffffffffff"
+        android:textSize="10sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/restaurant_name">
+
+    </TextView>
+
+    <TextView
+        android:id="@+id/opening_hours"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="7dp"
+        android:layout_marginTop="9dp"
+        android:layout_marginBottom="7dp"
+        android:text="qqqqqqqqqqqqqqqqqq"
+        android:textSize="10sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/restaurant_address">
+
+    </TextView>
+
+    <TextView
+        android:id="@+id/distance"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="7dp"
+        android:layout_marginTop="7dp"
+        android:layout_marginEnd="7dp"
+        android:text="qqqqqqqqqqqqqqqqqqqqqqqd"
+        android:textColor="#a7adb8"
+        android:textSize="10sp"
+        app:layout_constraintRight_toLeftOf="@+id/restaurant_image"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/workmates_number"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="7dp"
+        android:layout_marginTop="7dp"
+        android:layout_marginEnd="7dp"
+        android:text="3"
+        android:textSize="15sp"
+        android:textStyle="bold"
+        app:drawableLeftCompat="@drawable/ic_baseline_person_24"
+        app:layout_constraintRight_toLeftOf="@id/restaurant_image"
+        app:layout_constraintTop_toBottomOf="@id/distance">
+    </TextView>
+
+    <RatingBar
+        android:id="@+id/rating_stars"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:numStars="3"
+        android:stepSize="0.1"
+        style="@style/Widget.AppCompat.RatingBar.Small"
+        app:layout_constraintRight_toLeftOf="@id/restaurant_image"
+        app:layout_constraintTop_toBottomOf="@id/workmates_number"
+        >
+    </RatingBar>
+
+    <ImageView
+        android:id="@+id/restaurant_image"
+        android:layout_width="100dp"
+        android:layout_height="81dp"
+        android:layout_alignParentEnd="true"
+        android:layout_gravity="end"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="0dp"
+        android:scaleType="centerCrop"
+        android:src="@drawable/bowl_logo"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="1">
+    </ImageView>
+</androidx.constraintlayout.widget.ConstraintLayout>
