@@ -5,4 +5,6 @@
     <string name="workmates">Workmates</string>
     <string name="list_view">List View</string>
     <string name="map_view">Map View</string>
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
 </resources>

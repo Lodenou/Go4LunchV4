@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true"
+    tools:context=".ui.activities.DetailActivity">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <com.google.android.material.appbar.AppBarLayout
+            android:id="@+id/app_bar"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/app_bar_height"
+            android:theme="@style/AppTheme.AppBarOverlay">
+
+            <ImageView
+                android:id="@+id/restaurant_image2"
+                android:layout_width="wrap_content"
+                android:layout_height="@dimen/app_bar_height"
+                android:src="@drawable/bol_logo"
+                android:fitsSystemWindows="true"
+                android:scaleType="centerCrop" />
+
+
+            <com.google.android.material.appbar.CollapsingToolbarLayout
+                android:id="@+id/toolbar_layout"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:fitsSystemWindows="true"
+                app:contentScrim="?attr/colorPrimary"
+                app:layout_scrollFlags="scroll|exitUntilCollapsed">
+
+
+            </com.google.android.material.appbar.CollapsingToolbarLayout>
+        </com.google.android.material.appbar.AppBarLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/colorPrimary"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/restaurant_name_yourlunch"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/white"
+                    android:layout_marginStart="20dp"
+                    android:layout_marginTop="10dp"
+
+                    android:text="Your restaurant"
+                    android:textSize="20sp"
+                    android:textStyle="bold">
+
+                </TextView>
+
+                <ImageView
+                    android:id="@+id/image_star"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="bottom"
+                    android:layout_marginStart="10dp"
+                    android:src="@drawable/ic_baseline_star_25"
+                    android:visibility="invisible">
+
+                </ImageView>
+
+
+            </LinearLayout>
+
+
+            <TextView
+                android:id="@+id/restaurant_address2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:textColor="@color/white"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="20dp"
+                android:text="french restaurant 10 rue de la mariniere">
+
+            </TextView>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="#ffffff"
+            android:backgroundTint="@color/white"
+            android:orientation="horizontal"
+            android:theme="@style/AppTheme.linearColor">
+
+            <Button
+                android:id="@+id/call_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="#ffffff"
+                android:backgroundTint="@color/white"
+                android:drawableTop="@drawable/ic_baseline_phone_24"
+                android:paddingTop="20dp"
+                android:paddingBottom="20dp"
+                android:text="Call"
+                android:textColor="#ff582a"
+
+                />
+
+            <Button
+                android:id="@+id/star_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="#ffffff"
+                android:drawableTop="@drawable/ic_baseline_star_24"
+                android:paddingTop="20dp"
+                android:paddingBottom="20dp"
+                android:text="Like"
+                android:textColor="#ff582a"
+
+                />
+
+            <Button
+                android:id="@+id/website_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="#ffffff"
+                android:drawableTop="@drawable/ic_baseline_public_24"
+                android:paddingTop="20dp"
+                android:paddingBottom="20dp"
+                android:text="Website"
+                android:textColor="#ff582a"
+
+                />
+
+        </LinearLayout>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/my_recycler_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="#ffffff">
+
+        </androidx.recyclerview.widget.RecyclerView>
+
+    </LinearLayout>
+
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fab"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/fab_margin"
+        android:tint="#000000"
+        app:backgroundTint="#ffffff"
+        app:layout_anchor="@id/app_bar"
+        app:layout_anchorGravity="bottom|end"
+        app:srcCompat="@drawable/ic_baseline_crop_din_24" />
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

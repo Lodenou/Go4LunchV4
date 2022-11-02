@@ -3,11 +3,15 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/Users/Lou/Desktop/Android/P7/Go4LunchV4/app/src/main/res/layout/activity_detail.xml" value="0.33" />
         <entry key="..\:/Users/Lou/Desktop/Android/P7/Go4LunchV4/app/src/main/res/layout/activity_main.xml" value="0.1762917933130699" />
+        <entry key="..\:/Users/Lou/Desktop/Android/P7/Go4LunchV4/app/src/main/res/layout/activity_main_nav_header.xml" value="0.36666666666666664" />
         <entry key="..\:/Users/Lou/Desktop/Android/P7/Go4LunchV4/app/src/main/res/layout/fragment_list_view.xml" value="0.3484375" />
         <entry key="..\:/Users/Lou/Desktop/Android/P7/Go4LunchV4/app/src/main/res/layout/fragment_map.xml" value="0.1762917933130699" />
         <entry key="..\:/Users/Lou/Desktop/Android/P7/Go4LunchV4/app/src/main/res/layout/fragment_workmates.xml" value="0.3625" />
         <entry key="..\:/Users/Lou/Desktop/Android/P7/Go4LunchV4/app/src/main/res/layout/item_list_view.xml" value="0.3625" />
+        <entry key="..\:/Users/Lou/Desktop/Android/P7/Go4LunchV4/app/src/main/res/layout/item_workmates.xml" value="0.365625" />
+        <entry key="..\:/Users/Lou/Desktop/Android/P7/Go4LunchV4/app/src/main/res/menu/activity_main_menu_drawer.xml" value="0.365625" />
         <entry key="..\:/Users/Lou/Desktop/Android/P7/Go4LunchV4/app/src/main/res/menu/bottom_navigation_menu.xml" value="0.3625" />
       </map>
     </option>
