@@ -27,15 +27,15 @@ public class RestaurantRepository {
 
     private void setRestaurants() {
         dataset.add(new Restaurant("0", "12 rue blabla", "bloblo"
-                ,"https://c1.staticflickr.com/5/4636/25316407448_de5fbf183d_o.jpg"));
+                ,"https://i.picsum.photos/id/783/200/300.jpg?hmac=dWaIjCNc0MrS2mpEkUX5DxYsTp7vfpipFOlnODFMmfo"));
         dataset.add(new Restaurant("1", "12 rue blabl7777", "blo442blo"
-                ,"https://c1.staticflickr.com/5/4636/25316407448_de5fbf183d_o.jpg"));
+                ,"https://i.picsum.photos/id/783/200/300.jpg?hmac=dWaIjCNc0MrS2mpEkUX5DxYsTp7vfpipFOlnODFMmfo"));
         dataset.add(new Restaurant("2", "12 rue blabla5555", "bl2424oblo"
-                ,"https://c1.staticflickr.com/5/4636/25316407448_de5fbf183d_o.jpg"));
+                ,"https://i.picsum.photos/id/783/200/300.jpg?hmac=dWaIjCNc0MrS2mpEkUX5DxYsTp7vfpipFOlnODFMmfo"));
         dataset.add(new Restaurant("3", "12 rue blabla222", "blo422424blo"
-                ,"https://c1.staticflickr.com/5/4636/25316407448_de5fbf183d_o.jpg"));
+                ,"https://i.picsum.photos/id/783/200/300.jpg?hmac=dWaIjCNc0MrS2mpEkUX5DxYsTp7vfpipFOlnODFMmfo"));
         dataset.add(new Restaurant("4", "12 rue blabla111", "bl2424oblo"
-                ,"https://c1.staticflickr.com/5/4636/25316407448_de5fbf183d_o.jpg"));
+                ,"https://i.picsum.photos/id/783/200/300.jpg?hmac=dWaIjCNc0MrS2mpEkUX5DxYsTp7vfpipFOlnODFMmfo"));
     }
 
 

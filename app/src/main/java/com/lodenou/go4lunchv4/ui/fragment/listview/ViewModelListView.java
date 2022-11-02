@@ -18,7 +18,7 @@ public class ViewModelListView extends ViewModel {
         if(mMutableLiveData != null){
             return;
         }
-        mRestaurantRepository = mRestaurantRepository.getInstance();
+        mRestaurantRepository = RestaurantRepository.getInstance();
         mMutableLiveData = mRestaurantRepository.getRestaurants();
     }
 

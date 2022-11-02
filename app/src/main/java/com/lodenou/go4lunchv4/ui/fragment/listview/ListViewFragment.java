@@ -23,9 +23,6 @@ import java.util.List;
 
 public class ListViewFragment extends Fragment {
 
-
-
-
     FragmentListViewBinding mBinding;
     ListViewRecyclerViewAdapter mAdapter;
     ViewModelListView mViewModelListView;
@@ -44,8 +41,6 @@ public class ListViewFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         initViewModel();
-
-
     }
 
     @Override
