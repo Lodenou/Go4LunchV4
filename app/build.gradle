@@ -6,7 +6,9 @@ def apikeyPropertiesFile = rootProject.file("local.properties")
 def apikeyProperties = new Properties()
 apikeyProperties.load(new FileInputStream(apikeyPropertiesFile))
 
-android {
+
+
+ android {
     compileSdk 32
 
     defaultConfig {
@@ -18,6 +20,9 @@ android {
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         buildConfigField("String", "API_KEY", apikeyProperties['API_KEY'])
+        // To access api key in manifest
+        resValue "string", "google_map_id", apikeyProperties.getProperty("API_KEY")
+
     }
 
     buildFeatures {
