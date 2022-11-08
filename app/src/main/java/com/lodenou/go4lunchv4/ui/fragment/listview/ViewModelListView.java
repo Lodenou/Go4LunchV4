@@ -6,23 +6,24 @@ import androidx.lifecycle.ViewModel;
 
 import com.lodenou.go4lunchv4.data.RestaurantRepository;
 import com.lodenou.go4lunchv4.model.Restaurant;
+import com.lodenou.go4lunchv4.model.nearbysearch.Result;
 
 import java.util.List;
 
 public class ViewModelListView extends ViewModel {
 
-    private MutableLiveData<List<Restaurant>> mMutableLiveData;
+    private MutableLiveData<List<Result>> mMutableLiveData;
     private RestaurantRepository mRestaurantRepository;
 
-    public void init(){
+    public void init(String location){
         if(mMutableLiveData != null){
             return;
         }
         mRestaurantRepository = RestaurantRepository.getInstance();
-        mMutableLiveData = mRestaurantRepository.getRestaurants();
+        mMutableLiveData = mRestaurantRepository.getNearbyRestaurants(location);
     }
 
-    public LiveData<List<Restaurant>> getRestaurants(){
+    public LiveData<List<Result>> getNearbyRestaurants(){
         return mMutableLiveData;
     }
 }
