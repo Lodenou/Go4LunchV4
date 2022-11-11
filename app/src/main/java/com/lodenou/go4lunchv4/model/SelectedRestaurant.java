@@ -1,33 +1,31 @@
 package com.lodenou.go4lunchv4.model;
 
 import java.util.Date;
+import java.util.List;
 
 public class SelectedRestaurant {
 
-    private String idUser;
+    private List<User> users;
     private String idRestaurant;
     private Date date;
-    private String restaurantName;
-    private String restaurantImage;
+
 
     public SelectedRestaurant() {
     }
 
-    public SelectedRestaurant(String IdUser, String idRestaurant, Date date, String restaurantName, String restaurantImage) {
-        this.idUser = IdUser;
+    public SelectedRestaurant(List<User> users, String idRestaurant, Date date) {
+        this.users = users;
         this.idRestaurant = idRestaurant;
         this.date = date;
-        this.restaurantName = restaurantName;
-        this.restaurantImage = restaurantImage;
     }
 
 
-    public String getIdUser() {
-        return idUser;
+    public List<User> getIdUser() {
+        return users;
     }
 
-    public void setIdUser(String idUser) {
-        this.idUser = idUser;
+    public void setIdUser(List<User> users) {
+        this.users = users;
     }
 
     public String getIdRestaurant() {
@@ -46,20 +44,5 @@ public class SelectedRestaurant {
         this.date = date;
     }
 
-
-    public String getRestaurantName() {
-        return restaurantName;
     }
 
-    public void setRestaurantName(String restaurantName) {
-        this.restaurantName = restaurantName;
-    }
-
-    public String getRestaurantImage() {
-        return restaurantImage;
-    }
-
-    public void setRestaurantImage(String restaurantImage) {
-        this.restaurantImage = restaurantImage;
-    }
-}

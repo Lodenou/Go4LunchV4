@@ -19,7 +19,6 @@ public class ViewModelDetailActivity extends ViewModel {
         }
         SelectedRestaurantRepository selectedRestaurantRepository = SelectedRestaurantRepository.getInstance();
         mMutableLiveDataRestaurants = selectedRestaurantRepository.getSelectedRestaurants();
-        mMutableLiveDataRestaurant = selectedRestaurantRepository.getSelectedRestaurant();
     }
 
 

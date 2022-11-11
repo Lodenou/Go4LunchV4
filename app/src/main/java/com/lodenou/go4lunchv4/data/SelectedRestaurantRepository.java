@@ -24,7 +24,7 @@ public class SelectedRestaurantRepository {
         return mSelectedRestaurants;
     }
 
-    public MutableLiveData<SelectedRestaurant> getSelectedRestaurant(){
-        return mSelectedRestaurant;
-    }
+//    public MutableLiveData<SelectedRestaurant> getSelectedRestaurant(){
+//        return mSelectedRestaurant;
+//    }
 }
