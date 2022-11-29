@@ -24,7 +24,7 @@ public class ViewModelMap extends ViewModel {
             return;
         }
         mRestaurantRepository = RestaurantRepository.getInstance();
-        mMutableLiveDataNearby = mRestaurantRepository.getNearbyRestaurants(location);
+        mMutableLiveDataNearby = mRestaurantRepository.getNearbyRestaurants(location, true);
 
         // SelectedRestaurant
         if (mMutableLiveDataSelected != null){

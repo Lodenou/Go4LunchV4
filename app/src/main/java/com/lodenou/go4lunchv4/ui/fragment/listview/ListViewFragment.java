@@ -45,15 +45,20 @@ public class ListViewFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        fetchNearbyRestaurants();
+
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
+
+
         mBinding = FragmentListViewBinding.inflate(inflater,container,false);
+        initViewModel(getPermission(),getTask());
+        initRecyclerView();
         return mBinding.getRoot();
+
 
     }
     @Override
@@ -68,56 +73,51 @@ public class ListViewFragment extends Fragment {
         mBinding.recyclerViewListView.setAdapter(this.mAdapter);
     }
 
-    private void initViewModel(String location){
+    private void initViewModel(Boolean permission, Task task){
         mViewModelListView = new ViewModelProvider(this).get(ViewModelListView.class);
-        mViewModelListView.init(location);
-        mViewModelListView.getNearbyRestaurants().observe(this, new Observer<List<Result>>() {
+        mViewModelListView.init(permission, task);
+        mViewModelListView.getLocation().observe(getViewLifecycleOwner(), new Observer<Location>() {
             @Override
-            public void onChanged(List<Result> restaurants) {
-
-                if (mAdapter != null) {
-                    mAdapter.setRestaurant(restaurants);
-                }
-
+            public void onChanged(Location location) {
+                double lat = location.getLatitude();
+                double lng = location.getLongitude();
+                String loc = lat + "," + lng;
+                mViewModelListView.fetchNearbyRestaurants(loc);
             }
         });
+
+
+            mViewModelListView.getNearbyRestaurants().observe(getViewLifecycleOwner(), new Observer<List<Result>>() {
+                @Override
+                public void onChanged(List<Result> restaurants) {
+
+                    if (mAdapter != null) {
+                        mAdapter.setRestaurant(restaurants);
+                    }
+
+                }
+            });
+
     }
 
-   private void fetchNearbyRestaurants() {
+    // Can't be in the repository because of the context requirement
+   private Boolean getPermission() {
 
-       if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
-               && ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+       Boolean isPermission = ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
+               && ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED;
 
-       }
-       Task<Location> task = getFusedLocation().getLastLocation();
-       task.addOnSuccessListener(new OnSuccessListener<Location>() {
+       Boolean isPermissionOk = !(isPermission);
+       return isPermissionOk;
+   }
 
-           @SuppressLint("CheckResult")
-           @Override
-           public void onSuccess(Location location) {
-               if (ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
-                       && ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                   return;
-               }
-               if (location != null) {
-                   double lat = location.getLatitude();
-                   double lng = location.getLongitude();
-                   String loc = lat + "," + lng;
-                   initViewModel(loc);
-                   //fixme pb
-                   initRecyclerView();
-               }
-           }
-       });
-    }
-
-    private FusedLocationProviderClient getFusedLocation() {
+    private Task getTask() {
         FusedLocationProviderClient fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(requireContext());
+
         if (ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(requireContext(),
                 Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
         }
-        return fusedLocationProviderClient;
+        return fusedLocationProviderClient.getLastLocation();
     }
 
 

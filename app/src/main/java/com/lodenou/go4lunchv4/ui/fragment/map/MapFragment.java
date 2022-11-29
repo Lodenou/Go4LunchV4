@@ -101,7 +101,8 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
                 && ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
         }
 
-        mMap.setMyLocationEnabled(true);
+//        if ()
+            mMap.setMyLocationEnabled(true);
         Task<Location> task = getFusedLocation().getLastLocation();
         task.addOnSuccessListener(new OnSuccessListener<Location>() {
 
@@ -125,20 +126,19 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
                 } else {
                     onMapReady(mMap);
                 }
-                }
-
+            }
         });
     }
 
     private void initViewModel(String location, GoogleMap googleMap) {
         mViewModelMap = new ViewModelProvider(this).get(ViewModelMap.class);
-            mViewModelMap.init(location);
-            mViewModelMap.getNearbyRestaurants().observe(this, new Observer<List<Result>>() {
-                @Override
-                public void onChanged(List<Result> results) {
-                    createRestaurantsMarkers(results, googleMap);
-                }
-            });
+        mViewModelMap.init(location);
+        mViewModelMap.getNearbyRestaurants().observe(this, new Observer<List<Result>>() {
+            @Override
+            public void onChanged(List<Result> results) {
+                createRestaurantsMarkers(results, googleMap);
+            }
+        });
     }
 
     //TODO MAKE THE GREEN MARKERS WHEN USER CHOSE A RESTAURANT
@@ -180,7 +180,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
                 );
             }
             // Else add orange markers for all others restaurants
-            else{
+            else {
                 googleMap.addMarker(
                         new MarkerOptions()
                                 .position(currentLatLong)
@@ -191,20 +191,20 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         }
     }
 
-    private SelectedRestaurant getSelectedRestaurantInfo(int i){
+    private SelectedRestaurant getSelectedRestaurantInfo(int i) {
         final SelectedRestaurant[] mSelectedRestaurant = {new SelectedRestaurant()};
         // SelectedRestaurant mSelectedRestaurant = new SelectedRestaurant();
 
         // Logic here should be the same as initViewModel but for a method
         // mViewModelMap.getRestaurantRepository()
-         mViewModelMap.getSelectedRestaurantInfo().observe(this, new Observer<List<SelectedRestaurant>>() {
-             @Override
-             public void onChanged(List<SelectedRestaurant> selectedRestaurants) {
+        mViewModelMap.getSelectedRestaurantInfo().observe(this, new Observer<List<SelectedRestaurant>>() {
+            @Override
+            public void onChanged(List<SelectedRestaurant> selectedRestaurants) {
                 mSelectedRestaurant[0] = selectedRestaurants.get(i);
-             }
-         });
+            }
+        });
 
-         //FIXME This should not be update because of the outscope ==> outside the onChanged()
+        //FIXME This should not be update because of the outscope ==> outside the onChanged()
         return mSelectedRestaurant[0];
     }
 

@@ -16,6 +16,7 @@ import com.lodenou.go4lunchv4.databinding.FragmentWorkmatesBinding;
 import com.lodenou.go4lunchv4.model.User;
 import com.lodenou.go4lunchv4.ui.adapters.WorkmatesRecyclerViewAdapter;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class WorkmatesFragment extends Fragment {
@@ -51,7 +52,7 @@ public class WorkmatesFragment extends Fragment {
     }
 
     private void initRecyclerView(){
-        mAdapter = new WorkmatesRecyclerViewAdapter(getContext(), mViewModelWorkmates.getUsers().getValue());
+        mAdapter = new WorkmatesRecyclerViewAdapter(getContext(), new ArrayList<>());
         mBinding.recyclerView.setLayoutManager(new LinearLayoutManager(this.getContext()));
         mBinding.recyclerView.setAdapter(this.mAdapter);
     }
@@ -72,4 +73,6 @@ public class WorkmatesFragment extends Fragment {
         super.onDestroyView();
         mBinding = null;
     }
+
+
 }
