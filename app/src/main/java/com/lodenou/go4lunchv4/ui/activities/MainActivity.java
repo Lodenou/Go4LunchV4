@@ -9,21 +9,36 @@ import androidx.core.graphics.drawable.DrawableCompat;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 
 import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageView;
+import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
+import com.facebook.login.LoginManager;
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInClient;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationView;
+import com.google.android.material.resources.TextAppearance;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.lodenou.go4lunchv4.R;
+import com.lodenou.go4lunchv4.data.UserRepository;
 import com.lodenou.go4lunchv4.databinding.ActivityMainBinding;
+import com.lodenou.go4lunchv4.model.User;
 import com.lodenou.go4lunchv4.ui.fragment.listview.ListViewFragment;
+import com.lodenou.go4lunchv4.ui.fragment.listview.ViewModelListView;
 import com.lodenou.go4lunchv4.ui.fragment.map.MapFragment;
 import com.lodenou.go4lunchv4.ui.fragment.workmates.WorkmatesFragment;
 
@@ -33,6 +48,7 @@ public class MainActivity extends AppCompatActivity {
     private Toolbar toolbar;
     private DrawerLayout drawerLayout;
     private NavigationView navigationView;
+    ViewModelMainActivity mViewModelMainActivity;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,6 +60,8 @@ public class MainActivity extends AppCompatActivity {
         setToolBar();
         setDrawerLayout();
         setNavigationViewClickListener();
+        initViewModel();
+        setNavigationView();
     }
 
     private void setBottomNavigationView(){
@@ -106,7 +124,7 @@ public class MainActivity extends AppCompatActivity {
                         //todo onclicklistener
                         break;
                     case R.id.nav_logout:
-                        //todo onclicklistener
+                        logOut();
                         break;
                     case R.id.chat:
                         //todo onclicklistener
@@ -117,5 +135,50 @@ public class MainActivity extends AppCompatActivity {
                 return true;
             }
         });
+    }
+
+    private void setNavigationView(){
+        this.navigationView = mBinding.activityMainNavView;
+        FirebaseUser user = UserRepository.getInstance().getCurrentUser();
+        String userEmail = user.getEmail();
+        String userName = user.getDisplayName();
+        Uri userPhoto = user.getPhotoUrl();
+
+        View headerView = mBinding.activityMainNavView.getHeaderView(0);
+
+        TextView mUserEmail = headerView.findViewById(R.id.nav_user_mail);
+        TextView mUserName = headerView.findViewById(R.id.textview_user_name);
+        ImageView mUserPhoto = headerView.findViewById(R.id.user_photo);
+
+        mUserEmail.setText(userEmail);
+        mUserName.setText(userName);
+        Glide.with(this)
+                .load(userPhoto)
+                .sizeMultiplier(0.1f)
+                .circleCrop()
+                .into(mUserPhoto);
+    }
+
+    private void logOut() {
+
+        // FIREBASE LOGOUT
+        FirebaseAuth.getInstance().signOut();
+        // GOOGLE LOGOUT
+        GoogleSignInOptions gso = new GoogleSignInOptions.
+                Builder(GoogleSignInOptions.DEFAULT_SIGN_IN).
+                build();
+
+        GoogleSignInClient googleSignInClient = GoogleSignIn.getClient(MainActivity.this, gso);
+        googleSignInClient.signOut();
+        Intent intent = new Intent(MainActivity.this, ConnexionActivity.class);
+        finish();
+        startActivity(intent);
+        // FACEBOOK LOGOUT
+        LoginManager.getInstance().logOut();
+    }
+
+    private void initViewModel(){
+            mViewModelMainActivity = new ViewModelProvider(this).get(ViewModelMainActivity.class);
+            mViewModelMainActivity.init();
     }
 }
