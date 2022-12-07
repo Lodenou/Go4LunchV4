@@ -63,7 +63,7 @@ public class WorkmatesFragment extends Fragment {
         mViewModelWorkmates.getUsers().observe(this, new Observer<List<User>>() {
             @Override
             public void onChanged(List<User> users) {
-                mAdapter.notifyDataSetChanged();
+                mAdapter.setUsers(users);
             }
         });
     }

@@ -16,8 +16,8 @@ public class UserCallData {
         return FirebaseFirestore.getInstance().collection(COLLECTION_NAME);
     }
 
-    public static Task<Void> createUser(String uid, String userName, String userAvatarUrl, String FavoriteRestaurantId) {
-        User userToCreate = new User(uid, userName,  userAvatarUrl, FavoriteRestaurantId);
+    public static Task<Void> createUser(String uid, String userName, String userAvatarUrl, String FavoriteRestaurantId, String restaurantChosen) {
+        User userToCreate = new User(uid, userName,  userAvatarUrl, FavoriteRestaurantId, restaurantChosen);
         return UserCallData.getUsersCollection().document(uid).set(userToCreate);
     }
 

@@ -16,6 +16,7 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.lodenou.go4lunchv4.model.Restaurant;
 import com.lodenou.go4lunchv4.model.User;
@@ -38,48 +39,27 @@ public class UserRepository {
         return instance;
     }
 
-//    public MutableLiveData<List<User>> getUsers(){
-//        dataset.clear();
-//        setUsers();
-//        data.setValue(dataset);
-//        return data;
-//    }
-//
-//    private void setUsers() {
-//        dataset.add(new User("0", "Pablo", "https://i.picsum.photos/id/783/200/300.jpg?hmac=dWaIjCNc0MrS2mpEkUX5DxYsTp7vfpipFOlnODFMmfo"
-//                ,""));
-//        dataset.add(new User("1", "Pablo2", "https://c1.staticflickr.com/5/4636/25316407448_de5fbf183d_o.jpg"
-//                ,""));
-//        dataset.add(new User("2", "Pablo3", "https://c1.staticflickr.com/5/4636/25316407448_de5fbf183d_o.jpg"
-//                ,""));
-//        dataset.add(new User("3", "Pablo4", "https://c1.staticflickr.com/5/4636/25316407448_de5fbf183d_o.jpg"
-//                ,""));
-//        dataset.add(new User("4", "Pablo5", "https://c1.staticflickr.com/5/4636/25316407448_de5fbf183d_o.jpg"
-//                ,""));
-//    }
 
-    public MutableLiveData<List<User>> getUsers() {
-//FIXME NE VA NI DANS LE ONSUCCESS NI DANS LE ONfAILURE REGARDER LA DOC POUR RECUPERER DES INFOS DE FIRESTORE
-        UserCallData.getAllUsers().get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+
+    public MutableLiveData<List<User>> getUsers(){
+
+        dataset.clear();
+        UserCallData.getUsersCollection().get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
             @Override
-            public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
-                List<DocumentSnapshot> listWorkmates = queryDocumentSnapshots.getDocuments();
-                for (DocumentSnapshot item : listWorkmates) {
-                    mUser = item.toObject(User.class);
-                    dataset.add(mUser);
-                    System.out.println(dataset);
+            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                if (task.isSuccessful()) {
+                    for (QueryDocumentSnapshot document : task.getResult()) {
+                        Log.d("123", document.getId() + " => " + document.getData());
+                        mUser = document.toObject(User.class);
+                        dataset.add(mUser);
+                    }
+                    data.setValue(dataset);
+                } else {
+                    Log.d("123", "Error getting documents: ", task.getException());
                 }
-                data.setValue(dataset);
             }
         });
-
-        UserCallData.getAllUsers().get().addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                Log.e("123", "" + e);
-            }
-        });
-        return data;
+         return data;
     }
 
     @Nullable
@@ -99,7 +79,7 @@ public class UserRepository {
                 public void onSuccess(DocumentSnapshot documentSnapshot) {
                     mUser = documentSnapshot.toObject(User.class);
                     if (mUser == null) {
-                        UserCallData.createUser(uid, username, urlPicture, " ").addOnFailureListener(new OnFailureListener() {
+                        UserCallData.createUser(uid, username, urlPicture, " ", "").addOnFailureListener(new OnFailureListener() {
                             @Override
                             public void onFailure(@NonNull Exception e) {
                                 Toast.makeText(getApplicationContext(), "Firestore Error 1", Toast.LENGTH_LONG).show();

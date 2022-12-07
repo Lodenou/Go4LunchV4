@@ -8,16 +8,18 @@ public class User {
     private String userName;
     private String userAvatarUrl;
     private String FavoritesRestaurantId;
+    private String restaurantChosen;
 
 
     public User() {
     }
 
-    public User(String uid, String userName, String userAvatarUrl, String FavoriteRestaurantId) {
+    public User(String uid, String userName, String userAvatarUrl, String FavoriteRestaurantId, String restaurantChosen) {
         this.uid = uid;
         this.userName = userName;
         this.userAvatarUrl = userAvatarUrl;
         this.FavoritesRestaurantId = FavoriteRestaurantId;
+        this.restaurantChosen = restaurantChosen;
     }
 
 
@@ -53,5 +55,11 @@ public class User {
     public void setFavoritesRestaurant(String favoriteRestaurantId) {
         FavoritesRestaurantId = favoriteRestaurantId;
     }
+    public String getRestaurantChosen() {
+        return restaurantChosen;
+    }
 
+    public void setRestaurantChosen(String restaurantChosen) {
+        this.restaurantChosen = restaurantChosen;
+    }
 }
