@@ -3,31 +3,37 @@ package com.lodenou.go4lunchv4.ui.activities;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
+
+import com.lodenou.go4lunchv4.data.DetailRepository;
 import com.lodenou.go4lunchv4.data.SelectedRestaurantRepository;
 import com.lodenou.go4lunchv4.model.SelectedRestaurant;
+import com.lodenou.go4lunchv4.model.User;
+import com.lodenou.go4lunchv4.model.detail.Result;
+
 import java.util.List;
 
 public class ViewModelDetailActivity extends ViewModel {
 
 
-    private MutableLiveData<List<SelectedRestaurant>> mMutableLiveDataRestaurants;
-    private MutableLiveData<SelectedRestaurant> mMutableLiveDataRestaurant;
+    private MutableLiveData<List<User>> mMutableLiveDataUsers;
+    private MutableLiveData<Result> mMutableLiveDataRestaurantDetail;
 
-    public void init(){
-        if(mMutableLiveDataRestaurants != null && mMutableLiveDataRestaurant != null){
+    public void init(String restaurantId){
+        if(mMutableLiveDataUsers != null && mMutableLiveDataRestaurantDetail != null){
             return;
         }
-        SelectedRestaurantRepository selectedRestaurantRepository = SelectedRestaurantRepository.getInstance();
-        mMutableLiveDataRestaurants = selectedRestaurantRepository.getSelectedRestaurants();
+        DetailRepository detailRepository = DetailRepository.getInstance();
+        mMutableLiveDataRestaurantDetail = detailRepository.getRestaurantDetails(restaurantId);
+
+        mMutableLiveDataUsers = detailRepository.getUsersEatingHere(restaurantId);
     }
 
 
-    public LiveData<List<SelectedRestaurant>> getSelectedRestaurants(){
-        return mMutableLiveDataRestaurants;
+    public LiveData<Result> getRestaurantsDetail(String restaurantId){
+        return mMutableLiveDataRestaurantDetail;
     }
 
-    //TODO PEUT ETRE USELESS PEUT ETRE QU IL FAUT LE DETAIL RESTAURANT SUIVANT L ID DU RESTAURANT SELECTIONNE
-    public LiveData<SelectedRestaurant> getSelectedRestaurant(){
-        return mMutableLiveDataRestaurant;
+    public LiveData<List<User>> getUsersEatingHere(){
+        return mMutableLiveDataUsers;
     }
 }

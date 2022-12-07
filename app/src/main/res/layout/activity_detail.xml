@@ -20,7 +20,7 @@
             android:theme="@style/AppTheme.AppBarOverlay">
 
             <ImageView
-                android:id="@+id/restaurant_image2"
+                android:id="@+id/restaurant_image"
                 android:layout_width="wrap_content"
                 android:layout_height="@dimen/app_bar_height"
                 android:src="@drawable/bol_logo"
@@ -81,7 +81,7 @@
 
 
             <TextView
-                android:id="@+id/restaurant_address2"
+                android:id="@+id/restaurant_address"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="20dp"
