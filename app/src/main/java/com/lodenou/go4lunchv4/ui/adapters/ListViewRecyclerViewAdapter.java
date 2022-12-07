@@ -2,6 +2,7 @@ package com.lodenou.go4lunchv4.ui.adapters;
 
 import android.Manifest;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationManager;
@@ -26,6 +27,7 @@ import com.lodenou.go4lunchv4.R;
 import com.lodenou.go4lunchv4.model.Restaurant;
 import com.lodenou.go4lunchv4.model.nearbysearch.Result;
 import com.lodenou.go4lunchv4.ui.Utils;
+import com.lodenou.go4lunchv4.ui.activities.DetailActivity;
 
 import java.security.PrivateKey;
 import java.util.ArrayList;
@@ -105,6 +107,17 @@ public class ListViewRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerVi
 
         //Workmates number
         //TODO TO DO AFTER THE WORKMATES PART IS DONE
+
+        // click
+        ((ListViewViewHolder) holder).itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Context context = view.getContext();
+                Intent intent = new Intent(context, DetailActivity.class);
+                intent.putExtra("idrestaurant", restaurant.getPlaceId());
+                context.startActivity(intent);
+            }
+        });
     }
 
     @Override
