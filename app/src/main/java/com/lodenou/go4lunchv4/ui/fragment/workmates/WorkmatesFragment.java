@@ -11,7 +11,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.lodenou.go4lunchv4.R;
 import com.lodenou.go4lunchv4.databinding.FragmentWorkmatesBinding;
 import com.lodenou.go4lunchv4.model.User;
 import com.lodenou.go4lunchv4.ui.adapters.WorkmatesRecyclerViewAdapter;
@@ -63,7 +62,7 @@ public class WorkmatesFragment extends Fragment {
         mViewModelWorkmates.getUsers().observe(this, new Observer<List<User>>() {
             @Override
             public void onChanged(List<User> users) {
-                mAdapter.setUsers(users);
+                mAdapter.setUsersWorkmates(users);
             }
         });
     }

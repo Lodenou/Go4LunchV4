@@ -76,7 +76,7 @@ public class WorkmatesRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerV
         }
     }
 
-    public void setUsers(List<User> users){
+    public void setUsersWorkmates(List<User> users){
         this.mUsers = users;
         notifyDataSetChanged();
     }
