@@ -31,7 +31,7 @@ public class DetailActivityAdapter extends RecyclerView.Adapter<RecyclerView.Vie
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
-        View view = inflater.inflate(R.layout.item_workmates, parent, false);
+        View view = inflater.inflate(R.layout.item_detail, parent, false);
         // Return a new holder instance
         DetailViewHolder detailViewHolder = new DetailViewHolder(view);
         return detailViewHolder;

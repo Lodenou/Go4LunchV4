@@ -17,7 +17,8 @@
     <string name="hello_second_fragment">Hello second fragment. Arg: %1$s</string>
 
     <!--FACEBOOK -->
-    <string name="facebook_app_id" translatable="false">699324334758293</string>
-    <string name="fb_login_protocol_scheme" translatable="false">fb699324334758293</string>
-    <string name="facebook_client_token" translatable="false">f9e96cc7f2d64773c476c56d8cf2d1c3</string>
+    <string name="facebook_app_id" translatable="false">3402787136624128</string>
+    <string name="fb_login_protocol_scheme" translatable="false">fb3402787136624128</string>
+    <string name="facebook_client_token" translatable="false">a1f0838f547deda2af8709aa8646c040</string>
+    <string name="requestidtoken">538588114262-laoq3qcra2bhl7cg6temqgsl8a85dehf.apps.googleusercontent.com</string>
 </resources>
