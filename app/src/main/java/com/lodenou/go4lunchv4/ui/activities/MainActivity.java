@@ -18,6 +18,7 @@ import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
@@ -49,6 +50,7 @@ public class MainActivity extends AppCompatActivity {
     private DrawerLayout drawerLayout;
     private NavigationView navigationView;
     ViewModelMainActivity mViewModelMainActivity;
+    private FirebaseAuth mAuth;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,12 +58,37 @@ public class MainActivity extends AppCompatActivity {
         mBinding = ActivityMainBinding.inflate(getLayoutInflater());
         View view = mBinding.getRoot();
         setContentView(view);
+        mAuth = FirebaseAuth.getInstance();
         setBottomNavigationView();
         setToolBar();
         setDrawerLayout();
         setNavigationViewClickListener();
         initViewModel();
         setNavigationView();
+        Log.d("123", getCurrentUser().getUid());
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        // Check if user is signed in (non-null) and update UI accordingly.
+        FirebaseUser currentUser = mAuth.getCurrentUser();
+        if(currentUser == null){
+            reload();
+        }
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        logOut();
+    }
+
+    // restart connexion activity if the user isn't connected
+    private void reload(){
+            // User not logged in
+            startActivity(new Intent(this, ConnexionActivity.class));
+            finish();
     }
 
     private void setBottomNavigationView(){
@@ -180,5 +207,9 @@ public class MainActivity extends AppCompatActivity {
     private void initViewModel(){
             mViewModelMainActivity = new ViewModelProvider(this).get(ViewModelMainActivity.class);
             mViewModelMainActivity.init();
+    }
+
+    private FirebaseUser getCurrentUser(){
+        return FirebaseAuth.getInstance().getCurrentUser();
     }
 }

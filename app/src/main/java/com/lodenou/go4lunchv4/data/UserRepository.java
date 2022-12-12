@@ -67,28 +67,28 @@ public class UserRepository {
         return FirebaseAuth.getInstance().getCurrentUser();
     }
 
-    public void createUserInFirestore() {
-        if (this.getCurrentUser() != null) {
-            final String urlPicture = (this.getCurrentUser().getPhotoUrl() != null) ? this.getCurrentUser().getPhotoUrl().toString() : null;
-            final String username = this.getCurrentUser().getDisplayName();
-            final String uid = this.getCurrentUser().getUid();
-            final String id = FirebaseAuth.getInstance().getCurrentUser().getUid();
-
-            UserCallData.getUser(id).addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-                @Override
-                public void onSuccess(DocumentSnapshot documentSnapshot) {
-                    mUser = documentSnapshot.toObject(User.class);
-                    if (mUser == null) {
-                        UserCallData.createUser(uid, username, urlPicture, " ", "").addOnFailureListener(new OnFailureListener() {
-                            @Override
-                            public void onFailure(@NonNull Exception e) {
-                                Toast.makeText(getApplicationContext(), "Firestore Error 1", Toast.LENGTH_LONG).show();
-                                Log.d("TAG", "onFailure: firestore error 1 ");
-                            }
-                        });
-                    }
-                }
-            });
-        }
-    }
+//    public void createUserInFirestore() {
+//        if (this.getCurrentUser() != null) {
+//            final String urlPicture = (this.getCurrentUser().getPhotoUrl() != null) ? this.getCurrentUser().getPhotoUrl().toString() : null;
+//            final String username = this.getCurrentUser().getDisplayName();
+//            final String uid = this.getCurrentUser().getUid();
+//            final String email = this.getCurrentUser().getEmail();
+//
+//            UserCallData.getUser(uid).addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+//                @Override
+//                public void onSuccess(DocumentSnapshot documentSnapshot) {
+//                    mUser = documentSnapshot.toObject(User.class);
+//                    if (mUser == null) {
+//                        UserCallData.createUser(uid, username, urlPicture, email, " ", "").addOnFailureListener(new OnFailureListener() {
+//                            @Override
+//                            public void onFailure(@NonNull Exception e) {
+//                                Toast.makeText(getApplicationContext(), "Firestore Error 1", Toast.LENGTH_LONG).show();
+//                                Log.d("TAG", "onFailure: firestore error 1 ");
+//                            }
+//                        });
+//                    }
+//                }
+//            });
+//        }
+//    }
 }

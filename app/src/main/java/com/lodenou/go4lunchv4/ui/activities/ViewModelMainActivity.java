@@ -9,6 +9,6 @@ public class ViewModelMainActivity extends ViewModel {
 
     public void init(){
         mUserRepository = mUserRepository.getInstance();
-        mUserRepository.createUserInFirestore();
+//        mUserRepository.createUserInFirestore();
     }
 }
