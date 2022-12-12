@@ -18,6 +18,7 @@ import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
 import com.lodenou.go4lunchv4.databinding.FragmentListViewBinding;
 import com.lodenou.go4lunchv4.model.nearbysearch.Result;
 import com.lodenou.go4lunchv4.ui.adapters.ListViewRecyclerViewAdapter;
@@ -45,7 +46,6 @@ public class ListViewFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
     }
 
     @Override
@@ -97,7 +97,6 @@ public class ListViewFragment extends Fragment {
 
                 }
             });
-
     }
 
     // Can't be in the repository because of the context requirement
