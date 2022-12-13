@@ -127,7 +127,7 @@ public class DetailRepository {
         }
     }
 
-    public void removeUserFromDatabase() {
+    public void removeUserChoiceFromDatabase() {
         if (FirebaseAuth.getInstance().getCurrentUser() != null) {
             Map<String, Object> chosenRestaurant = new HashMap<>();
             chosenRestaurant.put("restaurantChosen", "");

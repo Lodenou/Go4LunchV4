@@ -44,9 +44,9 @@ public class ViewModelDetailActivity extends ViewModel {
         detailRepository.addUserChoiceToDatabase(restaurantId);
     }
 
-    public void removeUserFromDatabase(){
+    public void removeUserChoiceFromDatabase(){
         DetailRepository detailRepository = DetailRepository.getInstance();
-        detailRepository.removeUserFromDatabase();
+        detailRepository.removeUserChoiceFromDatabase();
     }
 
     public void addUserFavoriteToDatabase(String restaurantId){

@@ -2,7 +2,11 @@ package com.lodenou.go4lunchv4.ui.activities;
 
 import static java.security.AccessController.getContext;
 
+import android.Manifest;
+import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -11,6 +15,8 @@ import android.view.View;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.lifecycle.Lifecycle;
 import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.Observer;
@@ -31,6 +37,7 @@ import com.lodenou.go4lunchv4.data.UserCallData;
 import com.lodenou.go4lunchv4.databinding.ActivityDetailBinding;
 import com.lodenou.go4lunchv4.model.SelectedRestaurant;
 import com.lodenou.go4lunchv4.model.User;
+import com.lodenou.go4lunchv4.model.detail.DetailResult;
 import com.lodenou.go4lunchv4.model.detail.Result;
 import com.lodenou.go4lunchv4.ui.adapters.DetailActivityAdapter;
 import com.lodenou.go4lunchv4.ui.adapters.WorkmatesRecyclerViewAdapter;
@@ -46,6 +53,7 @@ public class DetailActivity extends AppCompatActivity {
     ActivityDetailBinding mBinding;
     ViewModelDetailActivity mViewModelDetailActivity;
     DetailActivityAdapter mAdapter;
+    static int PERMISSION_CODE = 100;
 
 
     @Override
@@ -56,28 +64,12 @@ public class DetailActivity extends AppCompatActivity {
         setContentView(view);
         initRecyclerView();
         initViewModel();
-//        setClickChosenRestaurantButton();
-
     }
 
-    @Override
-    protected void onStart() {
-        FirebaseAuth.getInstance().addAuthStateListener(new FirebaseAuth.AuthStateListener() {
-            @Override
-            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
-//                Log.d("123", firebaseAuth.getCurrentUser().getUid());
-            }
-        });
-        super.onStart();
-    }
 
     private String getRestaurantId() {
         Bundle extras = getIntent().getExtras();
         return extras.getString("idrestaurant");
-    }
-
-    private FirebaseUser getCurrentUser(){
-        return FirebaseAuth.getInstance().getCurrentUser();
     }
 
     private void initRecyclerView(){
@@ -91,16 +83,24 @@ public class DetailActivity extends AppCompatActivity {
         mViewModelDetailActivity = new ViewModelProvider(this).get(ViewModelDetailActivity.class);
         mViewModelDetailActivity.init(getRestaurantId());
 
-
+        // Get the restaurant info & fill it into the ui
         mViewModelDetailActivity.getRestaurantsDetail().observe(this, new Observer<Result>() {
             @Override
             public void onChanged(Result result) {
                 fillWithRestaurantInfo(result);
+                setOnClickOnCallButton(result);
+                setOnClickOnWebsiteButton(result);
             }
         });
 
+        // observe the user list & set it to the recycler view
        observeUsersList();
 
+       // observe boolean , set click & update the ui with it
+       observeIfCurrentUserHasChosenThisRestaurant();
+    }
+
+    private void observeIfCurrentUserHasChosenThisRestaurant(){
         mViewModelDetailActivity.isCurrentUserHasChosenThisRestaurant().observe(this, new Observer<Boolean>() {
             @Override
             public void onChanged(Boolean aBoolean) {
@@ -117,20 +117,16 @@ public class DetailActivity extends AppCompatActivity {
 
             }
         });
-
     }
 
     private void observeUsersList(){
         mViewModelDetailActivity.getUsersEatingHere().observe(this, new Observer<List<User>>() {
             @Override
             public void onChanged(List<User> users) {
-                //FIXME NE MET PAS A JOUR LA LISTE DES QUE LE USER CLIQUE
                 mAdapter.setUsersDetail(users);
-
             }
         });
     }
-
 
     private void fillWithRestaurantInfo(Result result){
         String address = result.getVicinity();
@@ -148,18 +144,17 @@ public class DetailActivity extends AppCompatActivity {
         }
     }
 
+
+
     private void setClickChosenRestaurantButton(Boolean bool){
         mBinding.fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 fabButtonSetting(bool);
                 mViewModelDetailActivity.setIsThisRestaurantChosen(getRestaurantId());
-
             }
         });
     }
-
-
 
     private void fabButtonSetting(Boolean isAdded){
         if (!isAdded){
@@ -171,39 +166,41 @@ public class DetailActivity extends AppCompatActivity {
         }
         if (isAdded){
             Log.d("123", isAdded.toString());
-            mViewModelDetailActivity.removeUserFromDatabase();
+            mViewModelDetailActivity.removeUserChoiceFromDatabase();
             mBinding.fab.setImageResource(R.drawable.ic_baseline_crop_din_24);
 
         }
     }
-//    private void setClickChosenRestaurantButton(){
-//        mBinding.fab.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                    if (FirebaseAuth.getInstance().getCurrentUser() != null) {
-//                        Map<String, Object> chosenRestaurant = new HashMap<>();
-//                        chosenRestaurant.put("restaurantChosen", getRestaurantId());
-//                        FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
-//                        DocumentReference docRef = UserCallData.getAllUsers().getFirestore().collection("users").document(firebaseUser.getUid());
-//                        docRef.set(chosenRestaurant, SetOptions.merge()).addOnCompleteListener(new OnCompleteListener<Void>() {
-//                            @Override
-//                            public void onComplete(@NonNull Task<Void> task) {
-//                                Log.d("123", "DocumentSnapshot successfully written!");
-//                            }
-//                        }).addOnFailureListener(new OnFailureListener() {
-//                            @Override
-//                            public void onFailure(@NonNull Exception e) {
-//                                Log.d("123", "Error writing document", e);
-//                            }
-//                        });
-//                    }
-//                    else {
-//                        Log.d("123", "pb with firebaseauth!");
-//                    }
-//
-//            }
-//        });
-//    }
+
+    private void setOnClickOnCallButton(Result result) {
+        mBinding.callButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                //FIXME CRASH QUAND DEMANDE 1ERE FOIS AUTORISATION 
+                if (ContextCompat.checkSelfPermission(DetailActivity.this, Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED) {
+                    ActivityCompat.requestPermissions(DetailActivity.this, new String[]{Manifest.permission.CALL_PHONE}, PERMISSION_CODE);
+                }
+                    String phoneNumber = result.getInternationalPhoneNumber();
+                    Intent callIntent = new Intent(Intent.ACTION_CALL);
+                    callIntent.setData(Uri.parse("tel:" + phoneNumber));
+                    startActivity(callIntent);
+            }
+        });
+    }
+
+    private void setOnClickOnWebsiteButton(Result result) {
+        mBinding.websiteButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String website = result.getWebsite();
+                Intent i = new Intent(Intent.ACTION_VIEW);
+                i.setData(Uri.parse(website));
+                startActivity(i);
+            }
+        });
+    }
+
+
 
 
 }
