@@ -1,12 +1,16 @@
 package com.lodenou.go4lunchv4.data;
 
+import static com.facebook.FacebookSdk.getApplicationContext;
+
 import android.util.Log;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.MutableLiveData;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -40,8 +44,10 @@ public class DetailRepository {
     private static DetailRepository instance;
     private ArrayList<User> datasetUsers = new ArrayList<>();
     MutableLiveData<List<User>> dataUsers = new MutableLiveData<>();
+    MutableLiveData<User> dataUser = new MutableLiveData<>();
     User mUser;
     MutableLiveData<Boolean> dataCurrent = new MutableLiveData<>();
+    MutableLiveData<Boolean> dataIsFav = new MutableLiveData<>();
     MutableLiveData<com.lodenou.go4lunchv4.model.detail.Result> dataDetail =
             new MutableLiveData<com.lodenou.go4lunchv4.model.detail.Result>();
     private com.lodenou.go4lunchv4.model.detail.Result mRestaurant;
@@ -81,6 +87,17 @@ public class DetailRepository {
                     }
                 });
         return dataDetail;
+    }
+
+    public MutableLiveData<User> getUser(String userId){
+        UserCallData.getUser(userId).addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+            @Override
+            public void onSuccess(DocumentSnapshot documentSnapshot) {
+                mUser = documentSnapshot.toObject(User.class);
+                dataUser.setValue(mUser);
+            }
+        });
+        return dataUser;
     }
 
 
@@ -236,5 +253,36 @@ public class DetailRepository {
         }
     }
 
+    public void removeUserFavoriteFromDatabase(){
+        if (FirebaseAuth.getInstance().getCurrentUser() != null) {
+            Map<String, Object> favoriteRestaurant = new HashMap<>();
+            favoriteRestaurant.put("favoritesRestaurant", "");
+            FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+            DocumentReference docRef = UserCallData.getAllUsers().getFirestore().collection("users").document(firebaseUser.getUid());
+            docRef.set(favoriteRestaurant, SetOptions.merge()).addOnCompleteListener(new OnCompleteListener<Void>() {
+                @Override
+                public void onComplete(@NonNull Task<Void> task) {
+                    Log.d("123", "DocumentSnapshot successfully unwritten!");
+                }
+            }).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+                    Log.d("123", "Error writing document", e);
+                }
+            });
+        }
+    }
+
+    public MutableLiveData<Boolean> isRestaurantEgalToUserFavorite(String userId, String restaurantId){
+        if (Objects.equals(Objects.requireNonNull(getUser(userId).getValue()).getFavoritesRestaurant(), restaurantId)){
+            dataIsFav.setValue(true);
+        }
+        else {
+            dataIsFav.setValue(false);
+        }
+
+
+        return dataIsFav;
+    }
 
 }

@@ -47,6 +47,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 public class DetailActivity extends AppCompatActivity {
 
@@ -64,6 +65,7 @@ public class DetailActivity extends AppCompatActivity {
         setContentView(view);
         initRecyclerView();
         initViewModel();
+        getUser();
     }
 
 
@@ -144,8 +146,6 @@ public class DetailActivity extends AppCompatActivity {
         }
     }
 
-
-
     private void setClickChosenRestaurantButton(Boolean bool){
         mBinding.fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -171,12 +171,13 @@ public class DetailActivity extends AppCompatActivity {
 
         }
     }
+    // END OF FAB SETTING PART
 
     private void setOnClickOnCallButton(Result result) {
         mBinding.callButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                //FIXME CRASH QUAND DEMANDE 1ERE FOIS AUTORISATION 
+                //FIXME CRASH QUAND DEMANDE 1ERE FOIS AUTORISATION
                 if (ContextCompat.checkSelfPermission(DetailActivity.this, Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED) {
                     ActivityCompat.requestPermissions(DetailActivity.this, new String[]{Manifest.permission.CALL_PHONE}, PERMISSION_CODE);
                 }
@@ -201,6 +202,55 @@ public class DetailActivity extends AppCompatActivity {
     }
 
 
+    // FAVORITE BUTTON PART
+    private void getUser(){
+        String userId = Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getUid();
+        mViewModelDetailActivity.getUser(userId).observe(this, new Observer<User>() {
+            @Override
+            public void onChanged(User user) {
+                setOnClickFavoriteButton(user);
+                setUserFavStarUi(user);
+            }
+        });
+    }
+
+    private void setOnClickFavoriteButton(User user){
+        mBinding.starButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                isUserFav(user);
+            }
+        });
+    }
+
+    private void isUserFav(User user){
+        // We need a boolean which uses data from repository to get the update version of user.getFavoriteRestaurant()
+        mViewModelDetailActivity.isRestaurantEgalToUserFavorite(user.getUid(), getRestaurantId()).observe(this, new Observer<Boolean>() {
+            @Override
+            public void onChanged(Boolean aBoolean) {
+                if (aBoolean){
+                    mViewModelDetailActivity.removeUserFavoriteFromDatabase();
+                    mBinding.imageStar.setVisibility(View.INVISIBLE);
+                }
+                else {
+                    mViewModelDetailActivity.addUserFavoriteToDatabase(getRestaurantId());
+                    mBinding.imageStar.setVisibility(View.VISIBLE);
+                }
+            }
+        });
+    }
+
+    private void setUserFavStarUi(User user){
+        // We don't need a boolean from repository because the user is already updated when we go back to previous activity
+        if (Objects.equals(user.getFavoritesRestaurant(), getRestaurantId())){
+            mBinding.imageStar.setVisibility(View.VISIBLE);
+        }
+
+        else {
+            mBinding.imageStar.setVisibility(View.INVISIBLE);
+        }
+    }
+    // END OF FAVORITE BUTTON PART
 
 
 }
