@@ -10,20 +10,24 @@ public class User  {
     private String userName;
     private String userAvatarUrl;
     private String FavoritesRestaurantId;
-    private String restaurantChosen;
+    private String restaurantChosenId;
+    private String restaurantChosenName;
     private String userEmail;
+
 
 
     public User() {
     }
 
-    public User(String uid, String userName, String userAvatarUrl,String userEmail, String FavoriteRestaurantId, String restaurantChosen) {
+    public User(String uid, String userName, String userAvatarUrl,String userEmail
+            , String FavoriteRestaurantId, String restaurantChosenId, String restaurantChosenName) {
         this.uid = uid;
         this.userName = userName;
         this.userAvatarUrl = userAvatarUrl;
         this.userEmail = userEmail;
         this.FavoritesRestaurantId = FavoriteRestaurantId;
-        this.restaurantChosen = restaurantChosen;
+        this.restaurantChosenId = restaurantChosenId;
+        this.restaurantChosenName = restaurantChosenName;
     }
 
 
@@ -59,12 +63,12 @@ public class User  {
     public void setFavoritesRestaurant(String favoriteRestaurantId) {
         FavoritesRestaurantId = favoriteRestaurantId;
     }
-    public String getRestaurantChosen() {
-        return restaurantChosen;
+    public String getRestaurantChosenId() {
+        return restaurantChosenId;
     }
 
-    public void setRestaurantChosen(String restaurantChosen) {
-        this.restaurantChosen = restaurantChosen;
+    public void setRestaurantChosenId(String restaurantChosenId) {
+        this.restaurantChosenId = restaurantChosenId;
     }
 
     public String getUserEmail() {
@@ -73,5 +77,13 @@ public class User  {
 
     public void setUserEmail(String userEmail) {
         this.userEmail = userEmail;
+    }
+
+    public String getRestaurantChosenName() {
+        return restaurantChosenName;
+    }
+
+    public void setRestaurantChosenName(String restaurantChosenName) {
+        this.restaurantChosenName = restaurantChosenName;
     }
 }

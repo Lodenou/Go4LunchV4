@@ -1,9 +1,6 @@
 package com.lodenou.go4lunchv4.data;
 
-import static com.facebook.FacebookSdk.getApplicationContext;
-
 import android.util.Log;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.MutableLiveData;
@@ -21,6 +18,7 @@ import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.firestore.SetOptions;
 import com.lodenou.go4lunchv4.model.User;
 import com.lodenou.go4lunchv4.model.detail.DetailResult;
+import com.lodenou.go4lunchv4.model.detail.Result;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -111,7 +109,7 @@ public class DetailRepository {
                     for (QueryDocumentSnapshot document : task.getResult()) {
                         Log.d("123", document.getId() + " => " + document.getData());
                         mUser = document.toObject(User.class);
-                        if (Objects.equals(mUser.getRestaurantChosen(), restaurantId)) {
+                        if (Objects.equals(mUser.getRestaurantChosenId(), restaurantId)) {
                             datasetUsers.add(mUser);
                             Log.d("123", "onComplete: user add to recyclerView ");
                         }
@@ -126,8 +124,11 @@ public class DetailRepository {
 
     public void addUserChoiceToDatabase(String restaurantId) {
         if (FirebaseAuth.getInstance().getCurrentUser() != null) {
+            String restaurantName = getRestaurantDetails(restaurantId).getValue().getName();
+
             Map<String, Object> chosenRestaurant = new HashMap<>();
-            chosenRestaurant.put("restaurantChosen", restaurantId);
+            chosenRestaurant.put("restaurantChosenId", restaurantId);
+            chosenRestaurant.put("restaurantChosenName", restaurantName);
             FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
             DocumentReference docRef = UserCallData.getAllUsers().getFirestore().collection("users").document(firebaseUser.getUid());
             docRef.set(chosenRestaurant, SetOptions.merge()).addOnCompleteListener(new OnCompleteListener<Void>() {
@@ -147,7 +148,8 @@ public class DetailRepository {
     public void removeUserChoiceFromDatabase() {
         if (FirebaseAuth.getInstance().getCurrentUser() != null) {
             Map<String, Object> chosenRestaurant = new HashMap<>();
-            chosenRestaurant.put("restaurantChosen", "");
+            chosenRestaurant.put("restaurantChosenId", "" );
+            chosenRestaurant.put("restaurantChosenName", "");
             FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
             DocumentReference docRef = UserCallData.getAllUsers().getFirestore().collection("users").document(firebaseUser.getUid());
             docRef.set(chosenRestaurant, SetOptions.merge()).addOnCompleteListener(new OnCompleteListener<Void>() {
@@ -181,7 +183,7 @@ public class DetailRepository {
     public void updateUserList() {
         FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
         User currentUserMapped = new User(currentUser.getUid(), currentUser.getDisplayName(), currentUser
-                .getPhotoUrl().toString(), currentUser.getEmail(), "", "");
+                .getPhotoUrl().toString(), currentUser.getEmail(), "", "", "");
         DocumentReference docRef = UserCallData.getAllUsers().getFirestore().collection("users")
                 .document(currentUser.getUid());
         docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
@@ -220,7 +222,7 @@ public class DetailRepository {
             public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                 if (task.isSuccessful()) {
 
-                    String userRestaurantChosenId = task.getResult().getString("restaurantChosen");
+                    String userRestaurantChosenId = task.getResult().getString("restaurantChosenId");
                     if (Objects.equals(userRestaurantChosenId, restaurantId)) {
                         dataCurrent.setValue(true);
                         Log.d("123", "onComplete: Value set to true");

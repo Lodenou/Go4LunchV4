@@ -39,7 +39,7 @@ public class ConnexionRepository {
                     String name = firebaseUser.getDisplayName();
                     String avatar = firebaseUser.getPhotoUrl().toString();
                     String email = firebaseUser.getEmail();
-                    User user = new User(uid, name, avatar, email, "", "");
+                    User user = new User(uid, name, avatar, email, "", "", "");
                     authenticatedUserMutableLiveData.setValue(user);
                 }
             } else {
@@ -91,7 +91,7 @@ public class ConnexionRepository {
                 public void onSuccess(DocumentSnapshot documentSnapshot) {
                     mUser = documentSnapshot.toObject(User.class);
                     if (mUser == null) {
-                        UserCallData.createUser(uid, username, urlPicture, email, " ", "").addOnFailureListener(e -> {
+                        UserCallData.createUser(uid, username, urlPicture, email, " ", "", "").addOnFailureListener(e -> {
                             Toast.makeText(getApplicationContext(), "Firestore Error 1", Toast.LENGTH_LONG).show();
                             Log.d("TAG", "onFailure: firestore error 1 ");
                         });
