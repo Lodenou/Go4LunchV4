@@ -1,6 +1,8 @@
 package com.lodenou.go4lunchv4.ui.adapters;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.view.LayoutInflater;
@@ -10,22 +12,25 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.lifecycle.ViewModelStore;
+import androidx.lifecycle.ViewModelStoreOwner;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
-import com.google.firebase.database.collection.LLRBNode;
 import com.lodenou.go4lunchv4.R;
 import com.lodenou.go4lunchv4.model.User;
-import com.lodenou.go4lunchv4.ui.fragment.workmates.WorkmatesFragment;
+import com.lodenou.go4lunchv4.ui.activities.DetailActivity;
+import com.lodenou.go4lunchv4.ui.activities.MainActivity;
 
 import java.util.List;
+import java.util.Objects;
 
 public class WorkmatesRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     private List<User> mUsers;
     Context mContext;
 
-    public WorkmatesRecyclerViewAdapter(Context context,List<User> users) {
+    public WorkmatesRecyclerViewAdapter(Context context, List<User> users) {
         this.mUsers = users;
         this.mContext = context;
     }
@@ -62,21 +67,42 @@ public class WorkmatesRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerV
         userName.setText(mUser.getUserName());
 
         // User restaurant
-        if (mUser.getRestaurantChosen() != null && mUser.getRestaurantChosen() != "") {
-            userRestaurant.setText(" mange à " + mUser.getRestaurantChosen());
-            //TODO RENDRE CLICKABLE ET ENVOYER VERS LA PAGE DETAIL DU RESTAURANT
-        }
-        else {
+
+        // click on workmate
+        ((WorkmatesViewHolder) holder).itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (mUser.getRestaurantChosenId() != null && mUser.getRestaurantChosenId() != "") {
+                    userRestaurant.setText(" mange à " + mUser.getRestaurantChosenName());
+                    Context context = view.getContext();
+                    Intent intent = new Intent(context, DetailActivity.class);
+                    intent.putExtra("idrestaurant", mUser.getRestaurantChosenId());
+                    context.startActivity(intent);
+
+                } else {
+                    userRestaurant.setText(" n'a pas encore choisi de restaurant");
+                    userRestaurant.setTextColor(Color.rgb(138, 133, 132));
+                    userRestaurant.setTypeface(null, Typeface.ITALIC);
+                    userName.setTextColor(Color.rgb(138, 133, 132));
+                    userName.setTypeface(null, Typeface.ITALIC);
+                }
+
+            }
+        });
+
+        if (!Objects.equals(mUser.getRestaurantChosenName(), "") && mUser.getRestaurantChosenName() != null) {
+            userRestaurant.setText(" mange à " + mUser.getRestaurantChosenName());
+        } else {
             userRestaurant.setText(" n'a pas encore choisi de restaurant");
             userRestaurant.setTextColor(Color.rgb(138, 133, 132));
             userRestaurant.setTypeface(null, Typeface.ITALIC);
             userName.setTextColor(Color.rgb(138, 133, 132));
             userName.setTypeface(null, Typeface.ITALIC);
-
         }
     }
 
-    public void setUsersWorkmates(List<User> users){
+
+    public void setUsersWorkmates(List<User> users) {
         this.mUsers = users;
         notifyDataSetChanged();
     }
