@@ -1,7 +1,5 @@
 package com.lodenou.go4lunchv4.ui.activities;
 
-import static java.security.AccessController.getContext;
-
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -9,44 +7,28 @@ import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
-import androidx.lifecycle.Lifecycle;
-import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.bumptech.glide.Glide;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.SetOptions;
 import com.lodenou.go4lunchv4.BuildConfig;
 import com.lodenou.go4lunchv4.R;
-import com.lodenou.go4lunchv4.data.UserCallData;
 import com.lodenou.go4lunchv4.databinding.ActivityDetailBinding;
-import com.lodenou.go4lunchv4.model.SelectedRestaurant;
 import com.lodenou.go4lunchv4.model.User;
-import com.lodenou.go4lunchv4.model.detail.DetailResult;
 import com.lodenou.go4lunchv4.model.detail.Result;
 import com.lodenou.go4lunchv4.ui.adapters.DetailActivityAdapter;
-import com.lodenou.go4lunchv4.ui.adapters.WorkmatesRecyclerViewAdapter;
 
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 
 public class DetailActivity extends AppCompatActivity {

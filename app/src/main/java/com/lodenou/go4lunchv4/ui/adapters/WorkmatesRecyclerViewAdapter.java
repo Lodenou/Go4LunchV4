@@ -90,8 +90,13 @@ public class WorkmatesRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerV
             }
         });
 
+        // Set the text without clicking on item
         if (!Objects.equals(mUser.getRestaurantChosenName(), "") && mUser.getRestaurantChosenName() != null) {
             userRestaurant.setText(" mange à " + mUser.getRestaurantChosenName());
+            userRestaurant.setTextColor(Color.rgb(0, 0, 0));
+            userRestaurant.setTypeface(null, Typeface.NORMAL);
+            userName.setTextColor(Color.rgb(0, 0, 0));
+            userName.setTypeface(null, Typeface.NORMAL);
         } else {
             userRestaurant.setText(" n'a pas encore choisi de restaurant");
             userRestaurant.setTextColor(Color.rgb(138, 133, 132));

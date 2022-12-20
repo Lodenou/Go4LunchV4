@@ -108,7 +108,7 @@ public class RestaurantRepository {
             @SuppressLint("CheckResult")
             @Override
             public void onSuccess(Location location) {
-                if (permission == false) {
+                if (!permission) {
                     return;
                 }
                 if (location != null) {

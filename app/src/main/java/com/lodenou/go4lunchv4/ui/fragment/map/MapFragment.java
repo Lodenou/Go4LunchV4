@@ -2,7 +2,6 @@ package com.lodenou.go4lunchv4.ui.fragment.map;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
-import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
@@ -16,7 +15,6 @@ import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
-import androidx.lifecycle.viewmodel.CreationExtras;
 
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -33,10 +31,8 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
-import com.google.firebase.firestore.QuerySnapshot;
 import com.karumi.dexter.Dexter;
 import com.karumi.dexter.MultiplePermissionsReport;
 import com.karumi.dexter.PermissionToken;
@@ -44,16 +40,10 @@ import com.karumi.dexter.listener.DexterError;
 import com.karumi.dexter.listener.PermissionRequest;
 import com.karumi.dexter.listener.PermissionRequestErrorListener;
 import com.karumi.dexter.listener.multi.MultiplePermissionsListener;
-import com.lodenou.go4lunchv4.BuildConfig;
 import com.lodenou.go4lunchv4.R;
-import com.lodenou.go4lunchv4.data.UserCallData;
-import com.lodenou.go4lunchv4.model.SelectedRestaurant;
-import com.lodenou.go4lunchv4.model.User;
 import com.lodenou.go4lunchv4.model.nearbysearch.Result;
 import com.lodenou.go4lunchv4.ui.activities.DetailActivity;
-import com.lodenou.go4lunchv4.ui.fragment.listview.ViewModelListView;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
