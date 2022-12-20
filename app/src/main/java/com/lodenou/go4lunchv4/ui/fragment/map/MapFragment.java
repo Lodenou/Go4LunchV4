@@ -2,6 +2,8 @@ package com.lodenou.go4lunchv4.ui.fragment.map;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
@@ -29,9 +31,12 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.firestore.QuerySnapshot;
 import com.karumi.dexter.Dexter;
 import com.karumi.dexter.MultiplePermissionsReport;
 import com.karumi.dexter.PermissionToken;
@@ -41,8 +46,11 @@ import com.karumi.dexter.listener.PermissionRequestErrorListener;
 import com.karumi.dexter.listener.multi.MultiplePermissionsListener;
 import com.lodenou.go4lunchv4.BuildConfig;
 import com.lodenou.go4lunchv4.R;
+import com.lodenou.go4lunchv4.data.UserCallData;
 import com.lodenou.go4lunchv4.model.SelectedRestaurant;
+import com.lodenou.go4lunchv4.model.User;
 import com.lodenou.go4lunchv4.model.nearbysearch.Result;
+import com.lodenou.go4lunchv4.ui.activities.DetailActivity;
 import com.lodenou.go4lunchv4.ui.fragment.listview.ViewModelListView;
 
 import java.util.ArrayList;
@@ -91,7 +99,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         }
     }
 
-    @Override
+        @Override
     public void onMapReady(@NonNull GoogleMap googleMap) {
         mMap = googleMap;
 
@@ -101,8 +109,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
                 && ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
         }
 
-//        if ()
-            mMap.setMyLocationEnabled(true);
+        mMap.setMyLocationEnabled(true);
         Task<Location> task = getFusedLocation().getLastLocation();
         task.addOnSuccessListener(new OnSuccessListener<Location>() {
 
@@ -130,6 +137,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         });
     }
 
+
     private void initViewModel(String location, GoogleMap googleMap) {
         mViewModelMap = new ViewModelProvider(this).get(ViewModelMap.class);
         mViewModelMap.init(location);
@@ -137,11 +145,11 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
             @Override
             public void onChanged(List<Result> results) {
                 createRestaurantsMarkers(results, googleMap);
+
             }
         });
     }
 
-    //TODO MAKE THE GREEN MARKERS WHEN USER CHOSE A RESTAURANT
     private void createRestaurantsMarkers(List<Result> results, GoogleMap googleMap) {
         googleMap.clear();
         int resultSize = results.size();
@@ -161,51 +169,57 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
                         .ic_marker_green, getActivity().getTheme());
         Bitmap bGreen = bitmapDrawGreen.getBitmap();
         Bitmap smallMarkerGreen = Bitmap.createScaledBitmap(bGreen, width, height, false);
-
-        for (int i = 0; i <= resultSize - 1; i++) {
-            Double lng = results.get(i).getGeometry().getLocation().getLng();
-            Double lat = results.get(i).getGeometry().getLocation().getLat();
-            LatLng currentLatLong = new LatLng(lat, lng);
-            String markerTitle = results.get(i).getName();
-
-            // Add green marker if it's restaurant place id is different from the
-            // SelectedRestaurant database
-            if (Objects.equals(results.get(i).getPlaceId(),
-                    getSelectedRestaurantInfo(i).getIdRestaurant())) {
-                googleMap.addMarker(
-                        new MarkerOptions()
-                                .position(currentLatLong)
-                                .title(markerTitle)
-                                .icon(BitmapDescriptorFactory.fromBitmap(smallMarkerGreen))
-                );
-            }
-            // Else add orange markers for all others restaurants
-            else {
-                googleMap.addMarker(
-                        new MarkerOptions()
-                                .position(currentLatLong)
-                                .title(markerTitle)
-                                .icon(BitmapDescriptorFactory.fromBitmap(smallMarkerOrange))
-                );
-            }
-        }
-    }
-
-    private SelectedRestaurant getSelectedRestaurantInfo(int i) {
-        final SelectedRestaurant[] mSelectedRestaurant = {new SelectedRestaurant()};
-        // SelectedRestaurant mSelectedRestaurant = new SelectedRestaurant();
-
-        // Logic here should be the same as initViewModel but for a method
-        // mViewModelMap.getRestaurantRepository()
-        mViewModelMap.getSelectedRestaurantInfo().observe(this, new Observer<List<SelectedRestaurant>>() {
+        googleMap.clear();
+        mViewModelMap.getRestaurantChosenId().observe(this, new Observer<List<String>>() {
             @Override
-            public void onChanged(List<SelectedRestaurant> selectedRestaurants) {
-                mSelectedRestaurant[0] = selectedRestaurants.get(i);
+            public void onChanged(List<String> strings) {
+                for (int i = 0; i <= resultSize - 1; i++) {
+                    Double lng = results.get(i).getGeometry().getLocation().getLng();
+                    Double lat = results.get(i).getGeometry().getLocation().getLat();
+                    LatLng currentLatLong = new LatLng(lat, lng);
+                    String markerTitle = results.get(i).getName();
+                    Log.d("123", "" + results.get(i).getPlaceId());
+                    if (strings.contains(results.get(i).getPlaceId())) {
+                        Marker greenMarker = googleMap.addMarker(
+                                new MarkerOptions()
+                                        .position(currentLatLong)
+                                        .title(markerTitle)
+                                        .icon(BitmapDescriptorFactory.fromBitmap(smallMarkerGreen))
+                        );
+
+
+                        googleMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+                            @Override
+                            public boolean onMarkerClick(@NonNull Marker marker) {
+                                for (int k = 0; k <= results.size() - 1; k++) {
+                                    if (Objects.equals(marker.getTitle(), results.get(k).getName())) {
+                                        startDetailActivity(results.get(k).getPlaceId());
+                                    }
+                                }
+                                return false;
+                            }
+                        });
+                    }
+
+                    // Else add orange markers for all others restaurants
+                    else if (!strings.contains(results.get(i).getPlaceId())) {
+                        googleMap.addMarker(
+                                new MarkerOptions()
+                                        .position(currentLatLong)
+                                        .title(markerTitle)
+                                        .icon(BitmapDescriptorFactory.fromBitmap(smallMarkerOrange))
+                        );
+                    }
+                }
             }
         });
+    }
 
-        //FIXME This should not be update because of the outscope ==> outside the onChanged()
-        return mSelectedRestaurant[0];
+    private void startDetailActivity(String restaurantId) {
+
+        Intent intent = new Intent(getContext(), DetailActivity.class);
+        intent.putExtra("idrestaurant", restaurantId);
+        getContext().startActivity(intent);
     }
 
     private FusedLocationProviderClient getFusedLocation() {
@@ -238,5 +252,57 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
                         Log.e("Dexter", "There was an error: " + error.toString());
                     }
                 }).check();
+    }
+
+    private void initMarkers() {
+        mViewModelMap.getLocation(getPermission(), getTask()).observe(this, new Observer<Location>() {
+            @Override
+            public void onChanged(Location location) {
+                double lat = location.getLatitude();
+                double lng = location.getLongitude();
+                String loc = lat + "," + lng;
+                currentLatLng = new LatLng(lat, lng);
+                mViewModelMap.init(loc);
+                // move back camera to the user position after refresh
+                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLatLng, 15));
+            }
+        });
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        // refresh the map and readd markers
+        if (mMap != null) {
+            mMap.clear();
+
+            mViewModelMap.getNearbyRestaurants().observe(this, new Observer<List<Result>>() {
+                @Override
+                public void onChanged(List<Result> results) {
+                    initMarkers();
+                    createRestaurantsMarkers(results, mMap);
+                }
+            });
+        }
+    }
+
+    private Boolean getPermission() {
+
+        Boolean isPermission = ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
+                && ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED;
+
+        Boolean isPermissionOk = !(isPermission);
+        return isPermissionOk;
+    }
+
+    private Task getTask() {
+        FusedLocationProviderClient fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(requireContext());
+
+        if (ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(requireContext(),
+                Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+        }
+        return fusedLocationProviderClient.getLastLocation();
     }
 }

@@ -1,34 +1,32 @@
 package com.lodenou.go4lunchv4.data;
 
-import static com.facebook.FacebookSdk.getApplicationContext;
-
 import android.util.Log;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.lifecycle.MutableLiveData;
 
 import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
-import com.lodenou.go4lunchv4.model.Restaurant;
 import com.lodenou.go4lunchv4.model.User;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class UserRepository {
 
     private static UserRepository instance;
-    private ArrayList<User> dataset = new ArrayList<>();
-    MutableLiveData<List<User>> data = new MutableLiveData<>();
+    private ArrayList<User> datasetUsers = new ArrayList<>();
+    MutableLiveData<List<User>> dataUsers = new MutableLiveData<>();
+    private ArrayList<String> datasetChosenRestaurantId = new ArrayList<>();
+    MutableLiveData<List<String>> dataChosenRestaurantId = new MutableLiveData<>();
+    MutableLiveData<User> dataUser = new MutableLiveData<>();
     User mUser;
 
 
@@ -43,52 +41,67 @@ public class UserRepository {
 
     public MutableLiveData<List<User>> getUsers(){
 
-        dataset.clear();
         UserCallData.getUsersCollection().get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
             @Override
             public void onComplete(@NonNull Task<QuerySnapshot> task) {
+
                 if (task.isSuccessful()) {
+                    datasetUsers.clear();
                     for (QueryDocumentSnapshot document : task.getResult()) {
                         Log.d("123", document.getId() + " => " + document.getData());
                         mUser = document.toObject(User.class);
-                        dataset.add(mUser);
+                        datasetUsers.add(mUser);
                     }
-                    data.setValue(dataset);
+                    dataUsers.setValue(datasetUsers);
                 } else {
                     Log.d("123", "Error getting documents: ", task.getException());
                 }
             }
         });
-         return data;
+         return dataUsers;
     }
+
+    public  MutableLiveData<User> getUser(){
+        String userId = Objects.requireNonNull(getCurrentUser()).getUid();
+        UserCallData.getUser(userId).addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                if (task.isSuccessful()) {
+                    DocumentSnapshot document = task.getResult();
+                    mUser = document.toObject(User.class);
+                    dataUser.setValue(mUser);
+                }
+            }
+        });
+
+        return dataUser;
+    }
+
+    public MutableLiveData<List<String>> getRestaurantChosenId(){
+        UserCallData.getAllUsers().whereNotEqualTo("restaurantChosenId", "").get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                if (task.isSuccessful()){
+                    datasetChosenRestaurantId.clear();
+                    for (QueryDocumentSnapshot document : task.getResult()) {
+                        Log.d("123", document.getId() + " => " + document.getData());
+                        mUser = document.toObject(User.class);
+                        datasetChosenRestaurantId.add(mUser.getRestaurantChosenId());
+                    }
+                    dataChosenRestaurantId.setValue(datasetChosenRestaurantId);
+                }
+            }
+        });
+        return dataChosenRestaurantId;
+    }
+
+
 
     @Nullable
     public FirebaseUser getCurrentUser() {
         return FirebaseAuth.getInstance().getCurrentUser();
     }
 
-//    public void createUserInFirestore() {
-//        if (this.getCurrentUser() != null) {
-//            final String urlPicture = (this.getCurrentUser().getPhotoUrl() != null) ? this.getCurrentUser().getPhotoUrl().toString() : null;
-//            final String username = this.getCurrentUser().getDisplayName();
-//            final String uid = this.getCurrentUser().getUid();
-//            final String email = this.getCurrentUser().getEmail();
-//
-//            UserCallData.getUser(uid).addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-//                @Override
-//                public void onSuccess(DocumentSnapshot documentSnapshot) {
-//                    mUser = documentSnapshot.toObject(User.class);
-//                    if (mUser == null) {
-//                        UserCallData.createUser(uid, username, urlPicture, email, " ", "").addOnFailureListener(new OnFailureListener() {
-//                            @Override
-//                            public void onFailure(@NonNull Exception e) {
-//                                Toast.makeText(getApplicationContext(), "Firestore Error 1", Toast.LENGTH_LONG).show();
-//                                Log.d("TAG", "onFailure: firestore error 1 ");
-//                            }
-//                        });
-//                    }
-//                }
-//            });
-//        }
-//    }
+
+
 }
