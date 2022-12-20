@@ -1,16 +1,22 @@
 package com.lodenou.go4lunchv4.ui.fragment.workmates;
 
+import android.os.Build;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.lodenou.go4lunchv4.R;
 import com.lodenou.go4lunchv4.databinding.FragmentWorkmatesBinding;
 import com.lodenou.go4lunchv4.model.User;
 import com.lodenou.go4lunchv4.ui.adapters.WorkmatesRecyclerViewAdapter;
@@ -25,6 +31,7 @@ public class WorkmatesFragment extends Fragment {
     FragmentWorkmatesBinding mBinding;
     WorkmatesRecyclerViewAdapter mAdapter;
     ViewModelWorkmates mViewModelWorkmates;
+    Boolean bool = true;
 
     public WorkmatesFragment() {
         // Required empty public constructor
@@ -38,7 +45,6 @@ public class WorkmatesFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        initViewModel();
     }
 
     @Override
@@ -74,4 +80,11 @@ public class WorkmatesFragment extends Fragment {
     }
 
 
+    @Override
+    public void onResume() {
+        Log.d("123","OnResume");
+        initViewModel();
+
+        super.onResume();
+    }
 }
