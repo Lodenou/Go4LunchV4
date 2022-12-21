@@ -119,5 +119,9 @@ public class ListViewFragment extends Fragment {
         return fusedLocationProviderClient.getLastLocation();
     }
 
-
+    @Override
+    public void onResume() {
+        super.onResume();
+        initViewModel(getPermission(),getTask());
+    }
 }

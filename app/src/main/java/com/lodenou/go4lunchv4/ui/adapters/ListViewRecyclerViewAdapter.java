@@ -16,6 +16,7 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
+import androidx.lifecycle.Observer;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
@@ -24,12 +25,18 @@ import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 import com.lodenou.go4lunchv4.BuildConfig;
 import com.lodenou.go4lunchv4.R;
+import com.lodenou.go4lunchv4.data.UserCallData;
+import com.lodenou.go4lunchv4.data.UserRepository;
 import com.lodenou.go4lunchv4.model.Restaurant;
+import com.lodenou.go4lunchv4.model.User;
 import com.lodenou.go4lunchv4.model.nearbysearch.Result;
 import com.lodenou.go4lunchv4.ui.Utils;
 import com.lodenou.go4lunchv4.ui.activities.DetailActivity;
+import com.lodenou.go4lunchv4.ui.fragment.listview.ViewModelListView;
 
 import java.security.PrivateKey;
 import java.util.ArrayList;
@@ -39,6 +46,7 @@ public class ListViewRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerVi
 
     private List<Result> mRestaurants = new ArrayList<>();
     private Context mContext;
+    private ViewModelListView mViewModelListView;
 
     public ListViewRecyclerViewAdapter(Context context, List<Result> restaurants) {
         mRestaurants = restaurants;
@@ -108,7 +116,23 @@ public class ListViewRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerVi
         ((ListViewViewHolder) holder).mOpeningHours.setText(Utils.isOpenOrNot(restaurant.getOpeningHours()));
 
         //Workmates number
-        //TODO TO DO AFTER THE WORKMATES PART IS DONE
+        //We can directly use Livedata in recyclerview so the original call is directly made here
+        UserCallData.getAllUsers().get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+            @Override
+            public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                int i = 0;
+                List<DocumentSnapshot> listworkmates = queryDocumentSnapshots.getDocuments();
+                for (DocumentSnapshot item : listworkmates) {
+                    User userw = item.toObject(User.class);
+                    if (userw.getRestaurantChosenId() != null && userw.getRestaurantChosenId()
+                            .equals(restaurant.getPlaceId())) {
+                        i = i + 1;
+                    }
+                }
+                ((ListViewViewHolder) holder).mWorkmatesNumber.setText(String.valueOf(i));
+            }
+        });
+
 
         // click
         ((ListViewViewHolder) holder).itemView.setOnClickListener(new View.OnClickListener() {
@@ -140,6 +164,7 @@ public class ListViewRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerVi
         public final ImageView mRestaurantImage;
         public final RatingBar mRatingStars;
         public final TextView mOpeningHours;
+        public final TextView mWorkmatesNumber;
 
 
         public ListViewViewHolder(@NonNull View itemView) {
@@ -152,6 +177,7 @@ public class ListViewRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerVi
             mRestaurantImage = itemView.findViewById(R.id.restaurant_image);
             mRatingStars = itemView.findViewById(R.id.rating_stars);
             mOpeningHours = itemView.findViewById(R.id.opening_hours);
+            mWorkmatesNumber = itemView.findViewById(R.id.workmates_number);
 
         }
     }

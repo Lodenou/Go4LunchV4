@@ -8,7 +8,9 @@ import androidx.lifecycle.ViewModel;
 
 import com.google.android.gms.tasks.Task;
 import com.lodenou.go4lunchv4.data.RestaurantRepository;
+import com.lodenou.go4lunchv4.data.UserRepository;
 import com.lodenou.go4lunchv4.model.Restaurant;
+import com.lodenou.go4lunchv4.model.User;
 import com.lodenou.go4lunchv4.model.nearbysearch.Result;
 
 import java.util.List;
@@ -18,6 +20,8 @@ public class ViewModelListView extends ViewModel {
     private MutableLiveData<List<Result>> mMutableLiveData;
     private MutableLiveData<Location> mMutableLiveDataLocation;
     private RestaurantRepository mRestaurantRepository;
+    private UserRepository mUserRepository;
+    private MutableLiveData<List<User>> mMutableLiveDataUsers;
 
     public void init(Boolean permission, Task task) {
         if (mMutableLiveData != null) {
@@ -38,5 +42,11 @@ public class ViewModelListView extends ViewModel {
 
     public void fetchNearbyRestaurants(String location) {
         mMutableLiveData = mRestaurantRepository.getNearbyRestaurants(location, true);
+    }
+
+    public LiveData<List<User>> getUsers(){
+        mUserRepository = UserRepository.getInstance();
+        mMutableLiveDataUsers = mUserRepository.getUsers();
+        return mMutableLiveDataUsers;
     }
 }
