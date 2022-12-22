@@ -50,6 +50,9 @@ public class DetailRepository {
             new MutableLiveData<com.lodenou.go4lunchv4.model.detail.Result>();
     private com.lodenou.go4lunchv4.model.detail.Result mRestaurant;
 
+    private ArrayList<String> datasetColleagues = new ArrayList<>();
+    MutableLiveData<List<String>> dataColleagues = new MutableLiveData<>();
+
 
     public static DetailRepository getInstance() {
         if (instance == null) {
@@ -285,6 +288,38 @@ public class DetailRepository {
 
 
         return dataIsFav;
+    }
+
+    public MutableLiveData<List<String>> getListOfColleaguesWhoEatWithCurrentUser( String restaurantId){
+        datasetColleagues.clear();
+        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+        UserCallData.getAllUsers().get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if (task.isSuccessful()){
+                            datasetColleagues.clear();
+                            for (QueryDocumentSnapshot document : task.getResult()) {
+                                    User mUser = document.toObject(User.class);
+                                    // if resto id != provided && user != current user to avoid adding current user to the list
+                                if (Objects.equals(mUser.getRestaurantChosenId(), restaurantId) &&
+                                        !Objects.equals(mUser.getUid(), Objects.requireNonNull(currentUser).getUid())) {
+                                    datasetColleagues.add(mUser.getUserName());
+                                    Log.d("123", "onComplete: user add to recyclerView ");
+                                }
+                            }
+                            if (datasetColleagues != null) {
+                                dataColleagues.setValue(datasetColleagues);
+                            }
+                            else {
+                                List<String> noOne = new ArrayList<>();
+                                noOne.add("no one");
+                                dataColleagues.setValue(noOne);
+                            }
+                        }
+                    }
+                });
+        return dataColleagues;
     }
 
 }

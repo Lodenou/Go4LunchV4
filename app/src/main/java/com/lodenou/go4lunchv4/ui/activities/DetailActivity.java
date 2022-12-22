@@ -1,26 +1,39 @@
 package com.lodenou.go4lunchv4.ui.activities;
 
 import android.Manifest;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.text.format.Time;
 import android.util.Log;
 import android.view.View;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
+import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationManagerCompat;
 import androidx.core.content.ContextCompat;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.bumptech.glide.Glide;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.lodenou.go4lunchv4.BuildConfig;
 import com.lodenou.go4lunchv4.R;
+import com.lodenou.go4lunchv4.data.UserCallData;
 import com.lodenou.go4lunchv4.databinding.ActivityDetailBinding;
 import com.lodenou.go4lunchv4.model.User;
 import com.lodenou.go4lunchv4.model.detail.Result;
@@ -28,15 +41,20 @@ import com.lodenou.go4lunchv4.ui.adapters.DetailActivityAdapter;
 
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 public class DetailActivity extends AppCompatActivity {
 
-    ActivityDetailBinding mBinding;
-    ViewModelDetailActivity mViewModelDetailActivity;
-    DetailActivityAdapter mAdapter;
-    static int PERMISSION_CODE = 100;
+    private ActivityDetailBinding mBinding;
+    private ViewModelDetailActivity mViewModelDetailActivity;
+    private DetailActivityAdapter mAdapter;
+    private static int PERMISSION_CODE = 100;
+    private final String CHANNEL_ID = "122";
+    private Boolean bool;
+    private User mUser;
 
 
     @Override
@@ -48,6 +66,7 @@ public class DetailActivity extends AppCompatActivity {
         initRecyclerView();
         initViewModel();
         getUser();
+        addUserToNotificationsCalls();
     }
 
 
@@ -56,7 +75,7 @@ public class DetailActivity extends AppCompatActivity {
         return extras.getString("idrestaurant");
     }
 
-    private void initRecyclerView(){
+    private void initRecyclerView() {
         mAdapter = new DetailActivityAdapter(this, new ArrayList<>());
         mBinding.myRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         mBinding.myRecyclerView.setAdapter(this.mAdapter);
@@ -78,32 +97,33 @@ public class DetailActivity extends AppCompatActivity {
         });
 
         // observe the user list & set it to the recycler view
-       observeUsersList();
+        observeUsersList();
 
-       // observe boolean , set click & update the ui with it
-       observeIfCurrentUserHasChosenThisRestaurant();
+        // observe boolean , set click & update the ui with it
+        observeIfCurrentUserHasChosenThisRestaurant();
     }
 
-    private void observeIfCurrentUserHasChosenThisRestaurant(){
+    private void observeIfCurrentUserHasChosenThisRestaurant() {
         mViewModelDetailActivity.isCurrentUserHasChosenThisRestaurant().observe(this, new Observer<Boolean>() {
             @Override
             public void onChanged(Boolean aBoolean) {
                 setClickChosenRestaurantButton(aBoolean);
-                if (aBoolean){
+                if (aBoolean) {
+
                     mBinding.fab.setImageResource(R.drawable.ic_baseline_check_circle_24);
                     mBinding.fab.setColorFilter(Color.argb(250, 25, 255, 25));
                     Log.d("123", aBoolean.toString() + " true");
-                }
-                else {
+                } else {
+                    removeUserFromNotificationCall();
                     mBinding.fab.setImageResource(R.drawable.ic_baseline_crop_din_24);
-                    Log.d("123", aBoolean.toString() +" false");
+                    Log.d("123", aBoolean.toString() + " false");
                 }
 
             }
         });
     }
 
-    private void observeUsersList(){
+    private void observeUsersList() {
         mViewModelDetailActivity.getUsersEatingHere().observe(this, new Observer<List<User>>() {
             @Override
             public void onChanged(List<User> users) {
@@ -112,7 +132,7 @@ public class DetailActivity extends AppCompatActivity {
         });
     }
 
-    private void fillWithRestaurantInfo(Result result){
+    private void fillWithRestaurantInfo(Result result) {
         String address = result.getVicinity();
         String name = result.getName();
         mBinding.restaurantAddress.setText(address);
@@ -128,7 +148,7 @@ public class DetailActivity extends AppCompatActivity {
         }
     }
 
-    private void setClickChosenRestaurantButton(Boolean bool){
+    private void setClickChosenRestaurantButton(Boolean bool) {
         mBinding.fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -138,15 +158,15 @@ public class DetailActivity extends AppCompatActivity {
         });
     }
 
-    private void fabButtonSetting(Boolean isAdded){
-        if (!isAdded){
+    private void fabButtonSetting(Boolean isAdded) {
+        if (!isAdded) {
             mViewModelDetailActivity.addUserChoiceToDatabase(getRestaurantId());
             mBinding.fab.setImageResource(R.drawable.ic_baseline_check_circle_24);
             mBinding.fab.setColorFilter(Color.argb(250, 25, 255, 25));
             Log.d("123", isAdded.toString());
 
         }
-        if (isAdded){
+        if (isAdded) {
             Log.d("123", isAdded.toString());
             mViewModelDetailActivity.removeUserChoiceFromDatabase();
             mBinding.fab.setImageResource(R.drawable.ic_baseline_crop_din_24);
@@ -163,10 +183,10 @@ public class DetailActivity extends AppCompatActivity {
                 if (ContextCompat.checkSelfPermission(DetailActivity.this, Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED) {
                     ActivityCompat.requestPermissions(DetailActivity.this, new String[]{Manifest.permission.CALL_PHONE}, PERMISSION_CODE);
                 }
-                    String phoneNumber = result.getInternationalPhoneNumber();
-                    Intent callIntent = new Intent(Intent.ACTION_CALL);
-                    callIntent.setData(Uri.parse("tel:" + phoneNumber));
-                    startActivity(callIntent);
+                String phoneNumber = result.getInternationalPhoneNumber();
+                Intent callIntent = new Intent(Intent.ACTION_CALL);
+                callIntent.setData(Uri.parse("tel:" + phoneNumber));
+                startActivity(callIntent);
             }
         });
     }
@@ -185,7 +205,7 @@ public class DetailActivity extends AppCompatActivity {
 
 
     // FAVORITE BUTTON PART
-    private void getUser(){
+    private void getUser() {
         String userId = Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getUid();
         mViewModelDetailActivity.getUser(userId).observe(this, new Observer<User>() {
             @Override
@@ -196,7 +216,7 @@ public class DetailActivity extends AppCompatActivity {
         });
     }
 
-    private void setOnClickFavoriteButton(User user){
+    private void setOnClickFavoriteButton(User user) {
         mBinding.starButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -205,16 +225,15 @@ public class DetailActivity extends AppCompatActivity {
         });
     }
 
-    private void isUserFav(User user){
+    private void isUserFav(User user) {
         // We need a boolean which uses data from repository to get the update version of user.getFavoriteRestaurant()
         mViewModelDetailActivity.isRestaurantEgalToUserFavorite(user.getUid(), getRestaurantId()).observe(this, new Observer<Boolean>() {
             @Override
             public void onChanged(Boolean aBoolean) {
-                if (aBoolean){
+                if (aBoolean) {
                     mViewModelDetailActivity.removeUserFavoriteFromDatabase();
                     mBinding.imageStar.setVisibility(View.INVISIBLE);
-                }
-                else {
+                } else {
                     mViewModelDetailActivity.addUserFavoriteToDatabase(getRestaurantId());
                     mBinding.imageStar.setVisibility(View.VISIBLE);
                 }
@@ -222,17 +241,122 @@ public class DetailActivity extends AppCompatActivity {
         });
     }
 
-    private void setUserFavStarUi(User user){
+    private void setUserFavStarUi(User user) {
         // We don't need a boolean from repository because the user is already updated when we go back to previous activity
-        if (Objects.equals(user.getFavoritesRestaurant(), getRestaurantId())){
+        if (Objects.equals(user.getFavoritesRestaurant(), getRestaurantId())) {
             mBinding.imageStar.setVisibility(View.VISIBLE);
-        }
-
-        else {
+        } else {
             mBinding.imageStar.setVisibility(View.INVISIBLE);
         }
     }
     // END OF FAVORITE BUTTON PART
 
+
+    //Notifications
+    private void setNotifications(String restaurantName, String restaurantAddress, List<String> colleagues) {
+        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+        bool = true;
+
+        // THE USAGE OF LIVEDATA MAKES UNWANTED BEHAVIORS (CALL OF THE FUNCTION AT EVERY CHANGE)
+        // SO WE DIRECTLY CALL HERE
+        UserCallData.getUser(Objects.requireNonNull(currentUser).getUid())
+                .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                        if (bool) {
+                            DocumentSnapshot document = task.getResult();
+                            mUser = document.toObject(User.class);
+                            if (Objects.equals(Objects.requireNonNull(mUser).getRestaurantChosenId(), getRestaurantId())){
+                                Log.d("123", "setNotifications: " + restaurantAddress + restaurantName + colleagues);
+                                bool = false;
+                                createNotification(restaurantName,restaurantAddress,colleagues);
+
+
+                            }
+                        }
+                    }
+                });
+
+
+//        String restaurantName =  mViewModelMainActivity.getUser().getValue().getRestaurantChosenName();
+//        String restaurantChosenId =  mViewModelMainActivity.getUser().getValue().getRestaurantChosenId();
+//        String restaurantAddress = mViewModelMainActivity.getRestaurantDetails(restaurantChosenId).getValue().getVicinity();
+
+//        String colleagues = "Bob";
+
+    }
+
+    private void createNotification(String restaurantName, String restaurantAddress, List<String> colleagues){
+        int notificationId = 55;
+        createNotificationChannel();
+        if (colleagues.size() >= 1) {
+            NotificationCompat.Builder builder = new NotificationCompat.Builder(this, CHANNEL_ID)
+                    .setSmallIcon(R.drawable.bol_logo)
+                    .setContentTitle("Go4Lunch")
+                    .setContentText("You are going to eat at " + restaurantName + " " + restaurantAddress + " with "
+                            + colleagues.stream().map(i -> i.toString()).collect(Collectors.joining(", ")))
+                    .setStyle(new NotificationCompat.BigTextStyle()
+                            .bigText("You are going to eat at " + restaurantName + " " + restaurantAddress + " with "
+                                    + colleagues.stream().map(i -> i.toString()).collect(Collectors.joining(", "))))
+                    .setPriority(NotificationCompat.PRIORITY_DEFAULT);
+            NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
+            notificationManager.notify(notificationId, builder.build());
+        }
+        else {
+
+            NotificationCompat.Builder builder = new NotificationCompat.Builder(this, CHANNEL_ID)
+                    .setSmallIcon(R.drawable.bol_logo)
+                    .setContentTitle("Go4Lunch")
+                    .setContentText("You are going to eat at " + restaurantName + " " + restaurantAddress+ " alone" )
+                    .setStyle(new NotificationCompat.BigTextStyle()
+                            .bigText("You are going to eat at " + restaurantName + " " + restaurantAddress+ " alone" ))
+                    .setPriority(NotificationCompat.PRIORITY_DEFAULT);
+            NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
+            notificationManager.notify(notificationId, builder.build());
+        }
+    }
+
+    private void createNotificationChannel() {
+        // Create the NotificationChannel, but only on API 26+ because
+        // the NotificationChannel class is new and not in the support library
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            CharSequence name = "Channel 1";
+            String description = "Channel for notifications";
+            int importance = NotificationManager.IMPORTANCE_DEFAULT;
+            NotificationChannel channel = new NotificationChannel(CHANNEL_ID, name, importance);
+            channel.setDescription(description);
+            // Register the channel with the system; you can't change the importance
+            // or other notification behaviors after this
+            NotificationManager notificationManager = getSystemService(NotificationManager.class);
+            notificationManager.createNotificationChannel(channel);
+        }
+    }
+
+    private void getRestaurantDetail(List<String> colleagues) {
+        mViewModelDetailActivity.getRestaurantsDetail().observe(this, new Observer<Result>() {
+            @Override
+            public void onChanged(Result result) {
+                setNotifications(result.getName(), result.getVicinity(), colleagues);
+            }
+        });
+    }
+
+    private void addUserToNotificationsCalls() {
+        mViewModelDetailActivity.getListOfColleaguesWhoEatWithCurrentUser(getRestaurantId())
+                .observe(this, new Observer<List<String>>() {
+                    @Override
+                    public void onChanged(List<String> strings) {
+                        getRestaurantDetail(strings);
+                    }
+                });
+
+
+    }
+
+    private void removeUserFromNotificationCall() {
+        //TODO CODE TO REMOVE NOTIFICATION
+        Log.d("123", "removeNotifications: ");
+        bool = true;
+    }
 
 }

@@ -5,6 +5,7 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import com.lodenou.go4lunchv4.data.DetailRepository;
+import com.lodenou.go4lunchv4.data.UserRepository;
 import com.lodenou.go4lunchv4.model.User;
 import com.lodenou.go4lunchv4.model.detail.Result;
 
@@ -18,6 +19,7 @@ public class ViewModelDetailActivity extends ViewModel {
     private MutableLiveData<Boolean> mMutableLiveDataBooleanFab;
     private MutableLiveData<Boolean> mMutableLiveDataBooleanFav;
     private MutableLiveData<User> mMutableLiveDataUser;
+    private LiveData<List<String>> mListColleaguesLiveData;
 
     public void init(String restaurantId){
         if(mMutableLiveDataUsers != null && mMutableLiveDataRestaurantDetail != null
@@ -82,5 +84,11 @@ public class ViewModelDetailActivity extends ViewModel {
         DetailRepository detailRepository = DetailRepository.getInstance();
         mMutableLiveDataBooleanFav = detailRepository.isRestaurantEgalToUserFavorite(userId, restaurantId);
         return mMutableLiveDataBooleanFav;
+    }
+
+    public LiveData<List<String>> getListOfColleaguesWhoEatWithCurrentUser( String restaurantId){
+        DetailRepository detailRepository = DetailRepository.getInstance();
+        mListColleaguesLiveData = detailRepository.getListOfColleaguesWhoEatWithCurrentUser(restaurantId);
+        return mListColleaguesLiveData;
     }
 }
