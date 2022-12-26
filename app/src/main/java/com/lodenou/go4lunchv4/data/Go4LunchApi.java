@@ -22,8 +22,8 @@ public interface Go4LunchApi {
             .client(new OkHttpClient.Builder().addInterceptor(new HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY)).build())
             .build();
 
-    @GET("nearbysearch/json?type=restaurant&key="+ BuildConfig.API_KEY )
-    Observable<NearbySearchResults  > getNearbyPlaces(@Query("location") String location, @Query("radius") int radius);
+    @GET("nearbysearch/json?type=restaurant&rankby=distance&key="+ BuildConfig.API_KEY )
+    Observable<NearbySearchResults  > getNearbyPlaces(@Query("location") String location);
 
     @GET("details/json?fields=name,vicinity,international_phone_number,website,photo,rating,geometry,place_id,opening_hours&key="+ BuildConfig.API_KEY)
     Observable<DetailResult> getPlaceDetails(@Query("place_id") String placeId);
