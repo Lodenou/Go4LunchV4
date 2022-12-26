@@ -81,6 +81,10 @@ public class ListViewRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerVi
                         .into(restaurantImage);
             }
         }
+        else {
+            restaurantImage.setImageResource(R.drawable.no_image_found);
+        }
+
         // Restaurant name
         ((ListViewViewHolder) holder).mContentView.setText(restaurant.getName());
 
