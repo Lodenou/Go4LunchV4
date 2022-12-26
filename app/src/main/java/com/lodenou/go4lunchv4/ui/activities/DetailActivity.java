@@ -1,8 +1,11 @@
 package com.lodenou.go4lunchv4.ui.activities;
 
 import android.Manifest;
+import android.app.AlarmManager;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
@@ -33,6 +36,7 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.lodenou.go4lunchv4.BuildConfig;
 import com.lodenou.go4lunchv4.R;
+import com.lodenou.go4lunchv4.data.NotificationReceiver;
 import com.lodenou.go4lunchv4.data.UserCallData;
 import com.lodenou.go4lunchv4.databinding.ActivityDetailBinding;
 import com.lodenou.go4lunchv4.model.User;
@@ -66,6 +70,7 @@ public class DetailActivity extends AppCompatActivity {
         initRecyclerView();
         initViewModel();
         getUser();
+        createNotificationChannel();
         addUserToNotificationsCalls();
     }
 
@@ -114,7 +119,7 @@ public class DetailActivity extends AppCompatActivity {
                     mBinding.fab.setColorFilter(Color.argb(250, 25, 255, 25));
                     Log.d("123", aBoolean.toString() + " true");
                 } else {
-                    removeUserFromNotificationCall();
+
                     mBinding.fab.setImageResource(R.drawable.ic_baseline_crop_din_24);
                     Log.d("123", aBoolean.toString() + " false");
                 }
@@ -167,6 +172,7 @@ public class DetailActivity extends AppCompatActivity {
 
         }
         if (isAdded) {
+            removeUserFromNotificationCall();
             Log.d("123", isAdded.toString());
             mViewModelDetailActivity.removeUserChoiceFromDatabase();
             mBinding.fab.setImageResource(R.drawable.ic_baseline_crop_din_24);
@@ -269,52 +275,14 @@ public class DetailActivity extends AppCompatActivity {
                             if (Objects.equals(Objects.requireNonNull(mUser).getRestaurantChosenId(), getRestaurantId())){
                                 Log.d("123", "setNotifications: " + restaurantAddress + restaurantName + colleagues);
                                 bool = false;
-                                createNotification(restaurantName,restaurantAddress,colleagues);
-
-
+//                                createNotification(restaurantName,restaurantAddress,colleagues);
+                                createPendingIntent(restaurantName,restaurantAddress,colleagues);
                             }
                         }
                     }
                 });
-
-
-//        String restaurantName =  mViewModelMainActivity.getUser().getValue().getRestaurantChosenName();
-//        String restaurantChosenId =  mViewModelMainActivity.getUser().getValue().getRestaurantChosenId();
-//        String restaurantAddress = mViewModelMainActivity.getRestaurantDetails(restaurantChosenId).getValue().getVicinity();
-
-//        String colleagues = "Bob";
-
     }
 
-    private void createNotification(String restaurantName, String restaurantAddress, List<String> colleagues){
-        int notificationId = 55;
-        createNotificationChannel();
-        if (colleagues.size() >= 1) {
-            NotificationCompat.Builder builder = new NotificationCompat.Builder(this, CHANNEL_ID)
-                    .setSmallIcon(R.drawable.bol_logo)
-                    .setContentTitle("Go4Lunch")
-                    .setContentText("You are going to eat at " + restaurantName + " " + restaurantAddress + " with "
-                            + colleagues.stream().map(i -> i.toString()).collect(Collectors.joining(", ")))
-                    .setStyle(new NotificationCompat.BigTextStyle()
-                            .bigText("You are going to eat at " + restaurantName + " " + restaurantAddress + " with "
-                                    + colleagues.stream().map(i -> i.toString()).collect(Collectors.joining(", "))))
-                    .setPriority(NotificationCompat.PRIORITY_DEFAULT);
-            NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
-            notificationManager.notify(notificationId, builder.build());
-        }
-        else {
-
-            NotificationCompat.Builder builder = new NotificationCompat.Builder(this, CHANNEL_ID)
-                    .setSmallIcon(R.drawable.bol_logo)
-                    .setContentTitle("Go4Lunch")
-                    .setContentText("You are going to eat at " + restaurantName + " " + restaurantAddress+ " alone" )
-                    .setStyle(new NotificationCompat.BigTextStyle()
-                            .bigText("You are going to eat at " + restaurantName + " " + restaurantAddress+ " alone" ))
-                    .setPriority(NotificationCompat.PRIORITY_DEFAULT);
-            NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
-            notificationManager.notify(notificationId, builder.build());
-        }
-    }
 
     private void createNotificationChannel() {
         // Create the NotificationChannel, but only on API 26+ because
@@ -330,6 +298,38 @@ public class DetailActivity extends AppCompatActivity {
             NotificationManager notificationManager = getSystemService(NotificationManager.class);
             notificationManager.createNotificationChannel(channel);
         }
+    }
+
+    private void createPendingIntent(String restaurantName, String restaurantAddress, List<String> colleagues){
+        Log.d("123", "createPendingIntent: ");
+        ArrayList<String> colleaguesArray = new ArrayList<>(colleagues);
+
+        Intent notificationIntent = new Intent(this, NotificationReceiver.class);
+        notificationIntent.putExtra("restaurantName", restaurantName);
+        notificationIntent.putExtra("restaurantAddress", restaurantAddress);
+        notificationIntent.putStringArrayListExtra("colleagues", colleaguesArray);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 0, notificationIntent,
+                PendingIntent.FLAG_UPDATE_CURRENT);
+
+        // Get an instance of the AlarmManager service
+        AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
+
+        Calendar notificationTime = Calendar.getInstance();
+        notificationTime.set(Calendar.HOUR_OF_DAY, 12);
+        notificationTime.set(Calendar.MINUTE,40);
+        notificationTime.set(Calendar.SECOND,0);
+
+        // Check if the Calendar time is in the past
+        if (notificationTime.getTimeInMillis() < System.currentTimeMillis()) {
+            Log.e("setAlarm","time is in past");notificationTime
+                    .add(Calendar.DAY_OF_YEAR, 1); // it will tell to run to next day
+        }
+
+        long triggerTime = notificationTime.getTimeInMillis();
+
+        // Set the alarm to trigger the pending intent at the specified time
+            alarmManager.set(AlarmManager.RTC_WAKEUP, triggerTime, pendingIntent);
+
     }
 
     private void getRestaurantDetail(List<String> colleagues) {
@@ -349,14 +349,19 @@ public class DetailActivity extends AppCompatActivity {
                         getRestaurantDetail(strings);
                     }
                 });
-
-
     }
 
     private void removeUserFromNotificationCall() {
         //TODO CODE TO REMOVE NOTIFICATION
         Log.d("123", "removeNotifications: ");
         bool = true;
+
+        AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+
+        Intent notificationIntent = new Intent(this, NotificationReceiver.class);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 0, notificationIntent,
+                PendingIntent.FLAG_UPDATE_CURRENT);
+        alarmManager.cancel(pendingIntent);
     }
 
 }
