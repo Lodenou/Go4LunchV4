@@ -69,6 +69,17 @@
             </intent-filter>
         </activity>
 
+        <activity
+            android:name=".ui.activities.SettingsActivity"
+            android:exported="true"
+            >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+
         <!-- google -->
         <meta-data
             android:name="com.google.android.geo.API_KEY"
