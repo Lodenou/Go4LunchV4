@@ -76,13 +76,13 @@ public class ViewModelDetailActivity extends ViewModel {
 
     public LiveData<User> getUser(String userId){
         DetailRepository detailRepository = DetailRepository.getInstance();
-        mMutableLiveDataUser = detailRepository.getUser(userId);
+        mMutableLiveDataUser = detailRepository.getUser();
         return mMutableLiveDataUser;
     }
 
-    public LiveData<Boolean> isRestaurantEgalToUserFavorite(String userId, String restaurantId){
+    public LiveData<Boolean> isRestaurantEgalToUserFavorite( String restaurantId){
         DetailRepository detailRepository = DetailRepository.getInstance();
-        mMutableLiveDataBooleanFav = detailRepository.isRestaurantEgalToUserFavorite(userId, restaurantId);
+        mMutableLiveDataBooleanFav = detailRepository.isRestaurantEgalToUserFavorite( restaurantId);
         return mMutableLiveDataBooleanFav;
     }
 

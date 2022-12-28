@@ -233,7 +233,7 @@ public class DetailActivity extends AppCompatActivity {
 
     private void isUserFav(User user) {
         // We need a boolean which uses data from repository to get the update version of user.getFavoriteRestaurant()
-        mViewModelDetailActivity.isRestaurantEgalToUserFavorite(user.getUid(), getRestaurantId()).observe(this, new Observer<Boolean>() {
+        mViewModelDetailActivity.isRestaurantEgalToUserFavorite( getRestaurantId()).observe(this, new Observer<Boolean>() {
             @Override
             public void onChanged(Boolean aBoolean) {
                 if (aBoolean) {
@@ -263,24 +263,16 @@ public class DetailActivity extends AppCompatActivity {
         FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
         bool = true;
 
-        // THE USAGE OF LIVEDATA MAKES UNWANTED BEHAVIORS (CALL OF THE FUNCTION AT EVERY CHANGE)
-        // SO WE DIRECTLY CALL HERE
-        UserCallData.getUser(Objects.requireNonNull(currentUser).getUid())
-                .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                        if (bool) {
-                            DocumentSnapshot document = task.getResult();
-                            mUser = document.toObject(User.class);
-                            if (Objects.equals(Objects.requireNonNull(mUser).getRestaurantChosenId(), getRestaurantId())){
+        mViewModelDetailActivity.getUser(currentUser.getUid()).observe(this, new Observer<User>() {
+            @Override
+            public void onChanged(User user) {
+                if (Objects.equals(Objects.requireNonNull(user).getRestaurantChosenId(), getRestaurantId())){
                                 Log.d("123", "setNotifications: " + restaurantAddress + restaurantName + colleagues);
                                 bool = false;
-//                                createNotification(restaurantName,restaurantAddress,colleagues);
                                 createPendingIntent(restaurantName,restaurantAddress,colleagues);
                             }
-                        }
-                    }
-                });
+            }
+        });
     }
 
 
@@ -316,7 +308,7 @@ public class DetailActivity extends AppCompatActivity {
 
         Calendar notificationTime = Calendar.getInstance();
         notificationTime.set(Calendar.HOUR_OF_DAY, 12);
-        notificationTime.set(Calendar.MINUTE,40);
+        notificationTime.set(Calendar.MINUTE,38);
         notificationTime.set(Calendar.SECOND,0);
 
         // Check if the Calendar time is in the past

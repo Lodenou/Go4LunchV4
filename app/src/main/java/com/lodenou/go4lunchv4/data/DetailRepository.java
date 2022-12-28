@@ -3,6 +3,7 @@ package com.lodenou.go4lunchv4.data;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.lifecycle.MutableLiveData;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -89,8 +90,13 @@ public class DetailRepository {
                 });
         return dataDetail;
     }
+    @Nullable
+    public FirebaseUser getCurrentUser() {
+        return FirebaseAuth.getInstance().getCurrentUser();
+    }
 
-    public MutableLiveData<User> getUser(String userId){
+    public MutableLiveData<User> getUser(){
+        String userId = Objects.requireNonNull(getCurrentUser()).getUid();
         UserCallData.getUser(userId).addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
             @Override
             public void onSuccess(DocumentSnapshot documentSnapshot) {
@@ -137,6 +143,7 @@ public class DetailRepository {
             docRef.set(chosenRestaurant, SetOptions.merge()).addOnCompleteListener(new OnCompleteListener<Void>() {
                 @Override
                 public void onComplete(@NonNull Task<Void> task) {
+                    getUser();
                     Log.d("123", "DocumentSnapshot successfully written!");
                 }
             }).addOnFailureListener(new OnFailureListener() {
@@ -158,6 +165,7 @@ public class DetailRepository {
             docRef.set(chosenRestaurant, SetOptions.merge()).addOnCompleteListener(new OnCompleteListener<Void>() {
                 @Override
                 public void onComplete(@NonNull Task<Void> task) {
+                    getUser();
                     Log.d("123", "DocumentSnapshot successfully unwritten!");
                 }
             }).addOnFailureListener(new OnFailureListener() {
@@ -278,8 +286,8 @@ public class DetailRepository {
         }
     }
 
-    public MutableLiveData<Boolean> isRestaurantEgalToUserFavorite(String userId, String restaurantId){
-        if (Objects.equals(Objects.requireNonNull(getUser(userId).getValue()).getFavoritesRestaurant(), restaurantId)){
+    public MutableLiveData<Boolean> isRestaurantEgalToUserFavorite(String restaurantId){
+        if (Objects.equals(Objects.requireNonNull(getUser().getValue()).getFavoritesRestaurant(), restaurantId)){
             dataIsFav.setValue(true);
         }
         else {

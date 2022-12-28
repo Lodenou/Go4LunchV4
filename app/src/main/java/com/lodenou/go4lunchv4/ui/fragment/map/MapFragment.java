@@ -125,6 +125,8 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
                 }
             }
         });
+
+
     }
 
 
@@ -145,6 +147,19 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         int resultSize = results.size();
         final int height = 100;
         final int width = 70;
+
+        googleMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+            @Override
+            public boolean onMarkerClick(@NonNull Marker marker) {
+                for (int k = 0; k <= results.size() - 1; k++) {
+                    if (Objects.equals(marker.getTitle(), results.get(k).getName())) {
+                        startDetailActivity(results.get(k).getPlaceId());
+                        return true;
+                    }
+                }
+                return false;
+            }
+        });
 
         // Resize the orange icon
         @SuppressLint("UseCompatLoadingForDrawables") BitmapDrawable bitmapDrawOrange = (BitmapDrawable) getResources()
@@ -176,19 +191,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
                                         .title(markerTitle)
                                         .icon(BitmapDescriptorFactory.fromBitmap(smallMarkerGreen))
                         );
-
-
-                        googleMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
-                            @Override
-                            public boolean onMarkerClick(@NonNull Marker marker) {
-                                for (int k = 0; k <= results.size() - 1; k++) {
-                                    if (Objects.equals(marker.getTitle(), results.get(k).getName())) {
-                                        startDetailActivity(results.get(k).getPlaceId());
-                                    }
-                                }
-                                return false;
-                            }
-                        });
                     }
 
                     // Else add orange markers for all others restaurants
@@ -263,7 +265,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
     public void onResume() {
         super.onResume();
 
-        // refresh the map and readd markers
+        // refresh the map and add markers
         if (mMap != null) {
             mMap.clear();
 
