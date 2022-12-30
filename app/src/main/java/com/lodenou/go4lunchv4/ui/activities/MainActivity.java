@@ -165,7 +165,8 @@ public class MainActivity extends AppCompatActivity {
                         logOut();
                         break;
                     case R.id.chat:
-                        //todo onclicklistener
+                        Intent intentC = new Intent(MainActivity.this, ChatActivity.class);
+                        startActivity(intentC);
                         break;
                     default:
                         break;

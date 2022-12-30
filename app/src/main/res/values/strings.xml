@@ -24,4 +24,14 @@
     <string name="autoriser_les_notifications">Autoriser les notifications</string>
     <string name="settings">Settings</string>
     <string name="oui">Oui</string>
+
+
+    <string name="toolbar_title_mentor_chat_activity">Discussion chat</string>
+    <string name="text_input_title_mentor_chat_activity">Compose you message</string>
+    <string name="button_title_mentor_chat_activity">Send</string>
+    <string name="text_view_mentor_chat_error">this discussion doesn\'t contain any image&#8230;</string>
+    <string name="popup_title_permission_files_access">This app needs permission to works</string>
+    <string name="toast_title_no_image_chosen">No image chosen&#8230;</string>
+
+
 </resources>
