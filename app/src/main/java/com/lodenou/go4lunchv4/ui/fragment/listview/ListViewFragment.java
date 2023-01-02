@@ -5,28 +5,39 @@ import android.annotation.SuppressLint;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
+
+import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
+
+import android.text.InputType;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.SearchView;
+
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
+import com.lodenou.go4lunchv4.R;
 import com.lodenou.go4lunchv4.databinding.FragmentListViewBinding;
 import com.lodenou.go4lunchv4.model.nearbysearch.Result;
 import com.lodenou.go4lunchv4.ui.adapters.ListViewRecyclerViewAdapter;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
-public class ListViewFragment extends Fragment {
+public class ListViewFragment extends Fragment implements SearchView.OnQueryTextListener{
 
     FragmentListViewBinding mBinding;
     ListViewRecyclerViewAdapter mAdapter;
@@ -46,6 +57,7 @@ public class ListViewFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
     }
 
     @Override
@@ -66,6 +78,8 @@ public class ListViewFragment extends Fragment {
         super.onDestroyView();
         mBinding = null;
     }
+
+
 
     private void initRecyclerView(){
         mAdapter = new ListViewRecyclerViewAdapter(getContext(), new ArrayList<>());
@@ -95,6 +109,7 @@ public class ListViewFragment extends Fragment {
                         mAdapter.setRestaurant(restaurants);
                     }
 
+
                 }
             });
     }
@@ -119,9 +134,48 @@ public class ListViewFragment extends Fragment {
         return fusedLocationProviderClient.getLastLocation();
     }
 
+
+
+
     @Override
     public void onResume() {
         super.onResume();
         initViewModel(getPermission(),getTask());
+    }
+
+    @Override
+    public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
+        inflater.inflate(R.menu.searchview_menu, menu);
+        MenuItem searchItem = menu.findItem(R.id.menu_search);
+        SearchView searchView = (SearchView) searchItem.getActionView();
+        searchView.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_CAP_SENTENCES);
+        searchView.setOnQueryTextListener(this);
+    }
+
+
+    @Override
+    public boolean onQueryTextSubmit(String s) {
+        return false;
+    }
+
+    @Override
+    public boolean onQueryTextChange(String s) {
+        ArrayList<Result> restaurantToFetch = new ArrayList<>();
+        List<Result> resultList = mViewModelListView.getNearbyRestaurants().getValue();
+        if (s.length() > 2) {
+            //FIXME peut etre faire le call api complet avec le observe et essayer avec le contains plutot que le ==
+
+            for (int i = 0; i <= Objects.requireNonNull(mViewModelListView.getNearbyRestaurants().getValue()).size() -1; i++) {
+                String restaurantName = Objects.requireNonNull(resultList).get(i).getName();
+                if (restaurantName.contains(s)){
+                    restaurantToFetch.add(resultList.get(i));
+                }
+                mAdapter.setRestaurant(restaurantToFetch);
+            }
+        }
+        else {
+            mAdapter.setRestaurant(resultList);
+        }
+        return true;
     }
 }
