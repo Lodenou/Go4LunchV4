@@ -16,10 +16,15 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
+import android.text.InputType;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.SearchView;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
@@ -44,6 +49,7 @@ import com.lodenou.go4lunchv4.R;
 import com.lodenou.go4lunchv4.model.nearbysearch.Result;
 import com.lodenou.go4lunchv4.ui.activities.DetailActivity;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -52,11 +58,12 @@ import java.util.Objects;
  * Use the {@link MapFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class MapFragment extends Fragment implements OnMapReadyCallback {
+public class MapFragment extends Fragment implements OnMapReadyCallback, SearchView.OnQueryTextListener {
 
     private GoogleMap mMap;
     LatLng currentLatLng;
     ViewModelMap mViewModelMap;
+    private List<Marker> markers = new ArrayList<>();
 
     public MapFragment() {
         // Required empty public constructor
@@ -70,6 +77,14 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mapPermission();
+        setHasOptionsMenu(true);
+        MapFragment mapFragment = null;
+        if (getFragmentManager() != null) {
+            mapFragment = (MapFragment) getFragmentManager().findFragmentById(R.id.map);
+        }
+        if (mapFragment != null) {
+            mMap = mapFragment.getMap();
+        }
     }
 
     @Override
@@ -77,6 +92,12 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_map, container, false);
+
+
+    }
+
+    public GoogleMap getMap() {
+        return mMap;
     }
 
     @Override
@@ -89,7 +110,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         }
     }
 
-        @Override
+    @Override
     public void onMapReady(@NonNull GoogleMap googleMap) {
         mMap = googleMap;
 
@@ -144,10 +165,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
 
     private void createRestaurantsMarkers(List<Result> results, GoogleMap googleMap) {
         googleMap.clear();
-        int resultSize = results.size();
-        final int height = 100;
-        final int width = 70;
-
         googleMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
             @Override
             public boolean onMarkerClick(@NonNull Marker marker) {
@@ -161,50 +178,8 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
             }
         });
 
-        // Resize the orange icon
-        @SuppressLint("UseCompatLoadingForDrawables") BitmapDrawable bitmapDrawOrange = (BitmapDrawable) getResources()
-                .getDrawable(R.drawable
-                        .ic_marker_orange, getActivity().getTheme());
-        Bitmap bOrange = bitmapDrawOrange.getBitmap();
-        Bitmap smallMarkerOrange = Bitmap.createScaledBitmap(bOrange, width, height, false);
-
-        // Resize the green icon
-        @SuppressLint("UseCompatLoadingForDrawables") BitmapDrawable bitmapDrawGreen = (BitmapDrawable) getResources()
-                .getDrawable(R.drawable
-                        .ic_marker_green, getActivity().getTheme());
-        Bitmap bGreen = bitmapDrawGreen.getBitmap();
-        Bitmap smallMarkerGreen = Bitmap.createScaledBitmap(bGreen, width, height, false);
         googleMap.clear();
-        mViewModelMap.getRestaurantChosenId().observe(this, new Observer<List<String>>() {
-            @Override
-            public void onChanged(List<String> strings) {
-                for (int i = 0; i <= resultSize - 1; i++) {
-                    Double lng = results.get(i).getGeometry().getLocation().getLng();
-                    Double lat = results.get(i).getGeometry().getLocation().getLat();
-                    LatLng currentLatLong = new LatLng(lat, lng);
-                    String markerTitle = results.get(i).getName();
-                    Log.d("123", "" + results.get(i).getPlaceId());
-                    if (strings.contains(results.get(i).getPlaceId())) {
-                        Marker greenMarker = googleMap.addMarker(
-                                new MarkerOptions()
-                                        .position(currentLatLong)
-                                        .title(markerTitle)
-                                        .icon(BitmapDescriptorFactory.fromBitmap(smallMarkerGreen))
-                        );
-                    }
-
-                    // Else add orange markers for all others restaurants
-                    else if (!strings.contains(results.get(i).getPlaceId())) {
-                        googleMap.addMarker(
-                                new MarkerOptions()
-                                        .position(currentLatLong)
-                                        .title(markerTitle)
-                                        .icon(BitmapDescriptorFactory.fromBitmap(smallMarkerOrange))
-                        );
-                    }
-                }
-            }
-        });
+        addAllMarkers();
     }
 
     private void startDetailActivity(String restaurantId) {
@@ -296,5 +271,126 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
                 Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
         }
         return fusedLocationProviderClient.getLastLocation();
+    }
+
+
+    //SEARCHVIEW
+    @Override
+    public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
+        inflater.inflate(R.menu.searchview_menu, menu);
+        MenuItem searchItem = menu.findItem(R.id.menu_search);
+        SearchView searchView = (SearchView) searchItem.getActionView();
+        searchView.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_CAP_SENTENCES);
+        searchView.setOnQueryTextListener(this);
+    }
+
+    @Override
+    public boolean onQueryTextSubmit(String s) {
+        return false;
+    }
+
+    @Override
+    public boolean onQueryTextChange(String s) {
+        ArrayList<Result> restaurantToFetch = new ArrayList<>();
+        List<Result> resultList = mViewModelMap.getNearbyRestaurants().getValue();
+        if (s.length() > 2) {
+            for (int i = 0; i <= Objects.requireNonNull(mViewModelMap.getNearbyRestaurants().getValue()).size() - 1; i++) {
+                String restaurantName = Objects.requireNonNull(resultList).get(i).getName();
+                if (restaurantName.contains(s)) {
+                    restaurantToFetch.add(resultList.get(i));
+                }
+                updateMapMarkers(s);
+            }
+        } else {
+            addAllMarkers();
+        }
+        return true;
+    }
+
+    private void updateMapMarkers(String query) {
+        // delete all markers
+        GoogleMap map = getMap();
+        map.clear();
+        // add filtered markers
+        addFilteredMarkers(query);
+    }
+
+    private void addFilteredMarkers(String searchResult) {
+        List<Result> results = mViewModelMap.getNearbyRestaurants().getValue();
+
+        for (int i = 0; i <= results.size() - 1; i++) {
+            Double lng = results.get(i).getGeometry().getLocation().getLng();
+            Double lat = results.get(i).getGeometry().getLocation().getLat();
+            LatLng currentLatLong = new LatLng(lat, lng);
+            // Resize the green icon
+            final int height = 100;
+            final int width = 70;
+            @SuppressLint("UseCompatLoadingForDrawables") BitmapDrawable bitmapDrawGreen = (BitmapDrawable) getResources()
+                    .getDrawable(R.drawable
+                            .ic_marker_green, getActivity().getTheme());
+            Bitmap bGreen = bitmapDrawGreen.getBitmap();
+            Bitmap smallMarkerGreen = Bitmap.createScaledBitmap(bGreen, width, height, false);
+            Result result = results.get(i);
+            GoogleMap map = getMap();
+            if (result.getName().contains(searchResult)) {
+                map.addMarker(new MarkerOptions()
+                        .position(currentLatLong)
+                        .title(result.getName())
+                        .icon(BitmapDescriptorFactory.fromBitmap(smallMarkerGreen))
+                );
+            }
+        }
+    }
+
+    private void addAllMarkers() {
+        List<Result> results = mViewModelMap.getNearbyRestaurants().getValue();
+
+
+        mViewModelMap.getRestaurantChosenId().observe(this, new Observer<List<String>>() {
+            @Override
+            public void onChanged(List<String> strings) {
+                for (int i = 0; i <= results.size() - 1; i++) {
+                    Double lng = results.get(i).getGeometry().getLocation().getLng();
+                    Double lat = results.get(i).getGeometry().getLocation().getLat();
+                    LatLng currentLatLong = new LatLng(lat, lng);
+                    // Resize the green icon
+                    final int height = 100;
+                    final int width = 70;
+                    // Resize the orange icon
+                    @SuppressLint("UseCompatLoadingForDrawables") BitmapDrawable bitmapDrawOrange = (BitmapDrawable) getResources()
+                            .getDrawable(R.drawable
+                                    .ic_marker_orange, getActivity().getTheme());
+                    Bitmap bOrange = bitmapDrawOrange.getBitmap();
+                    Bitmap smallMarkerOrange = Bitmap.createScaledBitmap(bOrange, width, height, false);
+                    @SuppressLint("UseCompatLoadingForDrawables") BitmapDrawable bitmapDrawGreen = (BitmapDrawable) getResources()
+                            .getDrawable(R.drawable
+                                    .ic_marker_green, getActivity().getTheme());
+                    Bitmap bGreen = bitmapDrawGreen.getBitmap();
+                    Bitmap smallMarkerGreen = Bitmap.createScaledBitmap(bGreen, width, height, false);
+                    Result result = results.get(i);
+                    GoogleMap map = getMap();
+                    if (strings.contains(results.get(i).getPlaceId())) {
+                        map.addMarker(
+                                new MarkerOptions()
+                                        .position(currentLatLong)
+                                        .title(result.getName())
+                                        .icon(BitmapDescriptorFactory.fromBitmap(smallMarkerGreen))
+                        );
+                    }
+
+                    // Else add orange markers for all others restaurants
+                    else if (!strings.contains(results.get(i).getPlaceId())) {
+                        map.addMarker(
+                                new MarkerOptions()
+                                        .position(currentLatLong)
+                                        .title(result.getName())
+                                        .icon(BitmapDescriptorFactory.fromBitmap(smallMarkerOrange))
+                        );
+                    }
+                }
+            }
+        });
+
+
     }
 }
