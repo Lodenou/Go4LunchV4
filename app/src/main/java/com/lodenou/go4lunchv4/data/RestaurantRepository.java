@@ -16,10 +16,14 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 import com.lodenou.go4lunchv4.model.User;
 import com.lodenou.go4lunchv4.model.detail.DetailResult;
 import com.lodenou.go4lunchv4.model.nearbysearch.NearbySearchResults;
 import com.lodenou.go4lunchv4.model.nearbysearch.Result;
+import com.lodenou.go4lunchv4.ui.adapters.ListViewRecyclerViewAdapter;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -38,15 +42,17 @@ public class RestaurantRepository {
     MutableLiveData<com.lodenou.go4lunchv4.model.detail.Result> dataDetail =
             new MutableLiveData<com.lodenou.go4lunchv4.model.detail.Result>();
     MutableLiveData<Location> dataLocation = new MutableLiveData<>();
+    MutableLiveData<List<Result>> dataResult = new MutableLiveData<>();
+    private ArrayList<Result> datasetResult = new ArrayList<>();
 
-    public static RestaurantRepository getInstance(){
+    public static RestaurantRepository getInstance() {
         if (instance == null) {
             instance = new RestaurantRepository();
         }
         return instance;
     }
 
-    public MutableLiveData<List<Result>> getNearbyRestaurants(String location, Boolean isInit){
+    public MutableLiveData<List<Result>> getNearbyRestaurants(String location, Boolean isInit) {
         if (isInit) {
             Go4LunchApi.retrofit.create(Go4LunchApi.class).getNearbyPlaces(location)
                     .subscribeOn(Schedulers.io())
@@ -77,10 +83,9 @@ public class RestaurantRepository {
                     });
         }
         return dataNearby;
-
     }
 
-    public MutableLiveData<com.lodenou.go4lunchv4.model.detail.Result> getRestaurantDetails(String restaurantId){
+    public MutableLiveData<com.lodenou.go4lunchv4.model.detail.Result> getRestaurantDetails(String restaurantId) {
         Go4LunchApi.retrofit.create(Go4LunchApi.class).getPlaceDetails(restaurantId)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -92,7 +97,7 @@ public class RestaurantRepository {
 
                     @Override
                     public void onNext(DetailResult detailResult) {
-                        mRestaurant  = detailResult.getResult();
+                        mRestaurant = detailResult.getResult();
                         dataDetail.setValue(mRestaurant);
                     }
 
@@ -109,7 +114,7 @@ public class RestaurantRepository {
         return dataDetail;
     }
 
-    public MutableLiveData<Location> getLocation(Boolean permission, Task task){
+    public MutableLiveData<Location> getLocation(Boolean permission, Task task) {
 
         task.addOnSuccessListener(new OnSuccessListener<Location>() {
 
@@ -126,6 +131,71 @@ public class RestaurantRepository {
         });
         return dataLocation;
     }
+
+    public MutableLiveData<List<Result>> getRestaurants(Boolean permission, Task task) {
+
+        task.addOnSuccessListener(new OnSuccessListener<Location>() {
+            @SuppressLint("CheckResult")
+            @Override
+            public void onSuccess(Location location) {
+                if (!permission) {
+                    return;
+                }
+                if (location != null) {
+                    double lat = location.getLatitude();
+                    double lng = location.getLongitude();
+                    String loc = lat + "," + lng;
+                    List<Result> results = RestaurantRepository.getInstance().getNearbyRestaurants(loc, true).getValue();
+                    UserCallData.getAllUsers().get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                        @Override
+                        public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                            List<Result> datasetResult = new ArrayList<>();
+                            if (task.isSuccessful()) {
+                                for (QueryDocumentSnapshot document : task.getResult()) {
+                                    User mUser = document.toObject(User.class);
+                                    for (Result restaurant : results) {
+                                        if (mUser.getRestaurantChosenId() != null && mUser.getRestaurantChosenId()
+                                                .equals(restaurant.getPlaceId())) {
+                                            //the boolean avoid the increment +1 on a null var 
+                                            boolean found = false;
+                                            for (Result r : datasetResult) {
+                                                if (r.getPlaceId().equals(restaurant.getPlaceId())) {
+                                                    r.setRestaurantUserNumber(r.getRestaurantUserNumber() + 1);
+                                                    found = true;
+                                                    break;
+                                                }
+                                            }
+                                            if (!found) {
+                                                restaurant.setRestaurantUserNumber(1);
+                                                datasetResult.add(restaurant);
+                                            }
+                                            break;
+                                        }
+                                    }
+                                }
+                                // add restaurants with getRestaurantNumber = 0 to the list
+                                for (Result restaurant : results) {
+                                    boolean found = false;
+                                    for (Result r : datasetResult) {
+                                        if (r.getPlaceId().equals(restaurant.getPlaceId())) {
+                                            found = true;
+                                            break;
+                                        }
+                                    }
+                                    if (!found) {
+                                        datasetResult.add(restaurant);
+                                    }
+                                }
+                                dataResult.postValue(datasetResult);
+                            }
+                        }
+                    });
+                }
+            }
+        });
+        return dataResult;
+    }
+
 
 
 }

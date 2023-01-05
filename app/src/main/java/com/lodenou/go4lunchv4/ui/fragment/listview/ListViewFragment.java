@@ -30,6 +30,7 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.lodenou.go4lunchv4.R;
 import com.lodenou.go4lunchv4.databinding.FragmentListViewBinding;
+import com.lodenou.go4lunchv4.model.Restaurant;
 import com.lodenou.go4lunchv4.model.nearbysearch.Result;
 import com.lodenou.go4lunchv4.ui.adapters.ListViewRecyclerViewAdapter;
 
@@ -90,28 +91,19 @@ public class ListViewFragment extends Fragment implements SearchView.OnQueryText
     private void initViewModel(Boolean permission, Task task){
         mViewModelListView = new ViewModelProvider(this).get(ViewModelListView.class);
         mViewModelListView.init(permission, task);
-        mViewModelListView.getLocation().observe(getViewLifecycleOwner(), new Observer<Location>() {
-            @Override
-            public void onChanged(Location location) {
-                double lat = location.getLatitude();
-                double lng = location.getLongitude();
-                String loc = lat + "," + lng;
-                mViewModelListView.fetchNearbyRestaurants(loc);
-            }
-        });
+
+            mViewModelListView.getRestaurants(permission, task).observe(getViewLifecycleOwner(),
+                    new Observer<List<Result>>() {
+                        @Override
+                        public void onChanged(List<Result> results) {
+                            mAdapter.setRestaurant(results);
+                        }
+                    });
 
 
-            mViewModelListView.getNearbyRestaurants().observe(getViewLifecycleOwner(), new Observer<List<Result>>() {
-                @Override
-                public void onChanged(List<Result> restaurants) {
-
-                    if (mAdapter != null) {
-                        mAdapter.setRestaurant(restaurants);
-                    }
 
 
-                }
-            });
+
     }
 
     // Can't be in the repository because of the context requirement
@@ -163,8 +155,6 @@ public class ListViewFragment extends Fragment implements SearchView.OnQueryText
         ArrayList<Result> restaurantToFetch = new ArrayList<>();
         List<Result> resultList = mViewModelListView.getNearbyRestaurants().getValue();
         if (s.length() > 2) {
-            //FIXME peut etre faire le call api complet avec le observe et essayer avec le contains plutot que le ==
-
             for (int i = 0; i <= Objects.requireNonNull(mViewModelListView.getNearbyRestaurants().getValue()).size() -1; i++) {
                 String restaurantName = Objects.requireNonNull(resultList).get(i).getName();
                 if (restaurantName.contains(s)){

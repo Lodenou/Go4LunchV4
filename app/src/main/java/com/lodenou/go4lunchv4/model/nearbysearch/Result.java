@@ -57,6 +57,11 @@ public class Result {
     @SerializedName("price_level")
     @Expose
     private Integer priceLevel;
+    private Integer restaurantUserNumber;
+
+    public Result( Integer restaurantUserNumber){
+        this.restaurantUserNumber = restaurantUserNumber;
+    }
 
     public String getBusinessStatus() {
         return businessStatus;
@@ -194,4 +199,10 @@ public class Result {
         this.priceLevel = priceLevel;
     }
 
+    public Integer getRestaurantUserNumber() {
+        return restaurantUserNumber;
+    }
+    public void setRestaurantUserNumber(Integer restaurantUserNumber) {
+        this.restaurantUserNumber = restaurantUserNumber;
+    }
 }

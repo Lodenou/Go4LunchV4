@@ -20,6 +20,8 @@ public class ViewModelListView extends ViewModel {
     private MutableLiveData<List<Result>> mMutableLiveData;
     private MutableLiveData<Location> mMutableLiveDataLocation;
     private RestaurantRepository mRestaurantRepository;
+    private MutableLiveData<List<Result>> mIntegerMutableLiveData;
+    private MutableLiveData<Boolean> dataLoaded;
 
 
     public void init(Boolean permission, Task task) {
@@ -29,6 +31,7 @@ public class ViewModelListView extends ViewModel {
         mRestaurantRepository = RestaurantRepository.getInstance();
         mMutableLiveData = mRestaurantRepository.getNearbyRestaurants("0,0", false);
         mMutableLiveDataLocation = mRestaurantRepository.getLocation(permission, task);
+
     }
 
     public LiveData<List<Result>> getNearbyRestaurants() {
@@ -41,5 +44,10 @@ public class ViewModelListView extends ViewModel {
 
     public void fetchNearbyRestaurants(String location) {
         mMutableLiveData = mRestaurantRepository.getNearbyRestaurants(location, true);
+    }
+
+    public LiveData<List<Result>> getRestaurants(Boolean permission, Task task){
+        mIntegerMutableLiveData = mRestaurantRepository.getRestaurants(permission, task);
+        return mIntegerMutableLiveData;
     }
 }

@@ -120,22 +120,12 @@ public class ListViewRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerVi
         ((ListViewViewHolder) holder).mOpeningHours.setText(Utils.isOpenOrNot(restaurant.getOpeningHours()));
 
         //Workmates number
-        //We can directly use Livedata in recyclerview so the original call is directly made here
-        UserCallData.getAllUsers().get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
-            @Override
-            public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
-                int i = 0;
-                List<DocumentSnapshot> listworkmates = queryDocumentSnapshots.getDocuments();
-                for (DocumentSnapshot item : listworkmates) {
-                    User userw = item.toObject(User.class);
-                    if (userw.getRestaurantChosenId() != null && userw.getRestaurantChosenId()
-                            .equals(restaurant.getPlaceId())) {
-                        i = i + 1;
-                    }
-                }
-                ((ListViewViewHolder) holder).mWorkmatesNumber.setText(String.valueOf(i));
+            if (restaurant.getRestaurantUserNumber() != null) {
+                ((ListViewViewHolder) holder).mWorkmatesNumber.setText(String.valueOf(restaurant.getRestaurantUserNumber()));
             }
-        });
+            else {
+                ((ListViewViewHolder) holder).mWorkmatesNumber.setText(String.valueOf(0));
+            }
 
 
         // click
