@@ -15,9 +15,11 @@ import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.SearchView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
@@ -44,11 +46,13 @@ import com.lodenou.go4lunchv4.ui.fragment.listview.ListViewFragment;
 import com.lodenou.go4lunchv4.ui.fragment.map.MapFragment;
 import com.lodenou.go4lunchv4.ui.fragment.workmates.WorkmatesFragment;
 
+import org.checkerframework.common.returnsreceiver.qual.This;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity  {
 
     ActivityMainBinding mBinding;
     private Toolbar toolbar;
@@ -254,15 +258,4 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        Log.d("123", "onResume: ");
-    }
-
-
-
-
-
 }

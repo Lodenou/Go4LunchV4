@@ -9,14 +9,17 @@ public class Restaurant {
     private String restaurantImageUrl;
 
 
+
     public Restaurant(){
     }
 
-    public Restaurant( String restaurantId,String restaurantAddress, String restaurantName, String restaurantImageUrl){
+    public Restaurant( String restaurantId,String restaurantAddress, String restaurantName,
+                       String restaurantImageUrl, Integer restaurantUserNumber){
         this.restaurantId = restaurantId;
         this.restaurantAddress = restaurantAddress;
         this.restaurantName = restaurantName;
         this.restaurantImageUrl = restaurantImageUrl;
+
     }
 
 
