@@ -16,17 +16,17 @@
         <com.google.android.material.appbar.AppBarLayout
             android:id="@+id/app_bar"
             android:layout_width="match_parent"
-            android:layout_height="@dimen/app_bar_height"
+            android:layout_height="138dp"
             android:theme="@style/AppTheme.AppBarOverlay">
+
 
             <ImageView
                 android:id="@+id/restaurant_image"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="@dimen/app_bar_height"
-                android:src="@drawable/bol_logo"
                 android:fitsSystemWindows="true"
-                android:scaleType="centerCrop" />
-
+                android:scaleType="centerCrop"
+                android:src="@drawable/bol_logo" />
 
             <com.google.android.material.appbar.CollapsingToolbarLayout
                 android:id="@+id/toolbar_layout"
@@ -96,7 +96,7 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="57dp"
             android:background="#ffffff"
             android:backgroundTint="@color/white"
             android:orientation="horizontal"
@@ -120,7 +120,7 @@
             <Button
                 android:id="@+id/star_button"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:background="#ffffff"
                 android:drawableTop="@drawable/ic_baseline_star_24"
@@ -165,8 +165,9 @@
         android:layout_margin="@dimen/fab_margin"
         android:tint="#000000"
         app:backgroundTint="#ffffff"
-        app:layout_anchor="@id/app_bar"
+        app:layout_anchor="@id/restaurant_image"
         app:layout_anchorGravity="bottom|end"
         app:srcCompat="@drawable/ic_baseline_crop_din_24" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
+
