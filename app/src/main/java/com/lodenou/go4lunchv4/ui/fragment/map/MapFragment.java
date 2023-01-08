@@ -12,6 +12,7 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
@@ -42,9 +43,12 @@ import com.karumi.dexter.Dexter;
 import com.karumi.dexter.MultiplePermissionsReport;
 import com.karumi.dexter.PermissionToken;
 import com.karumi.dexter.listener.DexterError;
+import com.karumi.dexter.listener.PermissionDeniedResponse;
+import com.karumi.dexter.listener.PermissionGrantedResponse;
 import com.karumi.dexter.listener.PermissionRequest;
 import com.karumi.dexter.listener.PermissionRequestErrorListener;
 import com.karumi.dexter.listener.multi.MultiplePermissionsListener;
+import com.karumi.dexter.listener.single.PermissionListener;
 import com.lodenou.go4lunchv4.R;
 import com.lodenou.go4lunchv4.model.nearbysearch.Result;
 import com.lodenou.go4lunchv4.ui.activities.DetailActivity;
@@ -58,7 +62,7 @@ import java.util.Objects;
  * Use the {@link MapFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class MapFragment extends Fragment implements OnMapReadyCallback, SearchView.OnQueryTextListener {
+public class MapFragment extends Fragment implements OnMapReadyCallback, SearchView.OnQueryTextListener,MultiplePermissionsListener {
 
     private GoogleMap mMap;
     LatLng currentLatLng;
@@ -76,7 +80,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, SearchV
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mapPermission();
+        checkLocationPermission();
         setHasOptionsMenu(true);
         MapFragment mapFragment = null;
         if (getFragmentManager() != null) {
@@ -114,40 +118,82 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, SearchV
     public void onMapReady(@NonNull GoogleMap googleMap) {
         mMap = googleMap;
 
-
         //PERMISSION
-        if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
-                && ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            if (ActivityCompat.checkSelfPermission(getContext(),
+                    Manifest.permission.ACCESS_FINE_LOCATION)
+                    != PackageManager.PERMISSION_GRANTED &&
+                    ActivityCompat.checkSelfPermission(getContext(),
+                            Manifest.permission.ACCESS_COARSE_LOCATION)
+                            != PackageManager.PERMISSION_GRANTED) {
+                return;
+            }
+            mMap.setMyLocationEnabled(true);
+            Task<Location> task = getFusedLocation().getLastLocation();
+            task.addOnSuccessListener(new OnSuccessListener<Location>() {
+
+                @SuppressLint("CheckResult")
+                @Override
+                public void onSuccess(Location location) {
+                    if (ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
+                            && ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                        return;
+                    }
+
+                    if (location != null) {
+                        double lat = location.getLatitude();
+                        double lng = location.getLongitude();
+                        currentLatLng = new LatLng(lat, lng);
+                        String loc = lat + "," + lng;
+                        initViewModel(loc, googleMap);
+                        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLatLng, 15));
+
+
+                    } else {
+                        onMapReady(mMap);
+                    }
+                }
+            });
         }
 
-        mMap.setMyLocationEnabled(true);
-        Task<Location> task = getFusedLocation().getLastLocation();
-        task.addOnSuccessListener(new OnSuccessListener<Location>() {
+        // PERMISSION LOCATION
 
-            @SuppressLint("CheckResult")
-            @Override
-            public void onSuccess(Location location) {
-                if (ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
-                        && ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                    return;
-                }
+    private void checkLocationPermission() {
+        // Check if the location permission is granted
+        if (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED &&
+                ActivityCompat.checkSelfPermission(getContext(),
+                        Manifest.permission.ACCESS_COARSE_LOCATION)
+                        != PackageManager.PERMISSION_GRANTED) {
 
-                if (location != null) {
-                    double lat = location.getLatitude();
-                    double lng = location.getLongitude();
-                    currentLatLng = new LatLng(lat, lng);
-                    String loc = lat + "," + lng;
-                    initViewModel(loc, googleMap);
-                    mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLatLng, 15));
-
-
-                } else {
-                    onMapReady(mMap);
-                }
-            }
-        });
+            // Permission not granted, we ask the user
+            Dexter.withActivity(getActivity())
+                    .withPermissions(Manifest.permission.ACCESS_FINE_LOCATION , Manifest.permission.ACCESS_COARSE_LOCATION)
+                    .withListener(this)
+                    .check();
+        } else {
+            // Permission already granted, we can init the map
+            initMap();
+        }
+    }
 
 
+    @Override
+    public void onPermissionsChecked(MultiplePermissionsReport multiplePermissionsReport) {
+        if (multiplePermissionsReport.areAllPermissionsGranted()){
+            initMap();
+        }
+    }
+
+    @Override
+    public void onPermissionRationaleShouldBeShown(List<PermissionRequest> list, PermissionToken permissionToken) {
+    }
+
+    private void initMap() {
+        // Get the SupportMapFragment and register the fragment as a callback when the map is ready to be used
+        SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
+        if (mapFragment != null) {
+            mapFragment.getMapAsync(this);
+        }
     }
 
 
@@ -158,7 +204,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, SearchV
             @Override
             public void onChanged(List<Result> results) {
                 createRestaurantsMarkers(results, googleMap);
-
             }
         });
     }
@@ -177,13 +222,11 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, SearchV
                 return false;
             }
         });
-
         googleMap.clear();
         addAllMarkers();
     }
 
     private void startDetailActivity(String restaurantId) {
-
         Intent intent = new Intent(getContext(), DetailActivity.class);
         intent.putExtra("idrestaurant", restaurantId);
         getContext().startActivity(intent);
@@ -196,29 +239,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, SearchV
                 Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
         }
         return fusedLocationProviderClient;
-    }
-
-    private void mapPermission() {
-        Dexter.withContext(requireContext())
-                .withPermissions(Manifest.permission.ACCESS_COARSE_LOCATION,
-                        Manifest.permission.ACCESS_FINE_LOCATION)
-                .withListener(new MultiplePermissionsListener() {
-                    @Override
-                    public void onPermissionsChecked(MultiplePermissionsReport multiplePermissionsReport) {
-
-                    }
-
-                    @Override
-                    public void onPermissionRationaleShouldBeShown(List<PermissionRequest> list, PermissionToken permissionToken) {
-
-                    }
-                })
-                .withErrorListener(new PermissionRequestErrorListener() {
-                    @Override
-                    public void onError(DexterError error) {
-                        Log.e("Dexter", "There was an error: " + error.toString());
-                    }
-                }).check();
     }
 
     private void initMarkers() {
@@ -239,18 +259,19 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, SearchV
     @Override
     public void onResume() {
         super.onResume();
-
         // refresh the map and add markers
         if (mMap != null) {
-            mMap.clear();
+            if (mViewModelMap != null) {
+                mMap.clear();
 
-            mViewModelMap.getNearbyRestaurants().observe(this, new Observer<List<Result>>() {
-                @Override
-                public void onChanged(List<Result> results) {
-                    initMarkers();
-                    createRestaurantsMarkers(results, mMap);
-                }
-            });
+                mViewModelMap.getNearbyRestaurants().observe(this, new Observer<List<Result>>() {
+                    @Override
+                    public void onChanged(List<Result> results) {
+                        initMarkers();
+                        createRestaurantsMarkers(results, mMap);
+                    }
+                });
+            }
         }
     }
 
@@ -393,4 +414,5 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, SearchV
 
 
     }
+
 }
