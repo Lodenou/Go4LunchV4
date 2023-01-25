@@ -59,6 +59,8 @@ public class DetailActivity extends AppCompatActivity {
     private final String CHANNEL_ID = "122";
     private Boolean bool;
     private User mUser;
+    private Result mResult;
+    private boolean permissionGranted = false;
 
 
     @Override
@@ -86,7 +88,6 @@ public class DetailActivity extends AppCompatActivity {
         mBinding.myRecyclerView.setAdapter(this.mAdapter);
     }
 
-
     private void initViewModel() {
         mViewModelDetailActivity = new ViewModelProvider(this).get(ViewModelDetailActivity.class);
         mViewModelDetailActivity.init(getRestaurantId());
@@ -100,8 +101,7 @@ public class DetailActivity extends AppCompatActivity {
                 setOnClickOnWebsiteButton(result);
             }
         });
-
-        // observe the user list & set it to the recycler view
+        // observe the user list eating here & set it to the recycler view
         observeUsersList();
 
         // observe boolean , set click & update the ui with it
@@ -181,20 +181,38 @@ public class DetailActivity extends AppCompatActivity {
     }
     // END OF FAB SETTING PART
 
+
     private void setOnClickOnCallButton(Result result) {
+        this.mResult = result;
         mBinding.callButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                //FIXME CRASH QUAND DEMANDE 1ERE FOIS AUTORISATION
-                if (ContextCompat.checkSelfPermission(DetailActivity.this, Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED) {
-                    ActivityCompat.requestPermissions(DetailActivity.this, new String[]{Manifest.permission.CALL_PHONE}, PERMISSION_CODE);
+                if (permissionGranted) {
+                    String phoneNumber = result.getInternationalPhoneNumber();
+                    Intent callIntent = new Intent(Intent.ACTION_CALL);
+                    callIntent.setData(Uri.parse("tel:" + phoneNumber));
+                    startActivity(callIntent);
+                } else {
+                    if (ContextCompat.checkSelfPermission(DetailActivity.this, Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED) {
+                        ActivityCompat.requestPermissions(DetailActivity.this, new String[]{Manifest.permission.CALL_PHONE}, PERMISSION_CODE);
+                    }
                 }
-                String phoneNumber = result.getInternationalPhoneNumber();
+            }
+        });
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == PERMISSION_CODE) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                permissionGranted = true;
+                String phoneNumber = mResult.getInternationalPhoneNumber();
                 Intent callIntent = new Intent(Intent.ACTION_CALL);
                 callIntent.setData(Uri.parse("tel:" + phoneNumber));
                 startActivity(callIntent);
             }
-        });
+        }
     }
 
     private void setOnClickOnWebsiteButton(Result result) {
@@ -308,13 +326,13 @@ public class DetailActivity extends AppCompatActivity {
 
         Calendar notificationTime = Calendar.getInstance();
         notificationTime.set(Calendar.HOUR_OF_DAY, 12);
-        notificationTime.set(Calendar.MINUTE,38);
+        notificationTime.set(Calendar.MINUTE,0);
         notificationTime.set(Calendar.SECOND,0);
 
         // Check if the Calendar time is in the past
         if (notificationTime.getTimeInMillis() < System.currentTimeMillis()) {
-            Log.e("setAlarm","time is in past");notificationTime
-                    .add(Calendar.DAY_OF_YEAR, 1); // it will tell to run to next day
+            Log.e("setAlarm","time is in past");
+            notificationTime.add(Calendar.DAY_OF_YEAR, 1); // it will tell to run to next day
         }
 
         long triggerTime = notificationTime.getTimeInMillis();
@@ -344,12 +362,9 @@ public class DetailActivity extends AppCompatActivity {
     }
 
     private void removeUserFromNotificationCall() {
-        //TODO CODE TO REMOVE NOTIFICATION
         Log.d("123", "removeNotifications: ");
         bool = true;
-
         AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
-
         Intent notificationIntent = new Intent(this, NotificationReceiver.class);
         PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 0, notificationIntent,
                 PendingIntent.FLAG_UPDATE_CURRENT);

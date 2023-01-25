@@ -96,8 +96,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, SearchV
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_map, container, false);
-
-
     }
 
     public GoogleMap getMap() {
@@ -134,8 +132,10 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, SearchV
                 @SuppressLint("CheckResult")
                 @Override
                 public void onSuccess(Location location) {
-                    if (ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
-                            && ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                    if (ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION)
+                            != PackageManager.PERMISSION_GRANTED
+                            && ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_COARSE_LOCATION)
+                            != PackageManager.PERMISSION_GRANTED) {
                         return;
                     }
 
@@ -147,8 +147,8 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, SearchV
                         initViewModel(loc, googleMap);
                         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLatLng, 15));
 
-
                     } else {
+                        // Restart onMapReady to get location
                         onMapReady(mMap);
                     }
                 }
@@ -167,7 +167,8 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, SearchV
 
             // Permission not granted, we ask the user
             Dexter.withActivity(getActivity())
-                    .withPermissions(Manifest.permission.ACCESS_FINE_LOCATION , Manifest.permission.ACCESS_COARSE_LOCATION)
+                    .withPermissions(Manifest.permission.ACCESS_FINE_LOCATION ,
+                            Manifest.permission.ACCESS_COARSE_LOCATION)
                     .withListener(this)
                     .check();
         } else {
@@ -210,6 +211,12 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, SearchV
 
     private void createRestaurantsMarkers(List<Result> results, GoogleMap googleMap) {
         googleMap.clear();
+        markersClickBehavior(results,googleMap);
+        googleMap.clear();
+        addAllMarkers();
+    }
+
+    private void markersClickBehavior(List<Result> results, GoogleMap googleMap){
         googleMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
             @Override
             public boolean onMarkerClick(@NonNull Marker marker) {
@@ -222,8 +229,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, SearchV
                 return false;
             }
         });
-        googleMap.clear();
-        addAllMarkers();
     }
 
     private void startDetailActivity(String restaurantId) {
@@ -233,7 +238,8 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, SearchV
     }
 
     private FusedLocationProviderClient getFusedLocation() {
-        FusedLocationProviderClient fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(requireContext());
+        FusedLocationProviderClient fusedLocationProviderClient = LocationServices
+                .getFusedLocationProviderClient(requireContext());
         if (ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(requireContext(),
                 Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
@@ -276,16 +282,18 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, SearchV
     }
 
     private Boolean getPermission() {
-
-        Boolean isPermission = ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
-                && ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED;
+        Boolean isPermission = ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED
+                && ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_COARSE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED;
 
         Boolean isPermissionOk = !(isPermission);
         return isPermissionOk;
     }
 
     private Task getTask() {
-        FusedLocationProviderClient fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(requireContext());
+        FusedLocationProviderClient fusedLocationProviderClient = LocationServices
+                .getFusedLocationProviderClient(requireContext());
 
         if (ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(requireContext(),
@@ -338,7 +346,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, SearchV
 
     private void addFilteredMarkers(String searchResult) {
         List<Result> results = mViewModelMap.getNearbyRestaurants().getValue();
-
         for (int i = 0; i <= results.size() - 1; i++) {
             Double lng = results.get(i).getGeometry().getLocation().getLng();
             Double lat = results.get(i).getGeometry().getLocation().getLat();
@@ -365,8 +372,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, SearchV
 
     private void addAllMarkers() {
         List<Result> results = mViewModelMap.getNearbyRestaurants().getValue();
-
-
         mViewModelMap.getRestaurantChosenId().observe(this, new Observer<List<String>>() {
             @Override
             public void onChanged(List<String> strings) {
@@ -411,8 +416,5 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, SearchV
                 }
             }
         });
-
-
     }
-
 }
