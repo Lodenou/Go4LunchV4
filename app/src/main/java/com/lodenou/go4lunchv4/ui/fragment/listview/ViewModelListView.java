@@ -8,9 +8,6 @@ import androidx.lifecycle.ViewModel;
 
 import com.google.android.gms.tasks.Task;
 import com.lodenou.go4lunchv4.data.RestaurantRepository;
-import com.lodenou.go4lunchv4.data.UserRepository;
-import com.lodenou.go4lunchv4.model.Restaurant;
-import com.lodenou.go4lunchv4.model.User;
 import com.lodenou.go4lunchv4.model.nearbysearch.Result;
 
 import java.util.List;

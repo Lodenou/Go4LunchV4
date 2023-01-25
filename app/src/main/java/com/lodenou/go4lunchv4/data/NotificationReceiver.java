@@ -34,7 +34,7 @@ public class NotificationReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         SharedPreferences sharedPref = context.getSharedPreferences("1234", Context.MODE_PRIVATE);
-        Boolean aBoolean = sharedPref.getBoolean("123", true);
+        boolean aBoolean = sharedPref.getBoolean("123", true);
         if (aBoolean) {
 
             Log.d("123", "onReceive: ");

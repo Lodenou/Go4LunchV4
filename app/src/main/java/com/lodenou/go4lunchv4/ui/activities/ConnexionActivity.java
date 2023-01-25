@@ -44,7 +44,6 @@ import java.util.Objects;
 
 public class ConnexionActivity extends AppCompatActivity {
 
-
     private ActivityConnexionBinding mBinding;
     GoogleSignInClient mGoogleSignInClient;
     private FirebaseAuth mAuth;

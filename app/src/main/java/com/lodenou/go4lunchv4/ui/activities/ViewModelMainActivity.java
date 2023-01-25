@@ -11,14 +11,10 @@ public class ViewModelMainActivity extends ViewModel {
     private LiveData<User> mUserLiveData;
 
 
-
     public void init() {
-
         mDetailRepository = DetailRepository.getInstance();
         mUserLiveData = mDetailRepository.getUser();
-
     }
-
     public LiveData<User> getUser() {
         return mUserLiveData;
     }

@@ -73,14 +73,15 @@ public class WorkmatesRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerV
             @Override
             public void onClick(View view) {
                 if (mUser.getRestaurantChosenId() != null && mUser.getRestaurantChosenId() != "") {
-                    userRestaurant.setText(" mange à " + mUser.getRestaurantChosenName());
+                    userRestaurant.setText(String.format("%s%s", mContext.getString(R.string.eats_at),
+                            mUser.getRestaurantChosenName()));
                     Context context = view.getContext();
                     Intent intent = new Intent(context, DetailActivity.class);
                     intent.putExtra("idrestaurant", mUser.getRestaurantChosenId());
                     context.startActivity(intent);
 
                 } else {
-                    userRestaurant.setText(" n'a pas encore choisi de restaurant");
+                    userRestaurant.setText(R.string.has_not_yet_chosen);
                     userRestaurant.setTextColor(Color.rgb(138, 133, 132));
                     userRestaurant.setTypeface(null, Typeface.ITALIC);
                     userName.setTextColor(Color.rgb(138, 133, 132));
@@ -92,13 +93,13 @@ public class WorkmatesRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerV
 
         // Set the text without clicking on item
         if (!Objects.equals(mUser.getRestaurantChosenName(), "") && mUser.getRestaurantChosenName() != null) {
-            userRestaurant.setText(" mange à " + mUser.getRestaurantChosenName());
+            userRestaurant.setText(String.format("%s%s", mContext.getString(R.string.eats_at), mUser.getRestaurantChosenName()));
             userRestaurant.setTextColor(Color.rgb(0, 0, 0));
             userRestaurant.setTypeface(null, Typeface.NORMAL);
             userName.setTextColor(Color.rgb(0, 0, 0));
             userName.setTypeface(null, Typeface.NORMAL);
         } else {
-            userRestaurant.setText(" n'a pas encore choisi de restaurant");
+            userRestaurant.setText(R.string.has_not_yet_chosen);
             userRestaurant.setTextColor(Color.rgb(138, 133, 132));
             userRestaurant.setTypeface(null, Typeface.ITALIC);
             userName.setTextColor(Color.rgb(138, 133, 132));

@@ -1,9 +1,7 @@
 package com.lodenou.go4lunchv4.ui.fragment.listview;
 
 import android.Manifest;
-import android.annotation.SuppressLint;
 import android.content.pm.PackageManager;
-import android.location.Location;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -14,7 +12,6 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import android.text.InputType;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -25,12 +22,9 @@ import android.widget.SearchView;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.FirebaseAuth;
 import com.lodenou.go4lunchv4.R;
 import com.lodenou.go4lunchv4.databinding.FragmentListViewBinding;
-import com.lodenou.go4lunchv4.model.Restaurant;
 import com.lodenou.go4lunchv4.model.nearbysearch.Result;
 import com.lodenou.go4lunchv4.ui.adapters.ListViewRecyclerViewAdapter;
 
@@ -99,25 +93,23 @@ public class ListViewFragment extends Fragment implements SearchView.OnQueryText
                             mAdapter.setRestaurant(results);
                         }
                     });
-
-
-
-
-
     }
 
     // Can't be in the repository because of the context requirement
    private Boolean getPermission() {
 
-       Boolean isPermission = ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
-               && ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED;
+       Boolean isPermission = ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) !=
+               PackageManager.PERMISSION_GRANTED
+               && ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_COARSE_LOCATION) !=
+               PackageManager.PERMISSION_GRANTED;
 
        Boolean isPermissionOk = !(isPermission);
        return isPermissionOk;
    }
 
     private Task getTask() {
-        FusedLocationProviderClient fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(requireContext());
+        FusedLocationProviderClient fusedLocationProviderClient = LocationServices
+                .getFusedLocationProviderClient(requireContext());
 
         if (ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(requireContext(),

@@ -14,6 +14,7 @@ import android.widget.ToggleButton;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.lodenou.go4lunchv4.R;
 import com.lodenou.go4lunchv4.databinding.ActivtySettingsBinding;
 
 public class SettingsActivity extends AppCompatActivity {
@@ -53,9 +54,9 @@ public class SettingsActivity extends AppCompatActivity {
                 editor.apply();
 
                 if (b) {
-                    Toast.makeText(getApplicationContext(), "Notifications activées", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplicationContext(), R.string.notifications_activated, Toast.LENGTH_SHORT).show();
                 } else  {
-                    Toast.makeText(getApplicationContext(), "Notifications désactivées", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplicationContext(), R.string.disable_notifications, Toast.LENGTH_SHORT).show();
                 }
             }
         });

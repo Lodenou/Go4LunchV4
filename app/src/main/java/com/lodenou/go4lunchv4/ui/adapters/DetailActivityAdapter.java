@@ -57,7 +57,7 @@ public class DetailActivityAdapter extends RecyclerView.Adapter<RecyclerView.Vie
         userName.setText(mUser.getUserName());
 
         // User restaurant
-        userRestaurant.setText(" mange ici");
+        userRestaurant.setText(R.string.eats_here);
     }
 
     @Override
@@ -84,7 +84,5 @@ public class DetailActivityAdapter extends RecyclerView.Adapter<RecyclerView.Vie
             mUsername = itemView.findViewById(R.id.user_name);
             mUserRestaurant = itemView.findViewById(R.id.user_restaurant);
         }
-
-
     }
 }

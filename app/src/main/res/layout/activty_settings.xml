@@ -38,7 +38,7 @@
         android:layout_below="@+id/message_title"
         android:layout_marginStart="30dp"
         android:layout_marginTop="13dp"
-        android:text="@string/autoriser_les_notifications"
+        android:text="@string/allow_notif"
         >
     </TextView>
 
@@ -50,7 +50,7 @@
         android:layout_marginStart="30dp"
         android:layout_toEndOf="@+id/message_text_question"
         android:backgroundTint="#5888"
-        android:text="@string/oui"
+        android:text="@string/yes_toggle"
         android:textStyle="bold" />
 
 </RelativeLayout>

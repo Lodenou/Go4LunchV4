@@ -60,7 +60,7 @@
                     android:layout_marginStart="20dp"
                     android:layout_marginTop="10dp"
 
-                    android:text="Your restaurant"
+                    android:text="@string/your_restaurant"
                     android:textSize="20sp"
                     android:textStyle="bold">
 
@@ -89,7 +89,7 @@
                 android:textColor="@color/white"
                 android:layout_marginTop="10dp"
                 android:layout_marginBottom="20dp"
-                android:text="french restaurant 10 rue de la mariniere">
+                android:text="@string/french_restaurant_10_rue_de_la_mariniere">
 
             </TextView>
         </LinearLayout>
@@ -112,7 +112,7 @@
                 android:drawableTop="@drawable/ic_baseline_phone_24"
                 android:paddingTop="20dp"
                 android:paddingBottom="20dp"
-                android:text="Call"
+                android:text="@string/call"
                 android:textColor="#ff582a"
 
                 />
@@ -126,7 +126,7 @@
                 android:drawableTop="@drawable/ic_baseline_star_24"
                 android:paddingTop="20dp"
                 android:paddingBottom="20dp"
-                android:text="Like"
+                android:text="@string/like"
                 android:textColor="#ff582a"
 
                 />
@@ -140,7 +140,7 @@
                 android:drawableTop="@drawable/ic_baseline_public_24"
                 android:paddingTop="20dp"
                 android:paddingBottom="20dp"
-                android:text="Website"
+                android:text="@string/website"
                 android:textColor="#ff582a"
 
                 />

@@ -50,69 +50,6 @@ public class InstrumentedTests {
         assertEquals("com.lodenou.go4lunchv4", appContext.getPackageName());
     }
 
-//    @Rule
-//    public ActivityScenarioRule<ConnexionActivity> mActivityScenarioRule =
-//            new ActivityScenarioRule<>(ConnexionActivity.class);
-//
-//    @Rule
-//    public GrantPermissionRule mGrantPermissionRule =
-//            GrantPermissionRule.grant(
-//                    "android.permission.ACCESS_FINE_LOCATION",
-//                    "android.permission.ACCESS_COARSE_LOCATION",
-//                    "android.permission.INTERNET");
-//
-//    @Test
-//    public void testMenus() {
-//        ViewInteraction appCompatButton = onView(
-//                allOf(withId(R.id.google_button), withText("Sign in with google"),
-//                        childAtPosition(
-//                                childAtPosition(
-//                                        withClassName(is("android.widget.LinearLayout")),
-//                                        4),
-//                                0),
-//                        isDisplayed()));
-//        appCompatButton.perform(click());
-//
-//        ViewInteraction bottomNavigationItemView = onView(
-//                allOf(withId(R.id.list_view), withContentDescription("List View"),
-//                        childAtPosition(
-//                                childAtPosition(
-//                                        withId(R.id.bottom_navigation),
-//                                        0),
-//                                1),
-//                        isDisplayed()));
-//        bottomNavigationItemView.perform(click());
-//
-//        ViewInteraction bottomNavigationItemView2 = onView(
-//                allOf(withId(R.id.workmates), withContentDescription("Workmates"),
-//                        childAtPosition(
-//                                childAtPosition(
-//                                        withId(R.id.bottom_navigation),
-//                                        0),
-//                                2),
-//                        isDisplayed()));
-//        bottomNavigationItemView2.perform(click());
-//    }
-//
-//    private static Matcher<View> childAtPosition(
-//            final Matcher<View> parentMatcher, final int position) {
-//
-//        return new TypeSafeMatcher<View>() {
-//            @Override
-//            public void describeTo(Description description) {
-//                description.appendText("Child at position " + position + " in parent ");
-//                parentMatcher.describeTo(description);
-//            }
-//
-//            @Override
-//            public boolean matchesSafely(View view) {
-//                ViewParent parent = view.getParent();
-//                return parent instanceof ViewGroup && parentMatcher.matches(parent)
-//                        && view.equals(((ViewGroup) parent).getChildAt(position));
-//            }
-//        };
-//    }
-
     @Rule
     public ActivityScenarioRule<ConnexionActivity> mActivityScenarioRule =
             new ActivityScenarioRule<>(ConnexionActivity.class);
@@ -121,7 +58,10 @@ public class InstrumentedTests {
     public GrantPermissionRule mGrantPermissionRule =
             GrantPermissionRule.grant(
                     "android.permission.ACCESS_FINE_LOCATION",
-                    "android.permission.ACCESS_COARSE_LOCATION");
+                    "android.permission.ACCESS_COARSE_LOCATION",
+                    "android.permission.INTERNET");
+
+
 
     @Test
     public void connexionActivityTest() {

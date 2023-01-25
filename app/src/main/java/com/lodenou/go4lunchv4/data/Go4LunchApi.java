@@ -28,6 +28,4 @@ public interface Go4LunchApi {
     @GET("details/json?fields=name,vicinity,international_phone_number,website,photo,rating,geometry,place_id,opening_hours&key="+ BuildConfig.API_KEY)
     Observable<DetailResult> getPlaceDetails(@Query("place_id") String placeId);
 
-//    @GET("autocomplete/json?types=establishment&radius=5000&strictbounds&key=" + BuildConfig.API_KEY)
-//    Observable<Autocomplete> getAutocomplete(@Query("input") String input, @Query("location") String location, @Query("radius") int radius);
 }

@@ -76,7 +76,6 @@ public class ChatActivity extends AppCompatActivity  {
     }
 
     private void configureRecyclerView() {
-
         //Track current chat name
         //Configure Adapter & RecyclerView
         this.mChatAdapter = new ChatAdapter(this,  new ArrayList<>());

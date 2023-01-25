@@ -25,8 +25,6 @@ import java.util.Objects;
 public class ConnexionRepository {
 
     private FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
-//    private FirebaseFirestore rootRef = FirebaseFirestore.getInstance();
-//    private CollectionReference usersRef = rootRef.collection("users");
     User mUser;
 
     public MutableLiveData<User> firebaseSignInWithGoogle(AuthCredential googleAuthCredential) {
@@ -49,30 +47,6 @@ public class ConnexionRepository {
         return authenticatedUserMutableLiveData;
     }
 
-    //    public MutableLiveData<User> createUserInFirestoreIfNotExists(User authenticatedUser) {
-//        MutableLiveData<User> newUserMutableLiveData = new MutableLiveData<>();
-//        DocumentReference uidRef = usersRef.document(authenticatedUser.getUid());
-//        uidRef.get().addOnCompleteListener(uidTask -> {
-//            if (uidTask.isSuccessful()) {
-//                DocumentSnapshot document = uidTask.getResult();
-//                if (!document.exists()) {
-//                    uidRef.set(authenticatedUser).addOnCompleteListener(userCreationTask -> {
-//                        if (userCreationTask.isSuccessful()) {
-//                            authenticatedUser.isCreated = true;
-//                            newUserMutableLiveData.setValue(authenticatedUser);
-//                        } else {
-//                            Log.d("123", "OnFailure: Loggin failed" + (userCreationTask.getException().getMessage()));
-//                        }
-//                    });
-//                } else {
-//                    newUserMutableLiveData.setValue(authenticatedUser);
-//                }
-//            } else {
-//                Log.d("123", "OnFailure: Loggin failed" + (uidTask.getException().getMessage()));
-//            }
-//        });
-//        return newUserMutableLiveData;
-//    }
     @Nullable
     public FirebaseUser getCurrentUser() {
         return FirebaseAuth.getInstance().getCurrentUser();
@@ -92,7 +66,7 @@ public class ConnexionRepository {
                     mUser = documentSnapshot.toObject(User.class);
                     if (mUser == null) {
                         UserCallData.createUser(uid, username, urlPicture, email, " ", "", "").addOnFailureListener(e -> {
-                            Toast.makeText(getApplicationContext(), "Firestore Error 1", Toast.LENGTH_LONG).show();
+                            Toast.makeText(getApplicationContext(), "Firestore Error ", Toast.LENGTH_LONG).show();
                             Log.d("TAG", "onFailure: firestore error 1 ");
                         });
                     }

@@ -83,12 +83,8 @@ public class ChatRepository {
         return dataUser;
     }
 
-//    public void createNewMessage(String message) {
-//       User user = Objects.requireNonNull(ChatRepository.getInstance().getUser().getValue());
-//        ChatCallData.createMessage(message,user );
-//    }
+
 public void createNewMessage(String message){
-//    User user = Objects.requireNonNull(ChatRepository.getInstance().getUser().getValue());
     Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
     Date date = calendar.getTime();
 

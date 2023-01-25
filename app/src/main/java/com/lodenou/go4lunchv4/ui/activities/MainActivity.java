@@ -9,47 +9,31 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
-
 import android.content.Intent;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
-import android.widget.SearchView;
 import android.widget.TextView;
-
 import com.bumptech.glide.Glide;
 import com.facebook.login.LoginManager;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
-import com.google.firebase.firestore.QuerySnapshot;
 import com.lodenou.go4lunchv4.R;
-import com.lodenou.go4lunchv4.data.UserCallData;
 import com.lodenou.go4lunchv4.data.UserRepository;
 import com.lodenou.go4lunchv4.databinding.ActivityMainBinding;
 import com.lodenou.go4lunchv4.model.User;
-import com.lodenou.go4lunchv4.model.detail.Result;
 import com.lodenou.go4lunchv4.ui.fragment.listview.ListViewFragment;
 import com.lodenou.go4lunchv4.ui.fragment.map.MapFragment;
 import com.lodenou.go4lunchv4.ui.fragment.workmates.WorkmatesFragment;
-
-import org.checkerframework.common.returnsreceiver.qual.This;
-
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
 
 public class MainActivity extends AppCompatActivity  {
@@ -180,6 +164,16 @@ public class MainActivity extends AppCompatActivity  {
         });
     }
 
+    private void initViewModel() {
+        mViewModelMainActivity = new ViewModelProvider(this).get(ViewModelMainActivity.class);
+        mViewModelMainActivity.init();
+//        mViewModelMainActivity.getUser().observe(this, new Observer<User>() {
+//            @Override
+//            public void onChanged(User user) {
+//            }
+//        });
+    }
+
     private void observeGetUser() {
         mViewModelMainActivity.getUser().observe(this, new Observer<User>() {
             @Override
@@ -195,7 +189,7 @@ public class MainActivity extends AppCompatActivity  {
                     Log.d("123", "onChanged: if");
                     new AlertDialog.Builder(MainActivity.this)
                             .setTitle("Oops")
-                            .setMessage("You didn't chose a restaurant !")
+                            .setMessage(R.string.nav_you_didnt_chose_restaurant)
                             .show();
                 }
                 else {
@@ -249,13 +243,5 @@ public class MainActivity extends AppCompatActivity  {
         LoginManager.getInstance().logOut();
     }
 
-    private void initViewModel() {
-        mViewModelMainActivity = new ViewModelProvider(this).get(ViewModelMainActivity.class);
-        mViewModelMainActivity.init();
-        mViewModelMainActivity.getUser().observe(this, new Observer<User>() {
-            @Override
-            public void onChanged(User user) {
-            }
-        });
-    }
+
 }

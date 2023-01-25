@@ -15,21 +15,12 @@ public class ViewModelChat extends ViewModel {
     private MutableLiveData<List<Message>> mQueryLiveData;
 
     public void init(){
-//        if(mMutableLiveDataUsers != null && mMutableLiveDataRestaurantDetail != null
-//                && mMutableLiveDataBooleanFab != null && mMutableLiveDataUser != null){
-//            return;
-//        }
-//        DetailRepository detailRepository = DetailRepository.getInstance();
-//        mMutableLiveDataRestaurantDetail = detailRepository.getRestaurantDetails(restaurantId);
-//        mMutableLiveDataUsers = detailRepository.getUsersEatingHere(restaurantId);
-//        mMutableLiveDataBooleanFab = detailRepository.isCurrentUserHasChosenThisRestaurant(restaurantId);
         if (mQueryLiveData != null){
             return;
         }
         mChatRepository = ChatRepository.getInstance();
         mQueryLiveData = mChatRepository.getAllMessageForChat();
     }
-
 
     public LiveData<List<Message>> getAllMessageForChat(){
         return mQueryLiveData;

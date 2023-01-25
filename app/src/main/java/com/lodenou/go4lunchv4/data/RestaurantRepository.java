@@ -70,7 +70,6 @@ public class RestaurantRepository {
                             dataNearby.setValue(dataset);
                             Log.d("TAG", "onNext: ");
                         }
-
                         @Override
                         public void onError(Throwable e) {
                             Log.d("TAG", "error: ");
@@ -132,8 +131,10 @@ public class RestaurantRepository {
         return dataLocation;
     }
 
+    // LIST VIEW PURPOSE
     public MutableLiveData<List<Result>> getRestaurants(Boolean permission, Task task) {
 
+        // get restaurants & get the number of workmates who selected a restaurant
         task.addOnSuccessListener(new OnSuccessListener<Location>() {
             @SuppressLint("CheckResult")
             @Override
@@ -156,7 +157,7 @@ public class RestaurantRepository {
                                     for (Result restaurant : results) {
                                         if (mUser.getRestaurantChosenId() != null && mUser.getRestaurantChosenId()
                                                 .equals(restaurant.getPlaceId())) {
-                                            //the boolean avoid the increment +1 on a null var 
+                                            //the boolean avoid the increment +1 on a null var
                                             boolean found = false;
                                             for (Result r : datasetResult) {
                                                 if (r.getPlaceId().equals(restaurant.getPlaceId())) {
@@ -195,7 +196,4 @@ public class RestaurantRepository {
         });
         return dataResult;
     }
-
-
-
 }

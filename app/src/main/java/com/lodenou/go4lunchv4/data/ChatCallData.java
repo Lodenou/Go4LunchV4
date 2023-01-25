@@ -21,5 +21,4 @@ public class ChatCallData {
                 .orderBy("dateCreated")
                 .limit(50);
     }
-
 }

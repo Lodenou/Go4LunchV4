@@ -13,13 +13,9 @@ public class ViewModelConnexionActivity extends ViewModel {
     private ConnexionRepository mConnexionRepository;
     MutableLiveData<User> authenticatedUserLiveData;
 
-
-
     public void init() {
         mConnexionRepository = new ConnexionRepository();
-
     }
-
     public void signInWithGoogle(AuthCredential googleAuthCredential) {
         authenticatedUserLiveData = mConnexionRepository.firebaseSignInWithGoogle(googleAuthCredential);
     }
