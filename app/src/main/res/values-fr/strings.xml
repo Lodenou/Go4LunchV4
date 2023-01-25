@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Go4LunchV4</string>
+    <string name="hello_blank_fragment">Salut fragment vide</string>
+    <string name="workmates">Workmates</string>
+    <string name="list_view">List View</string>
+    <string name="map_view">Map View</string>
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="title_activity_connexion">ConnexionActivity</string>
+    <!-- Strings used for fragments for navigation -->
+    <string name="first_fragment_label">First Fragment</string>
+    <string name="second_fragment_label">Second Fragment</string>
+    <string name="next">Suivant</string>
+    <string name="previous">Précédent</string>
+    <string name="hello_first_fragment">Hello first fragment</string>
+    <string name="hello_second_fragment">Hello second fragment. Arg: %1$s</string>
+    <!--FACEBOOK -->
+    <string name="facebook_app_id" translatable="false">3402787136624128</string>
+    <string name="fb_login_protocol_scheme" translatable="false">fb3402787136624128</string>
+    <string name="facebook_client_token" translatable="false">a1f0838f547deda2af8709aa8646c040</string>
+    <string name="requestidtoken">538588114262-laoq3qcra2bhl7cg6temqgsl8a85dehf.apps.googleusercontent.com</string>
+
+    <string name="allow_notif">Autoriser les notifications</string>
+    <string name="settings">Paramètres</string>
+    <string name="yes_toggle">yes</string>
+    <string name="toolbar_title_mentor_chat_activity">Discussion chat</string>
+    <string name="text_input_title_mentor_chat_activity">Entre ton message</string>
+    <string name="button_title_mentor_chat_activity">Envoyer</string>
+    <string name="text_view_mentor_chat_error">Cette discussion ne contient pas d\'image </string>
+    <string name="popup_title_permission_files_access">Cette app a besoion d\'autorisation pour fonctionner</string>
+    <string name="toast_title_no_image_chosen">Pas d\'image choisie </string>
+    <string name="search">Recherche</string>
+    <string name="nav_you_didnt_chose_restaurant">Vous n\'avez pas choisi de restaurant !</string>
+    <string name="notifications_activated">Notifications activées </string>
+    <string name="disable_notifications">Notifications désactivées</string>
+    <string name="eats_here">&#160;mange ici</string>
+    <string name="eats_at">&#160;mange à&#160;</string>
+    <string name="has_not_yet_chosen">&#160;n\'a pas encore choisi de restaurant</string>
+    <string name="find_a_nice_restaurant_and_invite_your_coworkers_for_lunch">Trouve un bon restaurant pour y manger avec tes collègues</string>
+    <string name="go4lunch">Go4Lunch</string>
+    <string name="sign_in_with_google">Sign in with google</string>
+    <string name="your_restaurant">Votre restaurant</string>
+    <string name="french_restaurant_10_rue_de_la_mariniere">french restaurant 10 rue de la mariniere</string>
+    <string name="call">Appel</string>
+    <string name="like">J\'aime</string>
+    <string name="website">Site web</string>
+    <string name="your_lunch">Votre repas</string>
+    <string name="logout">Déconnexion</string>
+    <string name="chat">Chat</string>
+</resources>

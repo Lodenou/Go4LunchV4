@@ -12,20 +12,16 @@
     <string name="second_fragment_label">Second Fragment</string>
     <string name="next">Next</string>
     <string name="previous">Previous</string>
-
     <string name="hello_first_fragment">Hello first fragment</string>
     <string name="hello_second_fragment">Hello second fragment. Arg: %1$s</string>
-
     <!--FACEBOOK -->
     <string name="facebook_app_id" translatable="false">3402787136624128</string>
     <string name="fb_login_protocol_scheme" translatable="false">fb3402787136624128</string>
     <string name="facebook_client_token" translatable="false">a1f0838f547deda2af8709aa8646c040</string>
     <string name="requestidtoken">538588114262-laoq3qcra2bhl7cg6temqgsl8a85dehf.apps.googleusercontent.com</string>
-    <string name="autoriser_les_notifications">Autoriser les notifications</string>
+    <string name="allow_notif">Allow notifications</string>
     <string name="settings">Settings</string>
-    <string name="oui">Oui</string>
-
-
+    <string name="yes_toggle">yes</string>
     <string name="toolbar_title_mentor_chat_activity">Discussion chat</string>
     <string name="text_input_title_mentor_chat_activity">Compose you message</string>
     <string name="button_title_mentor_chat_activity">Send</string>
@@ -33,6 +29,23 @@
     <string name="popup_title_permission_files_access">This app needs permission to works</string>
     <string name="toast_title_no_image_chosen">No image chosen&#8230;</string>
     <string name="search">Search</string>
+    <string name="nav_you_didnt_chose_restaurant">You didn\'t chose a restaurant !</string>
+    <string name="notifications_activated">Notifications activated </string>
+    <string name="disable_notifications">Notifications disabled</string>
+    <string name="eats_here"> &#160;eats here</string>
+    <string name="eats_at">&#160; eats at &#160;</string>
+    <string name="has_not_yet_chosen">&#160; has not yet chosen a restaurant</string>
+    <string name="find_a_nice_restaurant_and_invite_your_coworkers_for_lunch">Find a nice restaurant and invite your coworkers for lunch</string>
+    <string name="go4lunch">Go4Lunch</string>
+    <string name="sign_in_with_google">Sign in with google</string>
+    <string name="your_restaurant">Your restaurant</string>
+    <string name="french_restaurant_10_rue_de_la_mariniere">french restaurant 10 rue de la mariniere</string>
+    <string name="call">Call</string>
+    <string name="like">Like</string>
+    <string name="website">Website</string>
+    <string name="your_lunch">Your lunch</string>
+    <string name="logout">Logout</string>
+    <string name="chat">Chat</string>
 
 
 </resources>
