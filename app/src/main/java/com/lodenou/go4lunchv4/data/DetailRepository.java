@@ -1,5 +1,7 @@
 package com.lodenou.go4lunchv4.data;
 
+import android.annotation.SuppressLint;
+import android.location.Location;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
@@ -17,9 +19,10 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.firestore.SetOptions;
+import com.lodenou.go4lunchv4.data.user.UserCallData;
 import com.lodenou.go4lunchv4.model.User;
 import com.lodenou.go4lunchv4.model.detail.DetailResult;
-import com.lodenou.go4lunchv4.model.detail.Result;
+import com.lodenou.go4lunchv4.model.nearbysearch.NearbySearchResults;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -54,12 +57,64 @@ public class DetailRepository {
     private ArrayList<String> datasetColleagues = new ArrayList<>();
     MutableLiveData<List<String>> dataColleagues = new MutableLiveData<>();
 
+    // getNearbyRestaurants
+    private ArrayList<com.lodenou.go4lunchv4.model.nearbysearch.Result> dataset = new ArrayList<>();
+    MutableLiveData<List<com.lodenou.go4lunchv4.model.nearbysearch.Result>> dataNearby = new MutableLiveData<>();
+
 
     public static DetailRepository getInstance() {
         if (instance == null) {
             instance = new DetailRepository();
         }
         return instance;
+    }
+
+    public MutableLiveData<List<com.lodenou.go4lunchv4.model.nearbysearch.Result>> getNearbyRestaurants(Task task, Boolean permission) {
+
+        task.addOnSuccessListener(new OnSuccessListener<Location>() {
+
+            @SuppressLint("CheckResult")
+            @Override
+            public void onSuccess(Location location) {
+                if (!permission) {
+                    return;
+                }
+                if (location != null) {
+                    double lat = location.getLatitude();
+                    double lng = location.getLongitude();
+                    String loc = lat + "," + lng;
+
+                    Go4LunchApi.retrofit.create(Go4LunchApi.class).getNearbyPlaces(loc)
+                            .subscribeOn(Schedulers.io())
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribe(new Observer<NearbySearchResults>() {
+                                @Override
+                                public void onSubscribe(Disposable d) {
+                                    Log.d("TAG", "onSubscribe: ");
+                                }
+
+                                @Override
+                                public void onNext(NearbySearchResults nearbySearchResults) {
+                                    dataset.clear();
+                                    dataset.addAll(nearbySearchResults.getResults());
+                                    dataNearby.setValue(dataset);
+                                    Log.d("TAG", "onNext: ");
+                                }
+
+                                @Override
+                                public void onError(Throwable e) {
+                                    Log.d("TAG", "error: ");
+                                }
+
+                                @Override
+                                public void onComplete() {
+                                    Log.d("TAG", "onComplete: ");
+                                }
+                            });
+                }
+            }
+        });
+        return dataNearby;
     }
 
     public MutableLiveData<com.lodenou.go4lunchv4.model.detail.Result> getRestaurantDetails(String restaurantId) {
@@ -90,12 +145,13 @@ public class DetailRepository {
                 });
         return dataDetail;
     }
+
     @Nullable
     public FirebaseUser getCurrentUser() {
         return FirebaseAuth.getInstance().getCurrentUser();
     }
 
-    public MutableLiveData<User> getUser(){
+    public MutableLiveData<User> getUser() {
         String userId = Objects.requireNonNull(getCurrentUser()).getUid();
         UserCallData.getUser(userId).addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
             @Override
@@ -158,7 +214,7 @@ public class DetailRepository {
     public void removeUserChoiceFromDatabase() {
         if (FirebaseAuth.getInstance().getCurrentUser() != null) {
             Map<String, Object> chosenRestaurant = new HashMap<>();
-            chosenRestaurant.put("restaurantChosenId", "" );
+            chosenRestaurant.put("restaurantChosenId", "");
             chosenRestaurant.put("restaurantChosenName", "");
             FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
             DocumentReference docRef = UserCallData.getAllUsers().getFirestore().collection("users").document(firebaseUser.getUid());
@@ -266,7 +322,7 @@ public class DetailRepository {
         }
     }
 
-    public void removeUserFavoriteFromDatabase(){
+    public void removeUserFavoriteFromDatabase() {
         if (FirebaseAuth.getInstance().getCurrentUser() != null) {
             Map<String, Object> favoriteRestaurant = new HashMap<>();
             favoriteRestaurant.put("favoritesRestaurant", "");
@@ -286,11 +342,10 @@ public class DetailRepository {
         }
     }
 
-    public MutableLiveData<Boolean> isRestaurantEgalToUserFavorite(String restaurantId){
-        if (Objects.equals(Objects.requireNonNull(getUser().getValue()).getFavoritesRestaurant(), restaurantId)){
+    public MutableLiveData<Boolean> isRestaurantEgalToUserFavorite(String restaurantId) {
+        if (Objects.equals(Objects.requireNonNull(getUser().getValue()).getFavoritesRestaurant(), restaurantId)) {
             dataIsFav.setValue(true);
-        }
-        else {
+        } else {
             dataIsFav.setValue(false);
         }
 
@@ -298,18 +353,18 @@ public class DetailRepository {
         return dataIsFav;
     }
 
-    public MutableLiveData<List<String>> getListOfColleaguesWhoEatWithCurrentUser( String restaurantId){
+    public MutableLiveData<List<String>> getListOfColleaguesWhoEatWithCurrentUser(String restaurantId) {
         datasetColleagues.clear();
         FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
         UserCallData.getAllUsers().get()
                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                     @Override
                     public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                        if (task.isSuccessful()){
+                        if (task.isSuccessful()) {
                             datasetColleagues.clear();
                             for (QueryDocumentSnapshot document : task.getResult()) {
-                                    User mUser = document.toObject(User.class);
-                                    // if resto id != provided && user != current user to avoid adding current user to the list
+                                User mUser = document.toObject(User.class);
+                                // if resto id != provided && user != current user to avoid adding current user to the list
                                 if (Objects.equals(mUser.getRestaurantChosenId(), restaurantId) &&
                                         !Objects.equals(mUser.getUid(), Objects.requireNonNull(currentUser).getUid())) {
                                     datasetColleagues.add(mUser.getUserName());
@@ -318,8 +373,7 @@ public class DetailRepository {
                             }
                             if (datasetColleagues != null) {
                                 dataColleagues.setValue(datasetColleagues);
-                            }
-                            else {
+                            } else {
                                 List<String> noOne = new ArrayList<>();
                                 noOne.add("no one");
                                 dataColleagues.setValue(noOne);

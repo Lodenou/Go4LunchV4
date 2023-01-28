@@ -5,11 +5,15 @@ import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.app.ActivityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
+
+import android.Manifest;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
@@ -23,17 +27,27 @@ import com.facebook.login.LoginManager;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.lodenou.go4lunchv4.BuildConfig;
 import com.lodenou.go4lunchv4.R;
-import com.lodenou.go4lunchv4.data.UserRepository;
+import com.lodenou.go4lunchv4.data.user.UserRepository;
 import com.lodenou.go4lunchv4.databinding.ActivityMainBinding;
+import com.lodenou.go4lunchv4.model.Restaurant;
 import com.lodenou.go4lunchv4.model.User;
+import com.lodenou.go4lunchv4.model.nearbysearch.Result;
+import com.lodenou.go4lunchv4.ui.Utils;
+import com.lodenou.go4lunchv4.ui.activities.viewmodels.ViewModelMainActivity;
 import com.lodenou.go4lunchv4.ui.fragment.listview.ListViewFragment;
 import com.lodenou.go4lunchv4.ui.fragment.map.MapFragment;
 import com.lodenou.go4lunchv4.ui.fragment.workmates.WorkmatesFragment;
+
+import java.util.List;
 import java.util.Objects;
 
 public class MainActivity extends AppCompatActivity  {
@@ -44,7 +58,6 @@ public class MainActivity extends AppCompatActivity  {
     private NavigationView navigationView;
     ViewModelMainActivity mViewModelMainActivity;
     private FirebaseAuth mAuth;
-    final String CHANNEL_ID = "1235";
     Boolean bool;
     User mUser;
 
@@ -75,11 +88,7 @@ public class MainActivity extends AppCompatActivity  {
 
     }
 
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        logOut();
-    }
+
 
     // restart connexion activity if the user isn't connected
     private void reload() {
@@ -164,15 +173,39 @@ public class MainActivity extends AppCompatActivity  {
         });
     }
 
-    private void initViewModel() {
-        mViewModelMainActivity = new ViewModelProvider(this).get(ViewModelMainActivity.class);
-        mViewModelMainActivity.init();
-//        mViewModelMainActivity.getUser().observe(this, new Observer<User>() {
+//    private void initViewModel() {
+//        mViewModelMainActivity = new ViewModelProvider(this).get(ViewModelMainActivity.class);
+//        mViewModelMainActivity.init();
+//        mViewModelMainActivity.getNearbyRestaurants(getTask(), getPermission()).observe(this, new Observer<List<Result>>() {
 //            @Override
-//            public void onChanged(User user) {
+//            public void onChanged(List<Result> results) {
+//                //TODO SEND DATA TO ROOM DATABASE
 //            }
 //        });
+//    }
+
+    private void initViewModel(){
+        mViewModelMainActivity = ViewModelProvider.AndroidViewModelFactory.getInstance(getApplication()).create(ViewModelMainActivity.class);
+        mViewModelMainActivity.init();
+        mViewModelMainActivity.getNearbyRestaurants(getTask(),getPermission()).observe(this, new Observer<List<Result>>() {
+            @Override
+            public void onChanged(List<Result> results) {
+                for (int i = 0; i <= results.size() -1; i++) {
+                    mViewModelMainActivity.insertRestaurant(convertResultToRestaurant(results.get(i)));
+                }
+            }
+        });
     }
+
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        logOut();
+        // Delete restaurants from db to avoid getting wrong restaurant list if the user change his location
+        mViewModelMainActivity.deleteAllRestaurants();
+    }
+
 
     private void observeGetUser() {
         mViewModelMainActivity.getUser().observe(this, new Observer<User>() {
@@ -182,6 +215,32 @@ public class MainActivity extends AppCompatActivity  {
                 mUser = user;
             }
         });
+    }
+
+    private Restaurant convertResultToRestaurant(Result result){
+        // Geometry
+        Double lat = result.getGeometry().getLocation().getLat();
+        Double lng = result.getGeometry().getLocation().getLng();
+        String geometry = Utils.formatLocation(lat, lng);
+        // OpeningHours
+        String isOpenNow = Utils.isOpenOrNot(result.getOpeningHours());
+        String photo = "";
+        if (result.getPhotos() != null) {
+            photo = "https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&maxheight=400&photoreference=" +
+                    result.getPhotos().get(0).getPhotoReference() + "&key=" + BuildConfig.API_KEY;
+        }
+
+        Restaurant restaurant = new Restaurant(
+                result.getPlaceId(),
+                result.getName(),
+                geometry,
+                isOpenNow,
+                photo,
+                result.getRating(),
+                result.getVicinity()
+
+        );
+        return  restaurant;
     }
 
     private void clickYourLunch(){
@@ -244,4 +303,25 @@ public class MainActivity extends AppCompatActivity  {
     }
 
 
+    private Boolean getPermission() {
+
+        Boolean isPermission = ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_FINE_LOCATION) !=
+                PackageManager.PERMISSION_GRANTED
+                && ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_COARSE_LOCATION) !=
+                PackageManager.PERMISSION_GRANTED;
+
+        Boolean isPermissionOk = !(isPermission);
+        return isPermissionOk;
+    }
+
+    private Task getTask() {
+        FusedLocationProviderClient fusedLocationProviderClient = LocationServices
+                .getFusedLocationProviderClient(getApplicationContext());
+
+        if (ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getApplicationContext(),
+                Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+        }
+        return fusedLocationProviderClient.getLastLocation();
+    }
 }

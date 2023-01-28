@@ -8,7 +8,6 @@ import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.location.Location;
 import android.os.Bundle;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
@@ -16,9 +15,7 @@ import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
-
 import android.text.InputType;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -26,7 +23,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.SearchView;
-
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -42,32 +38,28 @@ import com.google.android.gms.tasks.Task;
 import com.karumi.dexter.Dexter;
 import com.karumi.dexter.MultiplePermissionsReport;
 import com.karumi.dexter.PermissionToken;
-import com.karumi.dexter.listener.DexterError;
-import com.karumi.dexter.listener.PermissionDeniedResponse;
-import com.karumi.dexter.listener.PermissionGrantedResponse;
 import com.karumi.dexter.listener.PermissionRequest;
-import com.karumi.dexter.listener.PermissionRequestErrorListener;
 import com.karumi.dexter.listener.multi.MultiplePermissionsListener;
-import com.karumi.dexter.listener.single.PermissionListener;
 import com.lodenou.go4lunchv4.R;
-import com.lodenou.go4lunchv4.model.nearbysearch.Result;
+import com.lodenou.go4lunchv4.model.Restaurant;
+import com.lodenou.go4lunchv4.ui.Utils;
 import com.lodenou.go4lunchv4.ui.activities.DetailActivity;
+import com.lodenou.go4lunchv4.ui.activities.viewmodels.ViewModelMainActivity;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link MapFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
-public class MapFragment extends Fragment implements OnMapReadyCallback, SearchView.OnQueryTextListener,MultiplePermissionsListener {
+public class MapFragment extends Fragment implements OnMapReadyCallback, SearchView.OnQueryTextListener, MultiplePermissionsListener {
+
+
+
 
     private GoogleMap mMap;
     LatLng currentLatLng;
     ViewModelMap mViewModelMap;
     private List<Marker> markers = new ArrayList<>();
+    ViewModelMainActivity mViewModelMainActivity;
 
     public MapFragment() {
         // Required empty public constructor
@@ -199,30 +191,32 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, SearchV
 
 
     private void initViewModel(String location, GoogleMap googleMap) {
+        initMainViewModel();
         mViewModelMap = new ViewModelProvider(this).get(ViewModelMap.class);
         mViewModelMap.init(location);
-        mViewModelMap.getNearbyRestaurants().observe(this, new Observer<List<Result>>() {
+
+        mViewModelMainActivity.getAllRestaurantsFromVm().observe(this, new Observer<List<Restaurant>>() {
             @Override
-            public void onChanged(List<Result> results) {
-                createRestaurantsMarkers(results, googleMap);
+            public void onChanged(List<Restaurant> restaurants) {
+                createRestaurantsMarkers(restaurants, googleMap);
             }
         });
     }
 
-    private void createRestaurantsMarkers(List<Result> results, GoogleMap googleMap) {
+    private void createRestaurantsMarkers(List<Restaurant> restaurants, GoogleMap googleMap) {
         googleMap.clear();
-        markersClickBehavior(results,googleMap);
+        markersClickBehavior(restaurants,googleMap);
         googleMap.clear();
         addAllMarkers();
     }
 
-    private void markersClickBehavior(List<Result> results, GoogleMap googleMap){
+    private void markersClickBehavior(List<Restaurant> restaurants, GoogleMap googleMap){
         googleMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
             @Override
             public boolean onMarkerClick(@NonNull Marker marker) {
-                for (int k = 0; k <= results.size() - 1; k++) {
-                    if (Objects.equals(marker.getTitle(), results.get(k).getName())) {
-                        startDetailActivity(results.get(k).getPlaceId());
+                for (int k = 0; k <= restaurants.size() - 1; k++) {
+                    if (Objects.equals(marker.getTitle(), restaurants.get(k).getName())) {
+                        startDetailActivity(restaurants.get(k).getPlaceId());
                         return true;
                     }
                 }
@@ -262,6 +256,11 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, SearchV
         });
     }
 
+    private void initMainViewModel(){
+        mViewModelMainActivity = ViewModelProvider.AndroidViewModelFactory.getInstance(getActivity().getApplication()).create(ViewModelMainActivity.class);
+        mViewModelMainActivity.init();
+    }
+
     @Override
     public void onResume() {
         super.onResume();
@@ -270,11 +269,11 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, SearchV
             if (mViewModelMap != null) {
                 mMap.clear();
 
-                mViewModelMap.getNearbyRestaurants().observe(this, new Observer<List<Result>>() {
+                mViewModelMainActivity.getAllRestaurantsFromVm().observe(this, new Observer<List<Restaurant>>() {
                     @Override
-                    public void onChanged(List<Result> results) {
+                    public void onChanged(List<Restaurant> restaurants) {
                         initMarkers();
-                        createRestaurantsMarkers(results, mMap);
+                        createRestaurantsMarkers(restaurants, mMap);
                     }
                 });
             }
@@ -320,13 +319,14 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, SearchV
 
     @Override
     public boolean onQueryTextChange(String s) {
-        ArrayList<Result> restaurantToFetch = new ArrayList<>();
-        List<Result> resultList = mViewModelMap.getNearbyRestaurants().getValue();
+        ArrayList<Restaurant> restaurantToFetch = new ArrayList<>();
+//        List<Result> resultList = mViewModelMap.getNearbyRestaurants().getValue();
+        List<Restaurant> restaurantList = mViewModelMainActivity.getAllRestaurantsFromVm().getValue();
         if (s.length() > 2) {
-            for (int i = 0; i <= Objects.requireNonNull(mViewModelMap.getNearbyRestaurants().getValue()).size() - 1; i++) {
-                String restaurantName = Objects.requireNonNull(resultList).get(i).getName();
+            for (int i = 0; i <= Objects.requireNonNull(restaurantList).size() - 1; i++) {
+                String restaurantName = Objects.requireNonNull(restaurantList).get(i).getName();
                 if (restaurantName.contains(s)) {
-                    restaurantToFetch.add(resultList.get(i));
+                    restaurantToFetch.add(restaurantList.get(i));
                 }
                 updateMapMarkers(s);
             }
@@ -345,11 +345,10 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, SearchV
     }
 
     private void addFilteredMarkers(String searchResult) {
-        List<Result> results = mViewModelMap.getNearbyRestaurants().getValue();
-        for (int i = 0; i <= results.size() - 1; i++) {
-            Double lng = results.get(i).getGeometry().getLocation().getLng();
-            Double lat = results.get(i).getGeometry().getLocation().getLat();
-            LatLng currentLatLong = new LatLng(lat, lng);
+        List<Restaurant> restaurants = mViewModelMainActivity.getAllRestaurantsFromVm().getValue();
+        for (int i = 0; i <= restaurants.size() - 1; i++) {
+            String latLngString = restaurants.get(i).getGeometry();
+            LatLng currentLatLong = Utils.stringToLatLng(latLngString);
             // Resize the green icon
             final int height = 100;
             final int width = 70;
@@ -358,12 +357,12 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, SearchV
                             .ic_marker_green, getActivity().getTheme());
             Bitmap bGreen = bitmapDrawGreen.getBitmap();
             Bitmap smallMarkerGreen = Bitmap.createScaledBitmap(bGreen, width, height, false);
-            Result result = results.get(i);
+            Restaurant restaurant = restaurants.get(i);
             GoogleMap map = getMap();
-            if (result.getName().contains(searchResult)) {
+            if (restaurant.getName().contains(searchResult)) {
                 map.addMarker(new MarkerOptions()
                         .position(currentLatLong)
-                        .title(result.getName())
+                        .title(restaurant.getName())
                         .icon(BitmapDescriptorFactory.fromBitmap(smallMarkerGreen))
                 );
             }
@@ -371,14 +370,13 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, SearchV
     }
 
     private void addAllMarkers() {
-        List<Result> results = mViewModelMap.getNearbyRestaurants().getValue();
+        List<Restaurant> restaurants = mViewModelMainActivity.getAllRestaurantsFromVm().getValue();
         mViewModelMap.getRestaurantChosenId().observe(this, new Observer<List<String>>() {
             @Override
             public void onChanged(List<String> strings) {
-                for (int i = 0; i <= results.size() - 1; i++) {
-                    Double lng = results.get(i).getGeometry().getLocation().getLng();
-                    Double lat = results.get(i).getGeometry().getLocation().getLat();
-                    LatLng currentLatLong = new LatLng(lat, lng);
+                for (int i = 0; i <= restaurants.size() - 1; i++) {
+                    String latLngString = restaurants.get(i).getGeometry();
+                    LatLng currentLatLong = Utils.stringToLatLng(latLngString);
                     // Resize the green icon
                     final int height = 100;
                     final int width = 70;
@@ -393,23 +391,23 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, SearchV
                                     .ic_marker_green, getActivity().getTheme());
                     Bitmap bGreen = bitmapDrawGreen.getBitmap();
                     Bitmap smallMarkerGreen = Bitmap.createScaledBitmap(bGreen, width, height, false);
-                    Result result = results.get(i);
+                    Restaurant restaurant = restaurants.get(i);
                     GoogleMap map = getMap();
-                    if (strings.contains(results.get(i).getPlaceId())) {
+                    if (strings.contains(restaurants.get(i).getPlaceId())) {
                         map.addMarker(
                                 new MarkerOptions()
                                         .position(currentLatLong)
-                                        .title(result.getName())
+                                        .title(restaurant.getName())
                                         .icon(BitmapDescriptorFactory.fromBitmap(smallMarkerGreen))
                         );
                     }
 
                     // Else add orange markers for all others restaurants
-                    else if (!strings.contains(results.get(i).getPlaceId())) {
+                    else if (!strings.contains(restaurants.get(i).getPlaceId())) {
                         map.addMarker(
                                 new MarkerOptions()
                                         .position(currentLatLong)
-                                        .title(result.getName())
+                                        .title(restaurant.getName())
                                         .icon(BitmapDescriptorFactory.fromBitmap(smallMarkerOrange))
                         );
                     }
