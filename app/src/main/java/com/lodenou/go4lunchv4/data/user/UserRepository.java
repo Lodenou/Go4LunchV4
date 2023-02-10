@@ -1,4 +1,4 @@
-package com.lodenou.go4lunchv4.data;
+package com.lodenou.go4lunchv4.data.user;
 
 import android.util.Log;
 

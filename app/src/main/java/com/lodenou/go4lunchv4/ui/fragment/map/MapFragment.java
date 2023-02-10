@@ -203,6 +203,12 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, SearchV
         });
     }
 
+
+    private void initMainViewModel(){
+        mViewModelMainActivity = ViewModelProvider.AndroidViewModelFactory.getInstance(getActivity().getApplication()).create(ViewModelMainActivity.class);
+        mViewModelMainActivity.init();
+    }
+
     private void createRestaurantsMarkers(List<Restaurant> restaurants, GoogleMap googleMap) {
         googleMap.clear();
         markersClickBehavior(restaurants,googleMap);
@@ -256,10 +262,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, SearchV
         });
     }
 
-    private void initMainViewModel(){
-        mViewModelMainActivity = ViewModelProvider.AndroidViewModelFactory.getInstance(getActivity().getApplication()).create(ViewModelMainActivity.class);
-        mViewModelMainActivity.init();
-    }
 
     @Override
     public void onResume() {

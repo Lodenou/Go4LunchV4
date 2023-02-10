@@ -16,9 +16,11 @@ public class Restaurant {
     private String photo;
     private Double rating;
     private String vicinity;
+    private Integer restaurantUserNumber;
 
 
-    public Restaurant(@NonNull String placeId, String name, String geometry, String openingHours, String photo, Double rating, String vicinity ){
+    public Restaurant(@NonNull String placeId, String name, String geometry,
+                      String openingHours, String photo, Double rating, String vicinity, Integer restaurantUserNumber ){
         this.placeId = placeId;
         this.name = name;
         this.geometry = geometry;
@@ -26,6 +28,7 @@ public class Restaurant {
         this.photo = photo;
         this.rating = rating;
         this.vicinity = vicinity;
+        this.restaurantUserNumber = restaurantUserNumber;
     }
 
     public String getPlaceId() {
@@ -82,5 +85,13 @@ public class Restaurant {
 
     public void setVicinity(String vicinity) {
         this.vicinity = vicinity;
+    }
+
+    public Integer getRestaurantUserNumber() {
+        return restaurantUserNumber;
+    }
+
+    public void setRestaurantUserNumber(Integer restaurantUserNumber) {
+        this.restaurantUserNumber = restaurantUserNumber;
     }
 }

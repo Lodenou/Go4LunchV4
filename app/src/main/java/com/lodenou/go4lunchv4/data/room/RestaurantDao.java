@@ -5,6 +5,7 @@ import androidx.room.Dao;
 import androidx.room.Insert;
 import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
+import androidx.room.Update;
 
 import com.lodenou.go4lunchv4.model.Restaurant;
 
@@ -21,5 +22,12 @@ public interface RestaurantDao {
 
     @Query("SELECT * FROM restaurant_table")
     LiveData<List<Restaurant>> getAllRestaurants();
+
+    @Query("SELECT * FROM restaurant_table WHERE placeId = :placeId")
+    LiveData<Restaurant> getRestaurantById(String placeId);
+
+    //    @Update
+    @Query("UPDATE restaurant_table SET restaurantUserNumber=:restaurantUserNumber WHERE placeId = :placeId")
+    void updateRestaurant(int restaurantUserNumber, String placeId);
 
 }

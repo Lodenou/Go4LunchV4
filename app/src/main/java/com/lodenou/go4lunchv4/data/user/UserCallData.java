@@ -1,4 +1,4 @@
-package com.lodenou.go4lunchv4.data;
+package com.lodenou.go4lunchv4.data.user;
 
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.CollectionReference;

@@ -20,10 +20,12 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.lodenou.go4lunchv4.BuildConfig;
 import com.lodenou.go4lunchv4.R;
+import com.lodenou.go4lunchv4.model.Restaurant;
 import com.lodenou.go4lunchv4.model.nearbysearch.Result;
 import com.lodenou.go4lunchv4.ui.Utils;
 import com.lodenou.go4lunchv4.ui.activities.DetailActivity;
@@ -31,14 +33,15 @@ import com.lodenou.go4lunchv4.ui.fragment.listview.ViewModelListView;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class ListViewRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
-    private List<Result> mRestaurants = new ArrayList<>();
+    private List<Restaurant> mRestaurants = new ArrayList<>();
     private Context mContext;
     private ViewModelListView mViewModelListView;
 
-    public ListViewRecyclerViewAdapter(Context context, List<Result> restaurants) {
+    public ListViewRecyclerViewAdapter(Context context, List<Restaurant> restaurants) {
         mRestaurants = restaurants;
         mContext = context;
     }
@@ -55,7 +58,7 @@ public class ListViewRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerVi
 
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
-        final Result restaurant = mRestaurants.get(position);
+        final Restaurant restaurant = mRestaurants.get(position);
 
 
         ImageView restaurantImage = ((ListViewViewHolder) holder).mRestaurantImage;
@@ -63,14 +66,14 @@ public class ListViewRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerVi
         // Restaurant address
         ((ListViewViewHolder) holder).mRestaurantAddress.setText(restaurant.getVicinity());
         // Restaurant photo
-        if (restaurant.getPhotos() != null) {
-            String restaurantPhoto = "https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&maxheight=400&photoreference=" +
-                    restaurant.getPhotos().get(0).getPhotoReference() + "&key=" + BuildConfig.API_KEY;
-            if (restaurant.getPhotos() != null && restaurant.getPhotos().size() > 0) {
-                Glide.with(mContext).load(restaurantPhoto)
+//        if (restaurant.getPhotos() != null) {
+//            String restaurantPhoto = "https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&maxheight=400&photoreference=" +
+//                    restaurant.getPhotos().get(0).getPhotoReference() + "&key=" + BuildConfig.API_KEY;
+            if (restaurant.getPhoto() != null && !Objects.equals(restaurant.getPhoto(), "")) {
+                Glide.with(mContext).load(restaurant.getPhoto())
                         .into(restaurantImage);
             }
-        }
+//        }
         else {
             restaurantImage.setImageResource(R.drawable.no_image_found);
         }
@@ -91,8 +94,11 @@ public class ListViewRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerVi
             @Override
             public void onSuccess(Location location) {
                 Location locationResto = new Location(LocationManager.GPS_PROVIDER);
-                locationResto.setLatitude(restaurant.getGeometry().getLocation().getLat());
-                locationResto.setLongitude(restaurant.getGeometry().getLocation().getLng());
+//                locationResto.setLatitude(restaurant.getGeometry().getLocation().getLat());
+//                locationResto.setLongitude(restaurant.getGeometry().getLocation().getLng());
+               LatLng latLng = Utils.stringToLatLng(restaurant.getGeometry());
+                locationResto.setLatitude(latLng.latitude);
+                locationResto.setLongitude(latLng.longitude);
                 Float distance1 = location.distanceTo(locationResto);
                 int i = distance1.intValue();
                 ((ListViewViewHolder) holder).mDistance.setText(i + " m");
@@ -107,16 +113,16 @@ public class ListViewRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerVi
         }
 
         // Opening hours
-        ((ListViewViewHolder) holder).mOpeningHours.setText(Utils.isOpenOrNot(restaurant.getOpeningHours()));
+        ((ListViewViewHolder) holder).mOpeningHours.setText(restaurant.getOpeningHours());
 
         //Workmates number
-            if (restaurant.getRestaurantUserNumber() != null) {
-                ((ListViewViewHolder) holder).mWorkmatesNumber.setText(String.valueOf(restaurant.getRestaurantUserNumber()));
-            }
-            else {
-                ((ListViewViewHolder) holder).mWorkmatesNumber.setText(String.valueOf(0));
-            }
-
+//            if (restaurant.getRestaurantUserNumber() != 0 && restaurant.getRestaurantUserNumber() != null) {
+//                ((ListViewViewHolder) holder).mWorkmatesNumber.setText(String.valueOf(restaurant.getRestaurantUserNumber()));
+//            }
+//            else {
+//                ((ListViewViewHolder) holder).mWorkmatesNumber.setText(String.valueOf(0));
+//            }
+        ((ListViewViewHolder) holder).mWorkmatesNumber.setText(String.valueOf(restaurant.getRestaurantUserNumber()));
 
         // click
         ((ListViewViewHolder) holder).itemView.setOnClickListener(new View.OnClickListener() {
@@ -135,7 +141,7 @@ public class ListViewRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerVi
         return mRestaurants.size();
     }
 
-    public void setRestaurant(List<Result> restaurants) {
+    public void setRestaurant(List<Restaurant> restaurants) {
         this.mRestaurants = restaurants;
         notifyDataSetChanged();
     }

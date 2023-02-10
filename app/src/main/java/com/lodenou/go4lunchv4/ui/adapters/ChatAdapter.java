@@ -1,39 +1,22 @@
 package com.lodenou.go4lunchv4.ui.adapters;
 
 import android.content.Context;
-import android.graphics.drawable.GradientDrawable;
-import android.os.UserManager;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.constraintlayout.widget.ConstraintLayout;
-import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.RequestManager;
 import com.bumptech.glide.request.RequestOptions;
-import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
-import com.firebase.ui.firestore.FirestoreRecyclerOptions;
-import com.google.firebase.auth.FirebaseAuth;
 import com.lodenou.go4lunchv4.R;
-import com.lodenou.go4lunchv4.data.UserCallData;
-import com.lodenou.go4lunchv4.databinding.ItemChatBinding;
 import com.lodenou.go4lunchv4.model.Message;
-import com.lodenou.go4lunchv4.model.User;
 import com.lodenou.go4lunchv4.ui.Utils;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 
 public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 

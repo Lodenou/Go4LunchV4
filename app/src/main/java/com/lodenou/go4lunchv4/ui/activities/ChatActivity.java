@@ -15,6 +15,7 @@ import com.google.firebase.auth.FirebaseUser;
 import com.lodenou.go4lunchv4.R;
 import com.lodenou.go4lunchv4.databinding.ActivityChatBinding;
 import com.lodenou.go4lunchv4.model.Message;
+import com.lodenou.go4lunchv4.ui.activities.viewmodels.ViewModelChat;
 import com.lodenou.go4lunchv4.ui.adapters.ChatAdapter;
 
 import java.util.ArrayList;
@@ -37,7 +38,6 @@ public class ChatActivity extends AppCompatActivity  {
         setBackButton();
         configureRecyclerView();
         initViewModel();
-
         onClickSendMessages();
     }
 

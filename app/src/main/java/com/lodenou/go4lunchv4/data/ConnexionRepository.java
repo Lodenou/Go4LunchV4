@@ -5,19 +5,15 @@ import static com.facebook.FacebookSdk.getApplicationContext;
 import android.util.Log;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.lifecycle.MutableLiveData;
 
-import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.firestore.CollectionReference;
-import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.FirebaseFirestore;
+import com.lodenou.go4lunchv4.data.user.UserCallData;
 import com.lodenou.go4lunchv4.model.User;
 
 import java.util.Objects;
@@ -41,7 +37,7 @@ public class ConnexionRepository {
                     authenticatedUserMutableLiveData.setValue(user);
                 }
             } else {
-                Log.d("123", "OnFailure: Loggin failed" + Objects.requireNonNull(authTask.getException()).getMessage());
+                Log.d("123", "OnFailure: Login failed" + Objects.requireNonNull(authTask.getException()).getMessage());
             }
         });
         return authenticatedUserMutableLiveData;

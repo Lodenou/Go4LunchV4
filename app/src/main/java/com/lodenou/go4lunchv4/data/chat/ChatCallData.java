@@ -1,4 +1,4 @@
-package com.lodenou.go4lunchv4.data;
+package com.lodenou.go4lunchv4.data.chat;
 
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;

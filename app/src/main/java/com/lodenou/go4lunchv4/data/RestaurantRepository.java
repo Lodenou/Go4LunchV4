@@ -2,6 +2,7 @@ package com.lodenou.go4lunchv4.data;
 
 
 import android.annotation.SuppressLint;
+import android.app.Application;
 import android.location.Location;
 import android.util.Log;
 
@@ -9,24 +10,24 @@ import androidx.annotation.NonNull;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
-import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.lodenou.go4lunchv4.BuildConfig;
+import com.lodenou.go4lunchv4.data.room.RestaurantDao;
+import com.lodenou.go4lunchv4.data.room.RestaurantRoomDatabase;
+import com.lodenou.go4lunchv4.data.user.UserCallData;
+import com.lodenou.go4lunchv4.model.Restaurant;
 import com.lodenou.go4lunchv4.model.User;
 import com.lodenou.go4lunchv4.model.detail.DetailResult;
 import com.lodenou.go4lunchv4.model.nearbysearch.NearbySearchResults;
 import com.lodenou.go4lunchv4.model.nearbysearch.Result;
-import com.lodenou.go4lunchv4.ui.adapters.ListViewRecyclerViewAdapter;
+import com.lodenou.go4lunchv4.ui.Utils;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -37,13 +38,15 @@ public class RestaurantRepository {
 
     private static RestaurantRepository instance;
     private ArrayList<Result> dataset = new ArrayList<>();
-    private com.lodenou.go4lunchv4.model.detail.Result mRestaurant;
+//    private com.lodenou.go4lunchv4.model.detail.Result mRestaurant;
     MutableLiveData<List<Result>> dataNearby = new MutableLiveData<>();
-    MutableLiveData<com.lodenou.go4lunchv4.model.detail.Result> dataDetail =
-            new MutableLiveData<com.lodenou.go4lunchv4.model.detail.Result>();
+//    MutableLiveData<com.lodenou.go4lunchv4.model.detail.Result> dataDetail =
+//            new MutableLiveData<com.lodenou.go4lunchv4.model.detail.Result>();
     MutableLiveData<Location> dataLocation = new MutableLiveData<>();
     MutableLiveData<List<Result>> dataResult = new MutableLiveData<>();
     private ArrayList<Result> datasetResult = new ArrayList<>();
+
+    //Room
 
     public static RestaurantRepository getInstance() {
         if (instance == null) {
@@ -84,116 +87,126 @@ public class RestaurantRepository {
         return dataNearby;
     }
 
-    public MutableLiveData<com.lodenou.go4lunchv4.model.detail.Result> getRestaurantDetails(String restaurantId) {
-        Go4LunchApi.retrofit.create(Go4LunchApi.class).getPlaceDetails(restaurantId)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Observer<DetailResult>() {
-                    @Override
-                    public void onSubscribe(Disposable d) {
+//    public MutableLiveData<com.lodenou.go4lunchv4.model.detail.Result> getRestaurantDetails(String restaurantId) {
+//        Go4LunchApi.retrofit.create(Go4LunchApi.class).getPlaceDetails(restaurantId)
+//                .subscribeOn(Schedulers.io())
+//                .observeOn(AndroidSchedulers.mainThread())
+//                .subscribe(new Observer<DetailResult>() {
+//                    @Override
+//                    public void onSubscribe(Disposable d) {
+//
+//                    }
+//
+//                    @Override
+//                    public void onNext(DetailResult detailResult) {
+//                        mRestaurant = detailResult.getResult();
+//                        dataDetail.setValue(mRestaurant);
+//                    }
+//
+//                    @Override
+//                    public void onError(Throwable e) {
+//
+//                    }
+//
+//                    @Override
+//                    public void onComplete() {
+//
+//                    }
+//                });
+//        return dataDetail;
+//    }
 
-                    }
+//    public MutableLiveData<Location> getLocation(Boolean permission, Task task) {
+//
+//        task.addOnSuccessListener(new OnSuccessListener<Location>() {
+//
+//            @SuppressLint("CheckResult")
+//            @Override
+//            public void onSuccess(Location location) {
+//                if (!permission) {
+//                    return;
+//                }
+//                if (location != null) {
+//                    dataLocation.setValue(location);
+//                }
+//            }
+//        });
+//        return dataLocation;
+//    }
+//
+//    // LIST VIEW PURPOSE
+//    public MutableLiveData<List<Result>> getRestaurants(Boolean permission, Task task) {
+//        if (mRestaurantRoomDatabase.mRestaurantDao().getAllRestaurants().getValue().isEmpty()) {
+//            // get restaurants & get the number of workmates who selected a restaurant
+//            task.addOnSuccessListener(new OnSuccessListener<Location>() {
+//                @SuppressLint("CheckResult")
+//                @Override
+//                public void onSuccess(Location location) {
+//                    if (!permission) {
+//                        return;
+//                    }
+//                    if (location != null) {
+//                        double lat = location.getLatitude();
+//                        double lng = location.getLongitude();
+//                        String loc = lat + "," + lng;
+//                        List<Result> results = RestaurantRepository.getInstance().getNearbyRestaurants(loc, true).getValue();
+//                        UserCallData.getAllUsers().get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+//                            @Override
+//                            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+//                                List<Result> userResult = new ArrayList<>();
+//                                if (task.isSuccessful()) {
+//                                    for (QueryDocumentSnapshot document : task.getResult()) {
+//                                        User mUser = document.toObject(User.class);
+//                                        for (Result restaurant : results) {
+//
+//                                            if (mUser.getRestaurantChosenId() != null && mUser.getRestaurantChosenId()
+//                                                    .equals(restaurant.getPlaceId())) {
+//                                                //the boolean avoid the increment +1 on a null var
+//                                                boolean found = false;
+//                                                int nbUser = 0;
+//                                                for (Result r : datasetResult) {
+//                                                    if (r.getPlaceId().equals(restaurant.getPlaceId())) {
+//                                                        nbUser++;
+//                                                    r.setRestaurantUserNumber(r.getRestaurantUserNumber() + 1);
+////                                                        found = true;
+////                                                        break;
+//                                                    }
+//                                                }
+//                                                mRestaurantRoomDatabase.mRestaurantDao().insert(resultToRestaurant(restaurant, nbUser));
+////                                                if (!found) {
+////                                                    restaurant.setRestaurantUserNumber(1);
+////                                                    datasetResult.add(restaurant);
+////                                                }
+////                                                break;
+//                                            }
+//                                        }
+//                                    }
+//                                    // add restaurants with getRestaurantNumber = 0 to the list
+//                                    for (Result restaurant : results) {
+//                                        boolean found = false;
+//                                        for (Result r : datasetResult) {
+//                                            if (r.getPlaceId().equals(restaurant.getPlaceId())) {
+//                                                found = true;
+//                                                break;
+//                                            }
+//                                        }
+//                                        if (!found) {
+//                                            datasetResult.add(restaurant);
+//                                        }
+//                                    }
+//                                    dataResult.postValue(datasetResult);
+//                                }
+//                            }
+//                        });
+//                    }
+//                }
+//            });
+//        }
+//        else {
+//            dataResult.setValue(mRestaurantRoomDatabase.mRestaurantDao().getAllResto());
+//        }
+//        return dataResult;
+//    }
 
-                    @Override
-                    public void onNext(DetailResult detailResult) {
-                        mRestaurant = detailResult.getResult();
-                        dataDetail.setValue(mRestaurant);
-                    }
 
-                    @Override
-                    public void onError(Throwable e) {
-
-                    }
-
-                    @Override
-                    public void onComplete() {
-
-                    }
-                });
-        return dataDetail;
-    }
-
-    public MutableLiveData<Location> getLocation(Boolean permission, Task task) {
-
-        task.addOnSuccessListener(new OnSuccessListener<Location>() {
-
-            @SuppressLint("CheckResult")
-            @Override
-            public void onSuccess(Location location) {
-                if (!permission) {
-                    return;
-                }
-                if (location != null) {
-                    dataLocation.setValue(location);
-                }
-            }
-        });
-        return dataLocation;
-    }
-
-    // LIST VIEW PURPOSE
-    public MutableLiveData<List<Result>> getRestaurants(Boolean permission, Task task) {
-
-        // get restaurants & get the number of workmates who selected a restaurant
-        task.addOnSuccessListener(new OnSuccessListener<Location>() {
-            @SuppressLint("CheckResult")
-            @Override
-            public void onSuccess(Location location) {
-                if (!permission) {
-                    return;
-                }
-                if (location != null) {
-                    double lat = location.getLatitude();
-                    double lng = location.getLongitude();
-                    String loc = lat + "," + lng;
-                    List<Result> results = RestaurantRepository.getInstance().getNearbyRestaurants(loc, true).getValue();
-                    UserCallData.getAllUsers().get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                        @Override
-                        public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                            List<Result> datasetResult = new ArrayList<>();
-                            if (task.isSuccessful()) {
-                                for (QueryDocumentSnapshot document : task.getResult()) {
-                                    User mUser = document.toObject(User.class);
-                                    for (Result restaurant : results) {
-                                        if (mUser.getRestaurantChosenId() != null && mUser.getRestaurantChosenId()
-                                                .equals(restaurant.getPlaceId())) {
-                                            //the boolean avoid the increment +1 on a null var
-                                            boolean found = false;
-                                            for (Result r : datasetResult) {
-                                                if (r.getPlaceId().equals(restaurant.getPlaceId())) {
-                                                    r.setRestaurantUserNumber(r.getRestaurantUserNumber() + 1);
-                                                    found = true;
-                                                    break;
-                                                }
-                                            }
-                                            if (!found) {
-                                                restaurant.setRestaurantUserNumber(1);
-                                                datasetResult.add(restaurant);
-                                            }
-                                            break;
-                                        }
-                                    }
-                                }
-                                // add restaurants with getRestaurantNumber = 0 to the list
-                                for (Result restaurant : results) {
-                                    boolean found = false;
-                                    for (Result r : datasetResult) {
-                                        if (r.getPlaceId().equals(restaurant.getPlaceId())) {
-                                            found = true;
-                                            break;
-                                        }
-                                    }
-                                    if (!found) {
-                                        datasetResult.add(restaurant);
-                                    }
-                                }
-                                dataResult.postValue(datasetResult);
-                            }
-                        }
-                    });
-                }
-            }
-        });
-        return dataResult;
-    }
 }

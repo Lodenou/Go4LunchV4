@@ -25,7 +25,9 @@ import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.Task;
 import com.lodenou.go4lunchv4.R;
 import com.lodenou.go4lunchv4.databinding.FragmentListViewBinding;
+import com.lodenou.go4lunchv4.model.Restaurant;
 import com.lodenou.go4lunchv4.model.nearbysearch.Result;
+import com.lodenou.go4lunchv4.ui.activities.viewmodels.ViewModelMainActivity;
 import com.lodenou.go4lunchv4.ui.adapters.ListViewRecyclerViewAdapter;
 
 import java.util.ArrayList;
@@ -37,7 +39,7 @@ public class ListViewFragment extends Fragment implements SearchView.OnQueryText
     FragmentListViewBinding mBinding;
     ListViewRecyclerViewAdapter mAdapter;
     ViewModelListView mViewModelListView;
-
+    ViewModelMainActivity mViewModelMainActivity;
 
 
 
@@ -65,8 +67,6 @@ public class ListViewFragment extends Fragment implements SearchView.OnQueryText
         initViewModel(getPermission(),getTask());
         initRecyclerView();
         return mBinding.getRoot();
-
-
     }
     @Override
     public void onDestroyView() {
@@ -83,16 +83,19 @@ public class ListViewFragment extends Fragment implements SearchView.OnQueryText
     }
 
     private void initViewModel(Boolean permission, Task task){
+        initViewModelMain();
         mViewModelListView = new ViewModelProvider(this).get(ViewModelListView.class);
-        mViewModelListView.init(permission, task);
+        mViewModelMainActivity.getAllRestaurantsFromVm().observe(getViewLifecycleOwner(), new Observer<List<Restaurant>>() {
+            @Override
+            public void onChanged(List<Restaurant> restaurants) {
+                mAdapter.setRestaurant(restaurants);
+            }
+        });
+    }
 
-            mViewModelListView.getRestaurants(permission, task).observe(getViewLifecycleOwner(),
-                    new Observer<List<Result>>() {
-                        @Override
-                        public void onChanged(List<Result> results) {
-                            mAdapter.setRestaurant(results);
-                        }
-                    });
+    private void initViewModelMain(){
+        mViewModelMainActivity = ViewModelProvider.AndroidViewModelFactory.getInstance(getActivity().getApplication()).create(ViewModelMainActivity.class);
+        mViewModelMainActivity.init();
     }
 
     // Can't be in the repository because of the context requirement
@@ -144,19 +147,20 @@ public class ListViewFragment extends Fragment implements SearchView.OnQueryText
 
     @Override
     public boolean onQueryTextChange(String s) {
-        ArrayList<Result> restaurantToFetch = new ArrayList<>();
-        List<Result> resultList = mViewModelListView.getNearbyRestaurants().getValue();
+        ArrayList<Restaurant> restaurantToFetch = new ArrayList<>();
+//        List<Restaurant> restaurantList = mViewModelListView.getNearbyRestaurants().getValue();
+        List<Restaurant> restaurantList = mViewModelMainActivity.getAllRestaurantsFromVm().getValue();
         if (s.length() > 2) {
-            for (int i = 0; i <= Objects.requireNonNull(mViewModelListView.getNearbyRestaurants().getValue()).size() -1; i++) {
-                String restaurantName = Objects.requireNonNull(resultList).get(i).getName();
+            for (int i = 0; i <= Objects.requireNonNull(mViewModelMainActivity.getAllRestaurantsFromVm().getValue()).size() -1; i++) {
+                String restaurantName = Objects.requireNonNull(restaurantList).get(i).getName();
                 if (restaurantName.contains(s)){
-                    restaurantToFetch.add(resultList.get(i));
+                    restaurantToFetch.add(restaurantList.get(i));
                 }
                 mAdapter.setRestaurant(restaurantToFetch);
             }
         }
         else {
-            mAdapter.setRestaurant(resultList);
+            mAdapter.setRestaurant(restaurantList);
         }
         return true;
     }

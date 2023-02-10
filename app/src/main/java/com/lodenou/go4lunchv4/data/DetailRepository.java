@@ -69,6 +69,8 @@ public class DetailRepository {
         return instance;
     }
 
+
+
     public MutableLiveData<List<com.lodenou.go4lunchv4.model.nearbysearch.Result>> getNearbyRestaurants(Task task, Boolean permission) {
 
         task.addOnSuccessListener(new OnSuccessListener<Location>() {
@@ -195,7 +197,8 @@ public class DetailRepository {
             chosenRestaurant.put("restaurantChosenId", restaurantId);
             chosenRestaurant.put("restaurantChosenName", restaurantName);
             FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
-            DocumentReference docRef = UserCallData.getAllUsers().getFirestore().collection("users").document(firebaseUser.getUid());
+            DocumentReference docRef = UserCallData.getAllUsers().getFirestore().collection("users")
+                    .document(firebaseUser.getUid());
             docRef.set(chosenRestaurant, SetOptions.merge()).addOnCompleteListener(new OnCompleteListener<Void>() {
                 @Override
                 public void onComplete(@NonNull Task<Void> task) {

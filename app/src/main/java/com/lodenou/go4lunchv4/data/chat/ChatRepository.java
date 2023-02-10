@@ -1,4 +1,4 @@
-package com.lodenou.go4lunchv4.data;
+package com.lodenou.go4lunchv4.data.chat;
 
 import android.util.Log;
 
@@ -7,17 +7,15 @@ import androidx.annotation.Nullable;
 import androidx.lifecycle.MutableLiveData;
 
 import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
-import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.lodenou.go4lunchv4.data.user.UserCallData;
 import com.lodenou.go4lunchv4.model.Message;
 import com.lodenou.go4lunchv4.model.User;
 

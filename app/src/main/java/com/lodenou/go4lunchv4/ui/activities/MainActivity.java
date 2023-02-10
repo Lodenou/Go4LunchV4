@@ -11,6 +11,7 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
+
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -22,6 +23,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
+
 import com.bumptech.glide.Glide;
 import com.facebook.login.LoginManager;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
@@ -29,13 +31,18 @@ import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 import com.lodenou.go4lunchv4.BuildConfig;
 import com.lodenou.go4lunchv4.R;
+import com.lodenou.go4lunchv4.data.room.RestaurantRoomDatabase;
+import com.lodenou.go4lunchv4.data.user.UserCallData;
 import com.lodenou.go4lunchv4.data.user.UserRepository;
 import com.lodenou.go4lunchv4.databinding.ActivityMainBinding;
 import com.lodenou.go4lunchv4.model.Restaurant;
@@ -49,14 +56,15 @@ import com.lodenou.go4lunchv4.ui.fragment.workmates.WorkmatesFragment;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.CountDownLatch;
 
-public class MainActivity extends AppCompatActivity  {
+public class MainActivity extends AppCompatActivity {
 
     ActivityMainBinding mBinding;
     private Toolbar toolbar;
     private DrawerLayout drawerLayout;
     private NavigationView navigationView;
-    ViewModelMainActivity mViewModelMainActivity;
+    private ViewModelMainActivity mViewModelMainActivity;
     private FirebaseAuth mAuth;
     Boolean bool;
     User mUser;
@@ -68,6 +76,7 @@ public class MainActivity extends AppCompatActivity  {
         View view = mBinding.getRoot();
         setContentView(view);
         mAuth = FirebaseAuth.getInstance();
+        RestaurantRoomDatabase.getDatabase(getApplicationContext());
         setBottomNavigationView();
         setToolBar();
         setDrawerLayout();
@@ -75,6 +84,7 @@ public class MainActivity extends AppCompatActivity  {
         initViewModel();
         setNavigationView();
         observeGetUser();
+
     }
 
     @Override
@@ -85,9 +95,7 @@ public class MainActivity extends AppCompatActivity  {
         if (currentUser == null) {
             reload();
         }
-
     }
-
 
 
     // restart connexion activity if the user isn't connected
@@ -184,18 +192,32 @@ public class MainActivity extends AppCompatActivity  {
 //        });
 //    }
 
-    private void initViewModel(){
+
+    private void initViewModel() {
         mViewModelMainActivity = ViewModelProvider.AndroidViewModelFactory.getInstance(getApplication()).create(ViewModelMainActivity.class);
         mViewModelMainActivity.init();
+        // We delete the restaurants from room db here too if the app stop without a call of onDestroy
+        // (forced stop from android studio)
+        mViewModelMainActivity.deleteAllRestaurants();
         mViewModelMainActivity.getNearbyRestaurants(getTask(),getPermission()).observe(this, new Observer<List<Result>>() {
             @Override
             public void onChanged(List<Result> results) {
-                for (int i = 0; i <= results.size() -1; i++) {
-                    mViewModelMainActivity.insertRestaurant(convertResultToRestaurant(results.get(i)));
+                getAllRestaurantsFromApiObserve(results);
+            }
+        });
+    }
+
+    private void getAllRestaurantsFromApiObserve(List<Result> results){
+        mViewModelMainActivity.getAllRestaurantsFromApi(results).observe(this, new Observer<List<Restaurant>>() {
+            @Override
+            public void onChanged(List<Restaurant> restaurants) {
+                for (int i = 0; i <= restaurants.size() - 1; i++) {
+                    mViewModelMainActivity.insertRestaurant(restaurants.get(i));
                 }
             }
         });
     }
+
 
 
     @Override
@@ -217,48 +239,22 @@ public class MainActivity extends AppCompatActivity  {
         });
     }
 
-    private Restaurant convertResultToRestaurant(Result result){
-        // Geometry
-        Double lat = result.getGeometry().getLocation().getLat();
-        Double lng = result.getGeometry().getLocation().getLng();
-        String geometry = Utils.formatLocation(lat, lng);
-        // OpeningHours
-        String isOpenNow = Utils.isOpenOrNot(result.getOpeningHours());
-        String photo = "";
-        if (result.getPhotos() != null) {
-            photo = "https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&maxheight=400&photoreference=" +
-                    result.getPhotos().get(0).getPhotoReference() + "&key=" + BuildConfig.API_KEY;
-        }
 
-        Restaurant restaurant = new Restaurant(
-                result.getPlaceId(),
-                result.getName(),
-                geometry,
-                isOpenNow,
-                photo,
-                result.getRating(),
-                result.getVicinity()
-
-        );
-        return  restaurant;
-    }
-
-    private void clickYourLunch(){
+    private void clickYourLunch() {
         if (bool) {
-                    Log.d("123", "onChanged: if");
-                    new AlertDialog.Builder(MainActivity.this)
-                            .setTitle("Oops")
-                            .setMessage(R.string.nav_you_didnt_chose_restaurant)
-                            .show();
-                }
-                else {
-                    Log.d("123", "onChanged: elseif");
-                    Intent intent = new Intent(MainActivity.this, DetailActivity.class);
-                    if (mUser != null) {
-                        intent.putExtra("idrestaurant", mUser.getRestaurantChosenId());
-                    }
-                    startActivity(intent);
-                }
+            Log.d("123", "onChanged: if");
+            new AlertDialog.Builder(MainActivity.this)
+                    .setTitle("Oops")
+                    .setMessage(R.string.nav_you_didnt_chose_restaurant)
+                    .show();
+        } else {
+            Log.d("123", "onChanged: elseif");
+            Intent intent = new Intent(MainActivity.this, DetailActivity.class);
+            if (mUser != null) {
+                intent.putExtra("idrestaurant", mUser.getRestaurantChosenId());
+            }
+            startActivity(intent);
+        }
     }
 
 
