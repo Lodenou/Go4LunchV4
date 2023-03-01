@@ -32,7 +32,6 @@ public class ViewModelDetailActivity extends ViewModel {
 
     }
 
-
     public LiveData<Result> getRestaurantsDetail(){
         return mMutableLiveDataRestaurantDetail;
     }

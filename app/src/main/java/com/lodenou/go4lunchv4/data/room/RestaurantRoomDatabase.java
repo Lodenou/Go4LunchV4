@@ -29,6 +29,7 @@ public abstract class RestaurantRoomDatabase extends RoomDatabase {
                     INSTANCE = Room.databaseBuilder(context.getApplicationContext(),
                                     RestaurantRoomDatabase.class, "restaurant_database")
                             .fallbackToDestructiveMigration()
+                            .allowMainThreadQueries()
                             .build();
                 }
             }

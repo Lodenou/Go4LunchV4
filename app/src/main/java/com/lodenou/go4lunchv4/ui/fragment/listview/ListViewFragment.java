@@ -32,6 +32,7 @@ import com.lodenou.go4lunchv4.ui.adapters.ListViewRecyclerViewAdapter;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 
 public class ListViewFragment extends Fragment implements SearchView.OnQueryTextListener{
@@ -40,8 +41,7 @@ public class ListViewFragment extends Fragment implements SearchView.OnQueryText
     ListViewRecyclerViewAdapter mAdapter;
     ViewModelListView mViewModelListView;
     ViewModelMainActivity mViewModelMainActivity;
-
-
+    List<Restaurant> restaurantList = new ArrayList<>();
 
     public ListViewFragment() {
         // Required empty public constructor
@@ -64,8 +64,8 @@ public class ListViewFragment extends Fragment implements SearchView.OnQueryText
 
 
         mBinding = FragmentListViewBinding.inflate(inflater,container,false);
-        initViewModel(getPermission(),getTask());
         initRecyclerView();
+        initViewModel(getPermission(),getTask());
         return mBinding.getRoot();
     }
     @Override
@@ -85,10 +85,15 @@ public class ListViewFragment extends Fragment implements SearchView.OnQueryText
     private void initViewModel(Boolean permission, Task task){
         initViewModelMain();
         mViewModelListView = new ViewModelProvider(this).get(ViewModelListView.class);
-        mViewModelMainActivity.getAllRestaurantsFromVm().observe(getViewLifecycleOwner(), new Observer<List<Restaurant>>() {
+        mViewModelMainActivity.fetchAllRestaurants(task, permission, getContext());
+
+        mViewModelMainActivity.getAllRestaurants().observe(getViewLifecycleOwner(), new Observer<List<Restaurant>>() {
             @Override
             public void onChanged(List<Restaurant> restaurants) {
-                mAdapter.setRestaurant(restaurants);
+                if (restaurants != null) {
+                    mAdapter.setRestaurant(restaurants);
+                    restaurantList = restaurants;
+                }
             }
         });
     }
@@ -148,17 +153,13 @@ public class ListViewFragment extends Fragment implements SearchView.OnQueryText
     @Override
     public boolean onQueryTextChange(String s) {
         ArrayList<Restaurant> restaurantToFetch = new ArrayList<>();
-//        List<Restaurant> restaurantList = mViewModelListView.getNearbyRestaurants().getValue();
-        List<Restaurant> restaurantList = mViewModelMainActivity.getAllRestaurantsFromVm().getValue();
-        if (s.length() > 2) {
-            for (int i = 0; i <= Objects.requireNonNull(mViewModelMainActivity.getAllRestaurantsFromVm().getValue()).size() -1; i++) {
-                String restaurantName = Objects.requireNonNull(restaurantList).get(i).getName();
-                if (restaurantName.contains(s)){
+        if (s.length() > 2) for (int i = 0; i <= restaurantList.size() -1; i++) {
+                String restaurantName = Objects.requireNonNull(restaurantList).get(i).getName().toLowerCase(Locale.ROOT);
+                if (restaurantName.contains(s.toLowerCase(Locale.ROOT))){
                     restaurantToFetch.add(restaurantList.get(i));
                 }
                 mAdapter.setRestaurant(restaurantToFetch);
             }
-        }
         else {
             mAdapter.setRestaurant(restaurantList);
         }

@@ -14,6 +14,7 @@ import androidx.lifecycle.ViewModelProvider;
 
 import android.Manifest;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.net.Uri;
@@ -31,24 +32,17 @@ import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
-import com.google.firebase.firestore.QuerySnapshot;
-import com.lodenou.go4lunchv4.BuildConfig;
 import com.lodenou.go4lunchv4.R;
 import com.lodenou.go4lunchv4.data.room.RestaurantRoomDatabase;
-import com.lodenou.go4lunchv4.data.user.UserCallData;
 import com.lodenou.go4lunchv4.data.user.UserRepository;
 import com.lodenou.go4lunchv4.databinding.ActivityMainBinding;
 import com.lodenou.go4lunchv4.model.Restaurant;
 import com.lodenou.go4lunchv4.model.User;
-import com.lodenou.go4lunchv4.model.nearbysearch.Result;
-import com.lodenou.go4lunchv4.ui.Utils;
 import com.lodenou.go4lunchv4.ui.activities.viewmodels.ViewModelMainActivity;
 import com.lodenou.go4lunchv4.ui.fragment.listview.ListViewFragment;
 import com.lodenou.go4lunchv4.ui.fragment.map.MapFragment;
@@ -56,7 +50,6 @@ import com.lodenou.go4lunchv4.ui.fragment.workmates.WorkmatesFragment;
 
 import java.util.List;
 import java.util.Objects;
-import java.util.concurrent.CountDownLatch;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -68,6 +61,9 @@ public class MainActivity extends AppCompatActivity {
     private FirebaseAuth mAuth;
     Boolean bool;
     User mUser;
+    private static final String PREFS_NAME = "MyPrefsFile";
+    private static final String PREFS_IS_FIRST_LAUNCH = "isFirstLaunch";
+    SharedPreferences.Editor editor;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -81,6 +77,7 @@ public class MainActivity extends AppCompatActivity {
         setToolBar();
         setDrawerLayout();
         setNavigationViewClickListener();
+        resetSharePref();
         initViewModel();
         setNavigationView();
         observeGetUser();
@@ -95,6 +92,13 @@ public class MainActivity extends AppCompatActivity {
         if (currentUser == null) {
             reload();
         }
+    }
+
+    private void resetSharePref(){
+        SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
+         editor = settings.edit();
+        editor.clear();
+        editor.apply();
     }
 
 
@@ -150,7 +154,6 @@ public class MainActivity extends AppCompatActivity {
     // 3 - Configure NavigationView
     private void setNavigationViewClickListener() {
         this.navigationView = mBinding.activityMainNavView;
-//        navigationView.setItemTextColor(ColorStateList.valueOf(Color.WHITE));
         navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
@@ -181,43 +184,24 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-//    private void initViewModel() {
-//        mViewModelMainActivity = new ViewModelProvider(this).get(ViewModelMainActivity.class);
-//        mViewModelMainActivity.init();
-//        mViewModelMainActivity.getNearbyRestaurants(getTask(), getPermission()).observe(this, new Observer<List<Result>>() {
-//            @Override
-//            public void onChanged(List<Result> results) {
-//                //TODO SEND DATA TO ROOM DATABASE
-//            }
-//        });
-//    }
-
-
     private void initViewModel() {
         mViewModelMainActivity = ViewModelProvider.AndroidViewModelFactory.getInstance(getApplication()).create(ViewModelMainActivity.class);
         mViewModelMainActivity.init();
-        // We delete the restaurants from room db here too if the app stop without a call of onDestroy
-        // (forced stop from android studio)
-        mViewModelMainActivity.deleteAllRestaurants();
-        mViewModelMainActivity.getNearbyRestaurants(getTask(),getPermission()).observe(this, new Observer<List<Result>>() {
-            @Override
-            public void onChanged(List<Result> results) {
-                getAllRestaurantsFromApiObserve(results);
-            }
-        });
     }
 
-    private void getAllRestaurantsFromApiObserve(List<Result> results){
-        mViewModelMainActivity.getAllRestaurantsFromApi(results).observe(this, new Observer<List<Restaurant>>() {
-            @Override
-            public void onChanged(List<Restaurant> restaurants) {
-                for (int i = 0; i <= restaurants.size() - 1; i++) {
-                    mViewModelMainActivity.insertRestaurant(restaurants.get(i));
-                }
-            }
-        });
+    private void fetchAllRestaurants(){
+        // get SharedPreferences
+        SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
+        boolean isFirstLaunch = settings.getBoolean(PREFS_IS_FIRST_LAUNCH, true);
+        if (isFirstLaunch) {
+            mViewModelMainActivity.fetchAllRestaurants(getTask(), getPermission(), getApplicationContext());
+            // This is the first launch of the application
+            // Save that it's no longer the first launch of the application
+            SharedPreferences.Editor editor = settings.edit();
+            editor.putBoolean(PREFS_IS_FIRST_LAUNCH, false);
+            editor.apply();
     }
-
+    }
 
 
     @Override

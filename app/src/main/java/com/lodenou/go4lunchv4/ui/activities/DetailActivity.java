@@ -110,13 +110,6 @@ public class DetailActivity extends AppCompatActivity {
     private void initMainViewModel() {
         mViewModelMainActivity = ViewModelProvider.AndroidViewModelFactory.getInstance(getApplication()).create(ViewModelMainActivity.class);
         mViewModelMainActivity.init();
-
-    //        mViewModelMainActivity.getRestaurantById(getRestaurantId()).observe(this, new Observer<Restaurant>() {
-//            @Override
-//            public void onChanged(Restaurant restaurant) {
-//
-//            }
-//        });
     }
 
     private void observeIfCurrentUserHasChosenThisRestaurant() {
@@ -177,25 +170,6 @@ public class DetailActivity extends AppCompatActivity {
             mBinding.fab.setImageResource(R.drawable.ic_baseline_check_circle_24);
             mBinding.fab.setColorFilter(Color.argb(250, 25, 255, 25));
             Log.d("123", isAdded.toString());
-//            mViewModelMainActivity.deleteAllRestaurants();
-//            mViewModelMainActivity.getNearbyRestaurants(getTask(), getPermission()).observe(this,
-//                    new Observer<List<com.lodenou.go4lunchv4.model.nearbysearch.Result>>() {
-//                @Override
-//                public void onChanged(List<com.lodenou.go4lunchv4.model.nearbysearch.Result> results) {
-//                    getAllRestaurantsFromApiObserve(results);
-//                }
-//            });
-//            mViewModelMainActivity.getRestaurantById(getRestaurantId()).observe(this, new Observer<Restaurant>() {
-//                @Override
-//                public void onChanged(Restaurant restaurant) {
-//                    mViewModelMainActivity.updateRestaurant(restaurant, true);
-//                }
-//            });
-//            mViewModelMainActivity.getRestaurantById(getRestaurantId()).removeObservers(this);
-            //TODO TROUVER UN MOYEN DE REMOVE CET OBSERVER POUR QU IL NE S ACTIVE QU UNE FOIS ET MEME
-            //TODO APRES CA IL FAUDRA RETROUVER LE PRECEDENT RESTO SELECTIONNE ET LE DELETE
-            //TODO LA SOLUTION POURRAIT ETRE DE CREER UN DELETE(Restaurant restaurant) dans le dao
-            //TODO POUR DELETE SEULEMENT LES/LE RESTAURANTS A UPDATE ET ENSUITE LE REINSERER DANS LA DB
         }
 
         if (isAdded) {
@@ -203,27 +177,8 @@ public class DetailActivity extends AppCompatActivity {
             Log.d("123", isAdded.toString());
             mViewModelDetailActivity.removeUserChoiceFromDatabase();
             mBinding.fab.setImageResource(R.drawable.ic_baseline_crop_din_24);
-//            mViewModelMainActivity.deleteAllRestaurants();
-//            mViewModelMainActivity.getNearbyRestaurants(getTask(), getPermission()).observe(this,
-//                    new Observer<List<com.lodenou.go4lunchv4.model.nearbysearch.Result>>() {
-//                        @Override
-//                        public void onChanged(List<com.lodenou.go4lunchv4.model.nearbysearch.Result> results) {
-//                            getAllRestaurantsFromApiObserve(results);
-//                        }
-//                    });
         }
 
-    }
-
-    private void getAllRestaurantsFromApiObserve(List<com.lodenou.go4lunchv4.model.nearbysearch.Result> results){
-        mViewModelMainActivity.getAllRestaurantsFromApi(results).observe(this, new Observer<List<Restaurant>>() {
-            @Override
-            public void onChanged(List<Restaurant> restaurants) {
-                for (int i = 0; i <= restaurants.size() - 1; i++) {
-                    mViewModelMainActivity.insertRestaurant(restaurants.get(i));
-                }
-            }
-        });
     }
     // END OF FAB SETTING PART
 
@@ -416,28 +371,4 @@ public class DetailActivity extends AppCompatActivity {
                 PendingIntent.FLAG_UPDATE_CURRENT);
         alarmManager.cancel(pendingIntent);
     }
-
-
-    private Boolean getPermission() {
-
-        Boolean isPermission = ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_FINE_LOCATION) !=
-                PackageManager.PERMISSION_GRANTED
-                && ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_COARSE_LOCATION) !=
-                PackageManager.PERMISSION_GRANTED;
-
-        Boolean isPermissionOk = !(isPermission);
-        return isPermissionOk;
-    }
-
-    private Task getTask() {
-        FusedLocationProviderClient fusedLocationProviderClient = LocationServices
-                .getFusedLocationProviderClient(getApplicationContext());
-
-        if (ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_FINE_LOCATION)
-                != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getApplicationContext(),
-                Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-        }
-        return fusedLocationProviderClient.getLastLocation();
-    }
-
 }

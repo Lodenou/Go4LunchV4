@@ -147,7 +147,6 @@ public class ConnexionActivity extends AppCompatActivity {
                 Log.d(TAG, "facebook:onSuccess:" + loginResult);
                 handleFacebookAccessToken(loginResult.getAccessToken());
             }
-
             @Override
             public void onCancel() {
                 Log.d(TAG, "facebook:onCancel");

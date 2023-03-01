@@ -101,4 +101,6 @@ dependencies {
     implementation "androidx.room:room-runtime:2.5.0"
     annotationProcessor "androidx.room:room-compiler:2.5.0"
     androidTestImplementation "androidx.room:room-testing:2.5.0"
+    // optional - Guava support for Room, including Optional and ListenableFuture
+    implementation "androidx.room:room-guava:2.5.0"
 }

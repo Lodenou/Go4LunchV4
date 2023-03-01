@@ -39,7 +39,7 @@ public class ListViewRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerVi
 
     private List<Restaurant> mRestaurants = new ArrayList<>();
     private Context mContext;
-    private ViewModelListView mViewModelListView;
+
 
     public ListViewRecyclerViewAdapter(Context context, List<Restaurant> restaurants) {
         mRestaurants = restaurants;
@@ -66,9 +66,6 @@ public class ListViewRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerVi
         // Restaurant address
         ((ListViewViewHolder) holder).mRestaurantAddress.setText(restaurant.getVicinity());
         // Restaurant photo
-//        if (restaurant.getPhotos() != null) {
-//            String restaurantPhoto = "https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&maxheight=400&photoreference=" +
-//                    restaurant.getPhotos().get(0).getPhotoReference() + "&key=" + BuildConfig.API_KEY;
             if (restaurant.getPhoto() != null && !Objects.equals(restaurant.getPhoto(), "")) {
                 Glide.with(mContext).load(restaurant.getPhoto())
                         .into(restaurantImage);
@@ -94,8 +91,6 @@ public class ListViewRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerVi
             @Override
             public void onSuccess(Location location) {
                 Location locationResto = new Location(LocationManager.GPS_PROVIDER);
-//                locationResto.setLatitude(restaurant.getGeometry().getLocation().getLat());
-//                locationResto.setLongitude(restaurant.getGeometry().getLocation().getLng());
                LatLng latLng = Utils.stringToLatLng(restaurant.getGeometry());
                 locationResto.setLatitude(latLng.latitude);
                 locationResto.setLongitude(latLng.longitude);

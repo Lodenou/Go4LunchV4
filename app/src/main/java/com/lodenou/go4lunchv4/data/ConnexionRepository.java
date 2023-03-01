@@ -49,7 +49,6 @@ public class ConnexionRepository {
     }
 
     public void createUserInFirestoreIfNotExists() {
-
         if (this.getCurrentUser() != null) {
             final String urlPicture = (this.getCurrentUser().getPhotoUrl() != null) ? this.getCurrentUser().getPhotoUrl().toString() : null;
             final String username = this.getCurrentUser().getDisplayName();

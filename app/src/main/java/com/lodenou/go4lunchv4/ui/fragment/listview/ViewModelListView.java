@@ -5,13 +5,9 @@ import android.location.Location;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
-import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
-import androidx.lifecycle.ViewModel;
 
-import com.google.android.gms.tasks.Task;
-import com.lodenou.go4lunchv4.data.RestaurantRepository;
-import com.lodenou.go4lunchv4.data.room.RestaurantRoomRepository;
+import com.lodenou.go4lunchv4.data.room.RestaurantRepository;
 import com.lodenou.go4lunchv4.model.nearbysearch.Result;
 
 import java.util.List;
@@ -23,11 +19,11 @@ public class ViewModelListView extends AndroidViewModel {
     private MutableLiveData<List<Result>> mMutableLiveData;
     private MutableLiveData<Location> mMutableLiveDataLocation;
 
-    private RestaurantRoomRepository mRestaurantRoomRepository;
+    private RestaurantRepository mRestaurantRepository;
 
     public ViewModelListView(@NonNull Application application) {
         super(application);
-        mRestaurantRoomRepository = new RestaurantRoomRepository(application);
+        mRestaurantRepository = new RestaurantRepository(application);
 
     }
 

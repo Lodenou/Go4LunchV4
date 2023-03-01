@@ -57,66 +57,11 @@ public class DetailRepository {
     private ArrayList<String> datasetColleagues = new ArrayList<>();
     MutableLiveData<List<String>> dataColleagues = new MutableLiveData<>();
 
-    // getNearbyRestaurants
-    private ArrayList<com.lodenou.go4lunchv4.model.nearbysearch.Result> dataset = new ArrayList<>();
-    MutableLiveData<List<com.lodenou.go4lunchv4.model.nearbysearch.Result>> dataNearby = new MutableLiveData<>();
-
-
     public static DetailRepository getInstance() {
         if (instance == null) {
             instance = new DetailRepository();
         }
         return instance;
-    }
-
-
-
-    public MutableLiveData<List<com.lodenou.go4lunchv4.model.nearbysearch.Result>> getNearbyRestaurants(Task task, Boolean permission) {
-
-        task.addOnSuccessListener(new OnSuccessListener<Location>() {
-
-            @SuppressLint("CheckResult")
-            @Override
-            public void onSuccess(Location location) {
-                if (!permission) {
-                    return;
-                }
-                if (location != null) {
-                    double lat = location.getLatitude();
-                    double lng = location.getLongitude();
-                    String loc = lat + "," + lng;
-
-                    Go4LunchApi.retrofit.create(Go4LunchApi.class).getNearbyPlaces(loc)
-                            .subscribeOn(Schedulers.io())
-                            .observeOn(AndroidSchedulers.mainThread())
-                            .subscribe(new Observer<NearbySearchResults>() {
-                                @Override
-                                public void onSubscribe(Disposable d) {
-                                    Log.d("TAG", "onSubscribe: ");
-                                }
-
-                                @Override
-                                public void onNext(NearbySearchResults nearbySearchResults) {
-                                    dataset.clear();
-                                    dataset.addAll(nearbySearchResults.getResults());
-                                    dataNearby.setValue(dataset);
-                                    Log.d("TAG", "onNext: ");
-                                }
-
-                                @Override
-                                public void onError(Throwable e) {
-                                    Log.d("TAG", "error: ");
-                                }
-
-                                @Override
-                                public void onComplete() {
-                                    Log.d("TAG", "onComplete: ");
-                                }
-                            });
-                }
-            }
-        });
-        return dataNearby;
     }
 
     public MutableLiveData<com.lodenou.go4lunchv4.model.detail.Result> getRestaurantDetails(String restaurantId) {

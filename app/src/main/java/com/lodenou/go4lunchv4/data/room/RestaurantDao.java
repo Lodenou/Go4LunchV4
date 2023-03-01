@@ -5,17 +5,21 @@ import androidx.room.Dao;
 import androidx.room.Insert;
 import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
-import androidx.room.Update;
 
+import com.google.common.util.concurrent.ListenableFuture;
 import com.lodenou.go4lunchv4.model.Restaurant;
-
 import java.util.List;
+import io.reactivex.Completable;
+import io.reactivex.Single;
 
 @Dao
 public interface RestaurantDao {
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     void insert(Restaurant restaurant);
+
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    void insertAll(List<Restaurant> restaurants);
 
     @Query("DELETE FROM restaurant_table")
     void deleteAll();
