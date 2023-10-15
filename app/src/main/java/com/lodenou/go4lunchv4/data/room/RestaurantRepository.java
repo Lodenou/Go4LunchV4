@@ -181,16 +181,7 @@ public class RestaurantRepository {
             });
         }
         else   {
-            //TODO marche en debug mais pas sans le debug
-
             dataRestaurants.setValue(mRestaurantRoomDatabase.mRestaurantDao().getAllRestaurants().getValue());
-//             mRestaurantRoomDatabase.mRestaurantDao().getAllRestaurants().observe(owner, new androidx.lifecycle.Observer<List<Restaurant>>() {
-//                @Override
-//                public void onChanged(List<Restaurant> restaurants) {
-//                    dataRestaurants.setValue(restaurants);
-//                    Log.d("123", "fetchAllRestaurants: " +dataRestaurants.getValue().size());
-//                }
-//            });
         }
     }
 

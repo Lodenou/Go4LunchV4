@@ -26,17 +26,6 @@ public class Utils {
         }
     }
 
-    public static String isOpenOrNotBoolean(Boolean bool){
-        if (bool != null) {
-            if (bool) {
-                return ("Open");
-            } else {
-                return ("Closed");
-            }
-        } else {
-            return ("No schedule specified");
-        }
-    }
 
     public static String formatLocation(Double lat ,Double lng){
         return lat.toString() + "," + lng.toString();

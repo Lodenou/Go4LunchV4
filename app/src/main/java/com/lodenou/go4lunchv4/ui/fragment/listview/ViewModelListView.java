@@ -14,7 +14,7 @@ import java.util.List;
 
 public class ViewModelListView extends AndroidViewModel {
 
-    //FIXME USELESS ATM VERIFY IF DELETE IS POSSIBLE
+//TODO USELESS SEE IF THE DELETE IS POSSIBLE
 
     private MutableLiveData<List<Result>> mMutableLiveData;
     private MutableLiveData<Location> mMutableLiveDataLocation;
@@ -32,28 +32,5 @@ public class ViewModelListView extends AndroidViewModel {
         if (mMutableLiveData != null) {
             return;
         }
-//        mRestaurantRepository = RestaurantRepository.getInstance();
-
-//        mMutableLiveData = mRestaurantRepository.getNearbyRestaurants("0,0", false);
-//        mMutableLiveDataLocation = mRestaurantRepository.getLocation(permission, task);
-
     }
-
-//    public LiveData<List<Result>> getNearbyRestaurants() {
-//        return mMutableLiveData;
-//    }
-
-//    public LiveData<Location> getLocation(Boolean permission, Task task) {
-//        mMutableLiveDataLocation = mRestaurantRoomRepository.getLocation(permission, task);
-//        return mMutableLiveDataLocation;
-//    }
-
-//    public void fetchNearbyRestaurants(String location) {
-//        mMutableLiveData = mRestaurantRepository.getNearbyRestaurants(location, true);
-//    }
-
-//    public LiveData<List<Result>> getRestaurants(Boolean permission, Task task){
-//        mIntegerMutableLiveData = mRestaurantRepository.getRestaurants(permission, task);
-//        return mIntegerMutableLiveData;
-//    }
 }
