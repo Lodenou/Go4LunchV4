@@ -207,6 +207,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onDestroy() {
         super.onDestroy();
+        //FIXME the logout actually cause pb with the phone rotation, the app goes to the connexion at each rotation.
         logOut();
         // Delete restaurants from db to avoid getting wrong restaurant list if the user change his location
         mViewModelMainActivity.deleteAllRestaurants();
@@ -278,8 +279,6 @@ public class MainActivity extends AppCompatActivity {
         Intent intent = new Intent(MainActivity.this, ConnexionActivity.class);
         finish();
         startActivity(intent);
-        // FACEBOOK LOGOUT
-        LoginManager.getInstance().logOut();
     }
 
 

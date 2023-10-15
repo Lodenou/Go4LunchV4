@@ -52,27 +52,6 @@
             android:layout_height="60dp"
             android:layout_marginTop="100dp">
 
-<!--            <com.facebook.login.widget.LoginButton-->
-<!--                android:id="@+id/login_button_fb"-->
-<!--                android:layout_width="292dp"-->
-<!--                android:layout_height="49dp"-->
-<!--                android:layout_gravity="center_horizontal"-->
-<!--                android:background="@drawable/rounded_button_fb"-->
-<!--                android:minHeight="45dp"-->
-<!--                android:paddingTop="15sp"-->
-<!--                android:paddingBottom="15sp" />-->
-
-            <com.facebook.login.widget.LoginButton
-                android:id="@+id/login_button_fb"
-                android:layout_width="292dp"
-                android:layout_height="49dp"
-                android:layout_gravity="center_horizontal"
-                android:paddingTop="15sp"
-                android:paddingBottom="15sp"
-                >
-
-            </com.facebook.login.widget.LoginButton>
-
         </FrameLayout>
 
         <FrameLayout
