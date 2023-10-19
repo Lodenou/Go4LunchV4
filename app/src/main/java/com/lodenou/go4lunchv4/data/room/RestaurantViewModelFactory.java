@@ -6,7 +6,7 @@ import androidx.annotation.NonNull;
 import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
 
-import com.lodenou.go4lunchv4.ui.activities.viewmodels.ViewModelMainActivity;
+import com.lodenou.go4lunchv4.ui.activities.main.ViewModelMainActivity;
 
 public class RestaurantViewModelFactory implements ViewModelProvider.Factory {
     private final Application application;

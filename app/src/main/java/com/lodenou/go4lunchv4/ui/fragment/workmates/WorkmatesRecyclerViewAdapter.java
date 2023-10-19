@@ -1,6 +1,5 @@
-package com.lodenou.go4lunchv4.ui.adapters;
+package com.lodenou.go4lunchv4.ui.fragment.workmates;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
@@ -12,15 +11,12 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.lifecycle.ViewModelStore;
-import androidx.lifecycle.ViewModelStoreOwner;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.lodenou.go4lunchv4.R;
 import com.lodenou.go4lunchv4.model.User;
-import com.lodenou.go4lunchv4.ui.activities.DetailActivity;
-import com.lodenou.go4lunchv4.ui.activities.MainActivity;
+import com.lodenou.go4lunchv4.ui.activities.detail.DetailActivity;
 
 import java.util.List;
 import java.util.Objects;

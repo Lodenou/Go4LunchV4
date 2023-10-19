@@ -1,4 +1,4 @@
-package com.lodenou.go4lunchv4.ui.activities.viewmodels;
+package com.lodenou.go4lunchv4.ui.activities.chat;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;

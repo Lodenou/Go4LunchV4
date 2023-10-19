@@ -1,27 +1,20 @@
 package com.lodenou.go4lunchv4.data;
 
 
-import static android.content.Context.ALARM_SERVICE;
-
 import android.app.AlarmManager;
-import android.app.NotificationChannel;
-import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.os.Build;
 import android.util.Log;
 
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 import com.lodenou.go4lunchv4.R;
-import com.lodenou.go4lunchv4.ui.activities.DetailActivity;
 
 
 import java.util.ArrayList;
-import java.util.List;
 
 import java.util.stream.Collectors;
 

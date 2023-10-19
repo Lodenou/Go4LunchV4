@@ -1,11 +1,10 @@
-package com.lodenou.go4lunchv4.ui.activities;
+package com.lodenou.go4lunchv4.ui.activities.connexion;
 
 
-import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 import com.google.firebase.auth.AuthCredential;
-import com.lodenou.go4lunchv4.data.ConnexionRepository;
+import com.lodenou.go4lunchv4.data.connexion.ConnexionRepository;
 import com.lodenou.go4lunchv4.model.User;
 
 public class ViewModelConnexionActivity extends ViewModel {

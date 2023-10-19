@@ -26,9 +26,7 @@ import com.google.android.gms.tasks.Task;
 import com.lodenou.go4lunchv4.R;
 import com.lodenou.go4lunchv4.databinding.FragmentListViewBinding;
 import com.lodenou.go4lunchv4.model.Restaurant;
-import com.lodenou.go4lunchv4.model.nearbysearch.Result;
-import com.lodenou.go4lunchv4.ui.activities.viewmodels.ViewModelMainActivity;
-import com.lodenou.go4lunchv4.ui.adapters.ListViewRecyclerViewAdapter;
+import com.lodenou.go4lunchv4.ui.activities.main.ViewModelMainActivity;
 
 import java.util.ArrayList;
 import java.util.List;

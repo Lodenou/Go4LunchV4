@@ -1,16 +1,14 @@
-package com.lodenou.go4lunchv4.ui.activities.viewmodels;
+package com.lodenou.go4lunchv4.ui.activities.main;
 
 import android.app.Application;
 import android.content.Context;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
-import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.LiveData;
-import androidx.lifecycle.MutableLiveData;
 
 import com.google.android.gms.tasks.Task;
-import com.lodenou.go4lunchv4.data.DetailRepository;
+import com.lodenou.go4lunchv4.data.detail.DetailRepository;
 import com.lodenou.go4lunchv4.data.room.RestaurantRepository;
 import com.lodenou.go4lunchv4.model.Restaurant;
 import com.lodenou.go4lunchv4.model.User;

@@ -1,7 +1,5 @@
-package com.lodenou.go4lunchv4.data;
+package com.lodenou.go4lunchv4.data.detail;
 
-import android.annotation.SuppressLint;
-import android.location.Location;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
@@ -19,10 +17,10 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.firestore.SetOptions;
+import com.lodenou.go4lunchv4.data.Go4LunchApi;
 import com.lodenou.go4lunchv4.data.user.UserCallData;
 import com.lodenou.go4lunchv4.model.User;
 import com.lodenou.go4lunchv4.model.detail.DetailResult;
-import com.lodenou.go4lunchv4.model.nearbysearch.NearbySearchResults;
 
 import java.util.ArrayList;
 import java.util.HashMap;

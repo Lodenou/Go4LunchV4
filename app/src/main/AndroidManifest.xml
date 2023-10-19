@@ -29,7 +29,7 @@
 
 
         <activity
-            android:name=".ui.activities.ConnexionActivity"
+            android:name=".ui.activities.connexion.ConnexionActivity"
             android:exported="true"
             >
             <intent-filter>
@@ -40,7 +40,7 @@
         </activity>
 
         <activity
-            android:name=".ui.activities.MainActivity"
+            android:name=".ui.activities.main.MainActivity"
             android:exported="true" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -49,7 +49,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".ui.activities.DetailActivity"
+            android:name=".ui.activities.detail.DetailActivity"
             android:exported="true" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -58,7 +58,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".ui.activities.SettingsActivity"
+            android:name=".ui.activities.settings.SettingsActivity"
             android:exported="true"
             >
             <intent-filter>
@@ -69,7 +69,7 @@
         </activity>
 
         <activity
-            android:name=".ui.activities.ChatActivity"
+            android:name=".ui.activities.chat.ChatActivity"
             android:exported="true" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

@@ -1,10 +1,10 @@
-package com.lodenou.go4lunchv4.ui.activities.viewmodels;
+package com.lodenou.go4lunchv4.ui.activities.detail;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
-import com.lodenou.go4lunchv4.data.DetailRepository;
+import com.lodenou.go4lunchv4.data.detail.DetailRepository;
 import com.lodenou.go4lunchv4.model.User;
 import com.lodenou.go4lunchv4.model.detail.Result;
 

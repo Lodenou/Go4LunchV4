@@ -1,4 +1,4 @@
-package com.lodenou.go4lunchv4.ui.adapters;
+package com.lodenou.go4lunchv4.ui.activities.detail;
 
 import android.content.Context;
 import android.view.LayoutInflater;

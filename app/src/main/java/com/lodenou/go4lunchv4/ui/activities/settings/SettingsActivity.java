@@ -1,4 +1,4 @@
-package com.lodenou.go4lunchv4.ui.activities;
+package com.lodenou.go4lunchv4.ui.activities.settings;
 
 import android.app.NotificationChannel;
 import android.app.NotificationManager;

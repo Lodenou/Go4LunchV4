@@ -1,14 +1,10 @@
 package com.lodenou.go4lunchv4.ui.fragment.workmates;
 
-import android.os.Build;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
-import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import android.util.Log;
@@ -16,10 +12,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.lodenou.go4lunchv4.R;
 import com.lodenou.go4lunchv4.databinding.FragmentWorkmatesBinding;
 import com.lodenou.go4lunchv4.model.User;
-import com.lodenou.go4lunchv4.ui.adapters.WorkmatesRecyclerViewAdapter;
 
 import java.util.ArrayList;
 import java.util.List;

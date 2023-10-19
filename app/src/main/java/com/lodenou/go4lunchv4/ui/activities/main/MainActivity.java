@@ -1,4 +1,4 @@
-package com.lodenou.go4lunchv4.ui.activities;
+package com.lodenou.go4lunchv4.ui.activities.main;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
@@ -26,7 +26,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
-import com.facebook.login.LoginManager;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
@@ -41,14 +40,15 @@ import com.lodenou.go4lunchv4.R;
 import com.lodenou.go4lunchv4.data.room.RestaurantRoomDatabase;
 import com.lodenou.go4lunchv4.data.user.UserRepository;
 import com.lodenou.go4lunchv4.databinding.ActivityMainBinding;
-import com.lodenou.go4lunchv4.model.Restaurant;
 import com.lodenou.go4lunchv4.model.User;
-import com.lodenou.go4lunchv4.ui.activities.viewmodels.ViewModelMainActivity;
+import com.lodenou.go4lunchv4.ui.activities.settings.SettingsActivity;
+import com.lodenou.go4lunchv4.ui.activities.chat.ChatActivity;
+import com.lodenou.go4lunchv4.ui.activities.connexion.ConnexionActivity;
+import com.lodenou.go4lunchv4.ui.activities.detail.DetailActivity;
 import com.lodenou.go4lunchv4.ui.fragment.listview.ListViewFragment;
 import com.lodenou.go4lunchv4.ui.fragment.map.MapFragment;
 import com.lodenou.go4lunchv4.ui.fragment.workmates.WorkmatesFragment;
 
-import java.util.List;
 import java.util.Objects;
 
 public class MainActivity extends AppCompatActivity {

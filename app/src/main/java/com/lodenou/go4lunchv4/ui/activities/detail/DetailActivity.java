@@ -1,4 +1,4 @@
-package com.lodenou.go4lunchv4.ui.activities;
+package com.lodenou.go4lunchv4.ui.activities.detail;
 
 import android.Manifest;
 import android.app.AlarmManager;
@@ -25,21 +25,15 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.bumptech.glide.Glide;
-import com.google.android.gms.location.FusedLocationProviderClient;
-import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.lodenou.go4lunchv4.BuildConfig;
 import com.lodenou.go4lunchv4.R;
 import com.lodenou.go4lunchv4.data.NotificationReceiver;
 import com.lodenou.go4lunchv4.databinding.ActivityDetailBinding;
-import com.lodenou.go4lunchv4.model.Restaurant;
 import com.lodenou.go4lunchv4.model.User;
 import com.lodenou.go4lunchv4.model.detail.Result;
-import com.lodenou.go4lunchv4.ui.activities.viewmodels.ViewModelDetailActivity;
-import com.lodenou.go4lunchv4.ui.activities.viewmodels.ViewModelMainActivity;
-import com.lodenou.go4lunchv4.ui.adapters.DetailActivityAdapter;
+import com.lodenou.go4lunchv4.ui.activities.main.ViewModelMainActivity;
 
 
 import java.util.ArrayList;

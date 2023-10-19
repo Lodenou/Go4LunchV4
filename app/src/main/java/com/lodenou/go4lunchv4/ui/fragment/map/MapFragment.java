@@ -43,8 +43,8 @@ import com.karumi.dexter.listener.multi.MultiplePermissionsListener;
 import com.lodenou.go4lunchv4.R;
 import com.lodenou.go4lunchv4.model.Restaurant;
 import com.lodenou.go4lunchv4.ui.Utils;
-import com.lodenou.go4lunchv4.ui.activities.DetailActivity;
-import com.lodenou.go4lunchv4.ui.activities.viewmodels.ViewModelMainActivity;
+import com.lodenou.go4lunchv4.ui.activities.detail.DetailActivity;
+import com.lodenou.go4lunchv4.ui.activities.main.ViewModelMainActivity;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -1,4 +1,4 @@
-package com.lodenou.go4lunchv4.ui.adapters;
+package com.lodenou.go4lunchv4.ui.fragment.listview;
 
 import android.Manifest;
 import android.content.Context;
@@ -23,13 +23,10 @@ import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
-import com.lodenou.go4lunchv4.BuildConfig;
 import com.lodenou.go4lunchv4.R;
 import com.lodenou.go4lunchv4.model.Restaurant;
-import com.lodenou.go4lunchv4.model.nearbysearch.Result;
 import com.lodenou.go4lunchv4.ui.Utils;
-import com.lodenou.go4lunchv4.ui.activities.DetailActivity;
-import com.lodenou.go4lunchv4.ui.fragment.listview.ViewModelListView;
+import com.lodenou.go4lunchv4.ui.activities.detail.DetailActivity;
 
 import java.util.ArrayList;
 import java.util.List;
