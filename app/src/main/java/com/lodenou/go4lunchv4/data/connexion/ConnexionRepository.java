@@ -17,7 +17,7 @@ import com.lodenou.go4lunchv4.model.User;
 
 import java.util.Objects;
 
-public class ConnexionRepository {
+public class ConnexionRepository implements IConnexionRepository {
 
     private FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
     User mUser;

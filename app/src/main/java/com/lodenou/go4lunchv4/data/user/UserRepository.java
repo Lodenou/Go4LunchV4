@@ -19,7 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-public class UserRepository {
+public class UserRepository implements IUserRepository{
 
     private static UserRepository instance;
     private ArrayList<User> datasetUsers = new ArrayList<>();
@@ -101,9 +101,4 @@ public class UserRepository {
     public FirebaseUser getCurrentUser() {
         return FirebaseAuth.getInstance().getCurrentUser();
     }
-
-
-
-
-
 }

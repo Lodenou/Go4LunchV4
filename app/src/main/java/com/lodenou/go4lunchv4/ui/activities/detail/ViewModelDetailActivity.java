@@ -80,7 +80,7 @@ public class ViewModelDetailActivity extends ViewModel {
 
     public LiveData<Boolean> isRestaurantEgalToUserFavorite( String restaurantId){
         DetailRepository detailRepository = DetailRepository.getInstance();
-        mMutableLiveDataBooleanFav = detailRepository.isRestaurantEgalToUserFavorite( restaurantId);
+        mMutableLiveDataBooleanFav = detailRepository.isRestaurantEqualToUserFavorite( restaurantId);
         return mMutableLiveDataBooleanFav;
     }
 

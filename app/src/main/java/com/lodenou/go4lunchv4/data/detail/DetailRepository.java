@@ -39,7 +39,7 @@ import io.reactivex.schedulers.Schedulers;
  * restaurant & user repositories
  **/
 
-public class DetailRepository {
+public class DetailRepository implements IDetailRepository {
 
     private static DetailRepository instance;
     private ArrayList<User> datasetUsers = new ArrayList<>();
@@ -288,7 +288,7 @@ public class DetailRepository {
         }
     }
 
-    public MutableLiveData<Boolean> isRestaurantEgalToUserFavorite(String restaurantId) {
+    public MutableLiveData<Boolean> isRestaurantEqualToUserFavorite(String restaurantId) {
         if (Objects.equals(Objects.requireNonNull(getUser().getValue()).getFavoritesRestaurant(), restaurantId)) {
             dataIsFav.setValue(true);
         } else {

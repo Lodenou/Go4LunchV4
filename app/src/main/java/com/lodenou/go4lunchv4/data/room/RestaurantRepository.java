@@ -35,7 +35,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 
-public class RestaurantRepository {
+public class RestaurantRepository implements IRestaurantRepository {
 
     private static final String PREFS_NAME = "MyPrefsFile";
     private static final String PREFS_IS_FIRST_LAUNCH = "isFirstLaunch";
@@ -69,9 +69,9 @@ public class RestaurantRepository {
         RestaurantRoomDatabase.databaseWriteExecutor.execute(() -> mRestaurantDao.insert(restaurant));
     }
 
-    public void insertAllRestaurants(List<Restaurant> restaurants){
-        RestaurantRoomDatabase.databaseWriteExecutor.execute(() -> mRestaurantDao.insertAll(restaurants));
-    }
+//    public void insertAllRestaurants(List<Restaurant> restaurants){
+//        RestaurantRoomDatabase.databaseWriteExecutor.execute(() -> mRestaurantDao.insertAll(restaurants));
+//    }
 
     public void updateRestaurants(Restaurant restaurant, Boolean isAddition){
 

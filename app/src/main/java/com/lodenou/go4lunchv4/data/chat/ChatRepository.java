@@ -26,7 +26,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.TimeZone;
 
-public class ChatRepository {
+public class ChatRepository implements IChatRepository {
     private static ChatRepository instance;
     private MutableLiveData<List<Message>> dataMessages = new MutableLiveData<>();
     private ArrayList<Message> mDatasetMessages = new ArrayList<>();
