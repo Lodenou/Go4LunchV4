@@ -1,6 +1,5 @@
 package com.lodenou.go4lunchv4.data.connexion;
 
-import static com.facebook.FacebookSdk.getApplicationContext;
 
 import android.util.Log;
 import android.widget.Toast;
@@ -61,7 +60,6 @@ public class ConnexionRepository {
                     mUser = documentSnapshot.toObject(User.class);
                     if (mUser == null) {
                         UserCallData.createUser(uid, username, urlPicture, email, " ", "", "").addOnFailureListener(e -> {
-                            Toast.makeText(getApplicationContext(), "Firestore Error ", Toast.LENGTH_LONG).show();
                             Log.d("TAG", "onFailure: firestore error 1 ");
                         });
                     }

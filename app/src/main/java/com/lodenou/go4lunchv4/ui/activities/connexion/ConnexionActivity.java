@@ -7,7 +7,6 @@ import android.view.View;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 
-import com.facebook.CallbackManager;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
@@ -30,7 +29,6 @@ public class ConnexionActivity extends AppCompatActivity {
     private FirebaseAuth mAuth;
     private final String TAG = "GOOGLE_SIGN_IN_TAG";
     private final int RC_SIGN_IN = 123;
-    private CallbackManager mCallbackManager;
     private ViewModelConnexionActivity mViewModelConnexionActivity;
 
     @Override
