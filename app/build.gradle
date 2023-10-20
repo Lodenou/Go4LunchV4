@@ -79,10 +79,6 @@ dependencies {
     // Dexter permission
     implementation 'com.karumi:dexter:6.2.3'
 
-    //Facebook login
-    implementation 'com.facebook.android:facebook-android-sdk:13.2.0'
-    implementation 'com.google.firebase:firebase-firestore:24.4.2'
-
     // Firebase
     implementation platform('com.google.firebase:firebase-bom:30.1.0')
     implementation 'com.google.firebase:firebase-auth:21.1.0'
