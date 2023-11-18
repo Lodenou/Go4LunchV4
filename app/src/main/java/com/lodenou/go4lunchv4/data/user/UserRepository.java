@@ -60,7 +60,6 @@ public class UserRepository implements IUserRepository{
         });
          return dataUsers;
     }
-
     public  MutableLiveData<User> getUser(){
         String userId = Objects.requireNonNull(getCurrentUser()).getUid();
         UserCallData.getUser(userId).addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
