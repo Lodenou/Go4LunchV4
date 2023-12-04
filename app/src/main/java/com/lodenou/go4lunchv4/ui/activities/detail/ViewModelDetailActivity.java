@@ -4,7 +4,9 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.lodenou.go4lunchv4.data.detail.DetailRepository;
+import com.lodenou.go4lunchv4.data.user.UserCallData;
 import com.lodenou.go4lunchv4.model.User;
 import com.lodenou.go4lunchv4.model.detail.Result;
 
@@ -20,12 +22,17 @@ public class ViewModelDetailActivity extends ViewModel {
     private MutableLiveData<User> mMutableLiveDataUser;
     private LiveData<List<String>> mListColleaguesLiveData;
 
+    private DetailRepository detailRepository;
+
+
     public void init(String restaurantId){
         if(mMutableLiveDataUsers != null && mMutableLiveDataRestaurantDetail != null
                 && mMutableLiveDataBooleanFab != null && mMutableLiveDataUser != null){
             return;
         }
-        DetailRepository detailRepository = DetailRepository.getInstance();
+        FirebaseFirestore firebaseFirestore = FirebaseFirestore.getInstance();
+        UserCallData userCallData = new UserCallData(firebaseFirestore);
+        detailRepository = DetailRepository.getInstance(userCallData);
         mMutableLiveDataRestaurantDetail = detailRepository.getRestaurantDetails(restaurantId);
         mMutableLiveDataUsers = detailRepository.getUsersEatingHere(restaurantId);
         mMutableLiveDataBooleanFab = detailRepository.isCurrentUserHasChosenThisRestaurant(restaurantId);
@@ -43,12 +50,10 @@ public class ViewModelDetailActivity extends ViewModel {
 
     // Fab button
     public void addUserChoiceToDatabase(String restaurantId){
-        DetailRepository detailRepository = DetailRepository.getInstance();
         detailRepository.addUserChoiceToDatabase(restaurantId);
     }
 
     public void removeUserChoiceFromDatabase(){
-        DetailRepository detailRepository = DetailRepository.getInstance();
         detailRepository.removeUserChoiceFromDatabase();
     }
     public LiveData<Boolean> isCurrentUserHasChosenThisRestaurant(){
@@ -56,36 +61,30 @@ public class ViewModelDetailActivity extends ViewModel {
     }
 
     public void setIsThisRestaurantChosen(String restaurantId){
-        DetailRepository detailRepository = DetailRepository.getInstance();
         detailRepository.updateUserList();
         detailRepository.isRestaurantChosen(restaurantId);
     }
 
     // Favorite button
     public void addUserFavoriteToDatabase(String restaurantId){
-        DetailRepository detailRepository = DetailRepository.getInstance();
         detailRepository.addUserFavoriteToDatabase(restaurantId);
     }
 
     public void removeUserFavoriteFromDatabase(){
-        DetailRepository detailRepository = DetailRepository.getInstance();
         detailRepository.removeUserFavoriteFromDatabase();
     }
 
     public LiveData<User> getUser(String userId){
-        DetailRepository detailRepository = DetailRepository.getInstance();
         mMutableLiveDataUser = detailRepository.getUser();
         return mMutableLiveDataUser;
     }
 
     public LiveData<Boolean> isRestaurantEgalToUserFavorite( String restaurantId){
-        DetailRepository detailRepository = DetailRepository.getInstance();
         mMutableLiveDataBooleanFav = detailRepository.isRestaurantEqualToUserFavorite( restaurantId);
         return mMutableLiveDataBooleanFav;
     }
 
     public LiveData<List<String>> getListOfColleaguesWhoEatWithCurrentUser( String restaurantId){
-        DetailRepository detailRepository = DetailRepository.getInstance();
         mListColleaguesLiveData = detailRepository.getListOfColleaguesWhoEatWithCurrentUser(restaurantId);
         return mListColleaguesLiveData;
     }

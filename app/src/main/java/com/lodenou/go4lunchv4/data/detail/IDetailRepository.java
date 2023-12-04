@@ -12,7 +12,7 @@ public interface IDetailRepository {
 
     MutableLiveData<Result> getRestaurantDetails(String restaurantId);
 
-    FirebaseUser getCurrentUser();
+//    FirebaseUser getCurrentUser();
 
     MutableLiveData<User> getUser();
 

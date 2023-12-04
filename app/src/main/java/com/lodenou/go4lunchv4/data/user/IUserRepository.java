@@ -11,8 +11,6 @@ public interface IUserRepository {
 
     MutableLiveData<List<User>> getUsers();
 
-    MutableLiveData<User> getUser();
-
     MutableLiveData<List<String>> getRestaurantChosenId();
 
     FirebaseUser getCurrentUser();

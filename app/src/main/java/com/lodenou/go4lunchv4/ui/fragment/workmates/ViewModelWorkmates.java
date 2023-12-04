@@ -4,6 +4,9 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.lodenou.go4lunchv4.data.detail.DetailRepository;
+import com.lodenou.go4lunchv4.data.user.UserCallData;
 import com.lodenou.go4lunchv4.data.user.UserRepository;
 import com.lodenou.go4lunchv4.model.User;
 
@@ -15,8 +18,9 @@ public class ViewModelWorkmates extends ViewModel {
     private UserRepository mUserRepository;
 
     public void init() {
-
-        mUserRepository = UserRepository.getInstance();
+        FirebaseFirestore firebaseFirestore = FirebaseFirestore.getInstance();
+        UserCallData userCallData = new UserCallData(firebaseFirestore);
+        mUserRepository = new UserRepository(userCallData);
         mMutableLiveData = mUserRepository.getUsers();
     }
 

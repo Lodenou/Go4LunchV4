@@ -36,8 +36,10 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.lodenou.go4lunchv4.R;
 import com.lodenou.go4lunchv4.data.room.RestaurantRoomDatabase;
+import com.lodenou.go4lunchv4.data.user.UserCallData;
 import com.lodenou.go4lunchv4.data.user.UserRepository;
 import com.lodenou.go4lunchv4.databinding.ActivityMainBinding;
 import com.lodenou.go4lunchv4.model.User;
@@ -161,7 +163,6 @@ public class MainActivity extends AppCompatActivity {
 
                 switch (id) {
                     case R.id.nav_yourlunch:
-
                         clickYourLunch();
 //                        mViewModelMainActivity.fetchUser();
                         break;
@@ -245,7 +246,10 @@ public class MainActivity extends AppCompatActivity {
 
     private void setNavigationView() {
         this.navigationView = mBinding.activityMainNavView;
-        FirebaseUser user = UserRepository.getInstance().getCurrentUser();
+        FirebaseFirestore firebaseFirestore = FirebaseFirestore.getInstance();
+        UserCallData userCallData = new UserCallData(firebaseFirestore);
+        UserRepository userRepository = new UserRepository(userCallData);
+        FirebaseUser user = userRepository.getCurrentUser();
         String userEmail = user.getEmail();
         String userName = user.getDisplayName();
         Uri userPhoto = user.getPhotoUrl();

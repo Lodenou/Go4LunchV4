@@ -8,26 +8,31 @@ import com.lodenou.go4lunchv4.model.User;
 import com.google.firebase.firestore.Query;
 
 
+
 public class UserCallData {
-
     private static final String COLLECTION_NAME = "users";
+    private final FirebaseFirestore firebaseFirestore;
 
-    public static CollectionReference getUsersCollection() {
-        return FirebaseFirestore.getInstance().collection(COLLECTION_NAME);
+    public UserCallData(FirebaseFirestore firebaseFirestore) {
+        this.firebaseFirestore = firebaseFirestore;
     }
 
-    public static Task<Void> createUser(String uid, String userName, String userAvatarUrl,String userEmail
-            , String FavoriteRestaurantId, String restaurantChosenId, String restaurantChosenName) {
-        User userToCreate = new User(uid, userName,  userAvatarUrl, userEmail, FavoriteRestaurantId,
-                restaurantChosenId,restaurantChosenName );
-        return UserCallData.getUsersCollection().document(uid).set(userToCreate);
+    public CollectionReference getUsersCollection() {
+        return firebaseFirestore.collection(COLLECTION_NAME);
     }
 
-    public static Task<DocumentSnapshot> getUser(String uid) {
-        return UserCallData.getUsersCollection().document(uid).get();
+    public Task<Void> createUser(String uid, String userName, String userAvatarUrl, String userEmail,
+                                 String favoriteRestaurantId, String restaurantChosenId, String restaurantChosenName) {
+        User userToCreate = new User(uid, userName, userAvatarUrl, userEmail, favoriteRestaurantId,
+                restaurantChosenId, restaurantChosenName);
+        return getUsersCollection().document(uid).set(userToCreate);
     }
 
-    public static Query getAllUsers() {
-        return UserCallData.getUsersCollection();
+    public Task<DocumentSnapshot> getUser(String uid) {
+        return getUsersCollection().document(uid).get();
+    }
+
+    public Query getAllUsers() {
+        return getUsersCollection();
     }
 }

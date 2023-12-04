@@ -4,7 +4,9 @@ package com.lodenou.go4lunchv4.ui.activities.connexion;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 import com.google.firebase.auth.AuthCredential;
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.lodenou.go4lunchv4.data.connexion.ConnexionRepository;
+import com.lodenou.go4lunchv4.data.user.UserCallData;
 import com.lodenou.go4lunchv4.model.User;
 
 public class ViewModelConnexionActivity extends ViewModel {
@@ -13,7 +15,9 @@ public class ViewModelConnexionActivity extends ViewModel {
     MutableLiveData<User> authenticatedUserLiveData;
 
     public void init() {
-        mConnexionRepository = new ConnexionRepository();
+        FirebaseFirestore firebaseFirestore = FirebaseFirestore.getInstance();
+        UserCallData userCallData = new UserCallData(firebaseFirestore);
+        mConnexionRepository = new ConnexionRepository(userCallData);
     }
     public void signInWithGoogle(AuthCredential googleAuthCredential) {
         authenticatedUserLiveData = mConnexionRepository.firebaseSignInWithGoogle(googleAuthCredential);

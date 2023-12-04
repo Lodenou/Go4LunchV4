@@ -22,6 +22,13 @@ public class ConnexionRepository implements IConnexionRepository {
     private FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
     User mUser;
 
+    private UserCallData userCallData;
+
+    // Constructor for injection
+    public ConnexionRepository(UserCallData userCallData) {
+        this.userCallData = userCallData;
+    }
+
     public MutableLiveData<User> firebaseSignInWithGoogle(AuthCredential googleAuthCredential) {
         MutableLiveData<User> authenticatedUserMutableLiveData = new MutableLiveData<>();
         firebaseAuth.signInWithCredential(googleAuthCredential).addOnCompleteListener(authTask -> {
@@ -54,12 +61,12 @@ public class ConnexionRepository implements IConnexionRepository {
             final String uid = this.getCurrentUser().getUid();
             final String email = this.getCurrentUser().getEmail();
 
-            UserCallData.getUser(uid).addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+            userCallData.getUser(uid).addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                 @Override
                 public void onSuccess(DocumentSnapshot documentSnapshot) {
                     mUser = documentSnapshot.toObject(User.class);
                     if (mUser == null) {
-                        UserCallData.createUser(uid, username, urlPicture, email, " ", "", "").addOnFailureListener(e -> {
+                        userCallData.createUser(uid, username, urlPicture, email, " ", "", "").addOnFailureListener(e -> {
                             Log.d("TAG", "onFailure: firestore error 1 ");
                         });
                     }

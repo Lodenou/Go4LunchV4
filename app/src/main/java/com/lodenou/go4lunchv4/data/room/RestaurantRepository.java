@@ -45,8 +45,6 @@ public class RestaurantRepository implements IRestaurantRepository {
     MutableLiveData<List<Restaurant>> dataRestaurants = new MutableLiveData<>();
     private ArrayList<Restaurant> datasetRestaurants = new ArrayList<>();
 
-    MutableLiveData<List<Restaurant>> dataRestaurantsUpdate = new MutableLiveData<>();
-    private ArrayList<Restaurant> datasetRestaurantsUpdate = new ArrayList<>();
 
     private ArrayList<Result> dataset = new ArrayList<>();
 
@@ -57,22 +55,26 @@ public class RestaurantRepository implements IRestaurantRepository {
     private LiveData<List<Restaurant>> mListRestaurantLiveData;
     private LiveData<Restaurant> mRestaurantLiveData;
 
-    public RestaurantRepository(Application application) {
-        //Room
-        mRestaurantRoomDatabase = RestaurantRoomDatabase.getDatabase(application);
-        mRestaurantDao = mRestaurantRoomDatabase.mRestaurantDao();
-        mListRestaurantLiveData = mRestaurantDao.getAllRestaurants();
+    private UserCallData userCallData;
+
+    public RestaurantRepository(Application application, UserCallData userCallData) {
+        // Room injection
+        RestaurantRoomDatabase mRestaurantRoomDatabase = RestaurantRoomDatabase.getDatabase(application);
+        this.mRestaurantDao = mRestaurantRoomDatabase.mRestaurantDao();
+        this.mListRestaurantLiveData = mRestaurantDao.getAllRestaurants();
+
+        //  UserCallData injection
+        this.userCallData = userCallData;
     }
 
     // Room
+    //TODO USELESS ATM
     public void insertRestaurant(Restaurant restaurant) {
         RestaurantRoomDatabase.databaseWriteExecutor.execute(() -> mRestaurantDao.insert(restaurant));
     }
 
-//    public void insertAllRestaurants(List<Restaurant> restaurants){
-//        RestaurantRoomDatabase.databaseWriteExecutor.execute(() -> mRestaurantDao.insertAll(restaurants));
-//    }
 
+    //TODO USELESS atm
     public void updateRestaurants(Restaurant restaurant, Boolean isAddition){
 
         RestaurantRoomDatabase.databaseWriteExecutor.execute(() -> {
@@ -142,7 +144,7 @@ public class RestaurantRepository implements IRestaurantRepository {
                                         ArrayList<User> datasetUsers = new ArrayList<>();
                                         dataset.clear();
                                         dataset.addAll(nearbySearchResults.getResults());
-                                        UserCallData.getAllUsers().get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                                        userCallData.getAllUsers().get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                                             @Override
                                             public void onComplete(@NonNull Task<QuerySnapshot> task) {
                                                 if (task.isSuccessful()) {

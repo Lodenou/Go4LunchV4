@@ -8,8 +8,10 @@ import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.lodenou.go4lunchv4.data.detail.DetailRepository;
 import com.lodenou.go4lunchv4.data.room.RestaurantRepository;
+import com.lodenou.go4lunchv4.data.user.UserCallData;
 import com.lodenou.go4lunchv4.model.Restaurant;
 import com.lodenou.go4lunchv4.model.User;
 
@@ -25,13 +27,16 @@ public class ViewModelMainActivity extends AndroidViewModel {
 
     public ViewModelMainActivity(@NonNull Application application) {
         super(application);
-        mRestaurantRepository = new RestaurantRepository(application);
-
+        FirebaseFirestore firebaseFirestore = FirebaseFirestore.getInstance();
+        UserCallData userCallData = new UserCallData(firebaseFirestore);
+        mRestaurantRepository = new RestaurantRepository(application, userCallData);
     }
 
 
     public void init() {
-        mDetailRepository = DetailRepository.getInstance();
+        FirebaseFirestore firebaseFirestore = FirebaseFirestore.getInstance();
+        UserCallData userCallData = new UserCallData(firebaseFirestore);
+        mDetailRepository = DetailRepository.getInstance(userCallData);
         mUserLiveData = mDetailRepository.getUser();
     }
     public LiveData<User> getUser() {

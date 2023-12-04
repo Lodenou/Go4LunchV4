@@ -21,27 +21,24 @@ import java.util.Objects;
 
 public class UserRepository implements IUserRepository{
 
-    private static UserRepository instance;
     private ArrayList<User> datasetUsers = new ArrayList<>();
     MutableLiveData<List<User>> dataUsers = new MutableLiveData<>();
     private ArrayList<String> datasetChosenRestaurantId = new ArrayList<>();
     MutableLiveData<List<String>> dataChosenRestaurantId = new MutableLiveData<>();
-    MutableLiveData<User> dataUser = new MutableLiveData<>();
     User mUser;
 
 
-    public static UserRepository getInstance() {
-        if (instance == null) {
-            instance = new UserRepository();
-        }
-        return instance;
-    }
+    private UserCallData userCallData;
 
+    // Constructor for injection
+    public UserRepository(UserCallData userCallData) {
+        this.userCallData = userCallData;
+    }
 
 
     public MutableLiveData<List<User>> getUsers(){
 
-        UserCallData.getUsersCollection().get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+        userCallData.getUsersCollection().get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
             @Override
             public void onComplete(@NonNull Task<QuerySnapshot> task) {
 
@@ -60,24 +57,10 @@ public class UserRepository implements IUserRepository{
         });
          return dataUsers;
     }
-    public  MutableLiveData<User> getUser(){
-        String userId = Objects.requireNonNull(getCurrentUser()).getUid();
-        UserCallData.getUser(userId).addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                if (task.isSuccessful()) {
-                    DocumentSnapshot document = task.getResult();
-                    mUser = document.toObject(User.class);
-                    dataUser.setValue(mUser);
-                }
-            }
-        });
 
-        return dataUser;
-    }
 
     public MutableLiveData<List<String>> getRestaurantChosenId(){
-        UserCallData.getAllUsers().whereNotEqualTo("restaurantChosenId", "").get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+        userCallData.getAllUsers().whereNotEqualTo("restaurantChosenId", "").get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
             @Override
             public void onComplete(@NonNull Task<QuerySnapshot> task) {
                 if (task.isSuccessful()){

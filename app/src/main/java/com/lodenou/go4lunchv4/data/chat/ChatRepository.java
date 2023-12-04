@@ -36,13 +36,13 @@ public class ChatRepository implements IChatRepository {
     Message message;
 
 
-    public static ChatRepository getInstance() {
-        if (instance == null) {
-            instance = new ChatRepository();
-        }
-        return instance;
-    }
 
+    private UserCallData userCallData;
+
+    // Constructor for injection
+    public ChatRepository(UserCallData userCallData) {
+        this.userCallData = userCallData;
+    }
 
     public MutableLiveData<List<Message>> getAllMessageForChat() {
 
@@ -68,7 +68,7 @@ public class ChatRepository implements IChatRepository {
 
     public MutableLiveData<User> getUser() {
         String userId = Objects.requireNonNull(getCurrentUser()).getUid();
-        UserCallData.getUser(userId).addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+        userCallData.getUser(userId).addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
             public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                 if (task.isSuccessful()) {
@@ -87,7 +87,7 @@ public void createNewMessage(String message){
     Date date = calendar.getTime();
 
     String userId = Objects.requireNonNull(getCurrentUser()).getUid();
-    UserCallData.getUser(userId).addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+    userCallData.getUser(userId).addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
         @Override
         public void onComplete(@NonNull Task<DocumentSnapshot> task) {
             if (task.isSuccessful()) {

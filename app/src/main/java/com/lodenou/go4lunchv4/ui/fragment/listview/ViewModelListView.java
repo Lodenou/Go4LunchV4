@@ -7,7 +7,9 @@ import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.MutableLiveData;
 
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.lodenou.go4lunchv4.data.room.RestaurantRepository;
+import com.lodenou.go4lunchv4.data.user.UserCallData;
 import com.lodenou.go4lunchv4.model.nearbysearch.Result;
 
 import java.util.List;
@@ -23,8 +25,9 @@ public class ViewModelListView extends AndroidViewModel {
 
     public ViewModelListView(@NonNull Application application) {
         super(application);
-        mRestaurantRepository = new RestaurantRepository(application);
-
+        FirebaseFirestore firebaseFirestore = FirebaseFirestore.getInstance();
+        UserCallData userCallData = new UserCallData(firebaseFirestore);
+        mRestaurantRepository = new RestaurantRepository(application, userCallData);
     }
 
 

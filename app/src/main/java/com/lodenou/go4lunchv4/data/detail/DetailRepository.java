@@ -55,9 +55,16 @@ public class DetailRepository implements IDetailRepository {
     private ArrayList<String> datasetColleagues = new ArrayList<>();
     MutableLiveData<List<String>> dataColleagues = new MutableLiveData<>();
 
-    public static DetailRepository getInstance() {
+    private UserCallData userCallData;
+
+    // Constructor for injection
+    private DetailRepository(UserCallData userCallData) {
+        this.userCallData = userCallData;
+    }
+    // Singleton model with injection
+    public static synchronized DetailRepository getInstance(UserCallData userCallData) {
         if (instance == null) {
-            instance = new DetailRepository();
+            instance = new DetailRepository(userCallData);
         }
         return instance;
     }
@@ -92,13 +99,13 @@ public class DetailRepository implements IDetailRepository {
     }
 
     @Nullable
-    public FirebaseUser getCurrentUser() {
+    private FirebaseUser getCurrentUser() {
         return FirebaseAuth.getInstance().getCurrentUser();
     }
 
     public MutableLiveData<User> getUser() {
         String userId = Objects.requireNonNull(getCurrentUser()).getUid();
-        UserCallData.getUser(userId).addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+        userCallData.getUser(userId).addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
             @Override
             public void onSuccess(DocumentSnapshot documentSnapshot) {
                 mUser = documentSnapshot.toObject(User.class);
@@ -112,7 +119,7 @@ public class DetailRepository implements IDetailRepository {
     public MutableLiveData<List<User>> getUsersEatingHere(String restaurantId) {
 
         datasetUsers.clear();
-        UserCallData.getAllUsers().get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+        userCallData.getAllUsers().get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
             @Override
             public void onComplete(@NonNull Task<QuerySnapshot> task) {
                 if (task.isSuccessful()) {
@@ -140,11 +147,12 @@ public class DetailRepository implements IDetailRepository {
             chosenRestaurant.put("restaurantChosenId", restaurantId);
             chosenRestaurant.put("restaurantChosenName", restaurantName);
             FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
-            DocumentReference docRef = UserCallData.getAllUsers().getFirestore().collection("users")
+            DocumentReference docRef = userCallData.getAllUsers().getFirestore().collection("users")
                     .document(firebaseUser.getUid());
             docRef.set(chosenRestaurant, SetOptions.merge()).addOnCompleteListener(new OnCompleteListener<Void>() {
                 @Override
                 public void onComplete(@NonNull Task<Void> task) {
+                    //UPDATE USER
                     getUser();
                     Log.d("123", "DocumentSnapshot successfully written!");
                 }
@@ -163,10 +171,11 @@ public class DetailRepository implements IDetailRepository {
             chosenRestaurant.put("restaurantChosenId", "");
             chosenRestaurant.put("restaurantChosenName", "");
             FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
-            DocumentReference docRef = UserCallData.getAllUsers().getFirestore().collection("users").document(firebaseUser.getUid());
+            DocumentReference docRef = userCallData.getAllUsers().getFirestore().collection("users").document(firebaseUser.getUid());
             docRef.set(chosenRestaurant, SetOptions.merge()).addOnCompleteListener(new OnCompleteListener<Void>() {
                 @Override
                 public void onComplete(@NonNull Task<Void> task) {
+                    //UPDATE USER
                     getUser();
                     Log.d("123", "DocumentSnapshot successfully unwritten!");
                 }
@@ -181,7 +190,7 @@ public class DetailRepository implements IDetailRepository {
 
     public MutableLiveData<Boolean> isCurrentUserHasChosenThisRestaurant(String restaurantId) {
         String currentUserId = FirebaseAuth.getInstance().getCurrentUser().getUid();
-        DocumentReference docRef = UserCallData.getAllUsers().getFirestore().collection("users").document(currentUserId);
+        DocumentReference docRef = userCallData.getAllUsers().getFirestore().collection("users").document(currentUserId);
         docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
             public void onComplete(@NonNull Task<DocumentSnapshot> task) {
@@ -197,7 +206,7 @@ public class DetailRepository implements IDetailRepository {
         FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
         User currentUserMapped = new User(currentUser.getUid(), currentUser.getDisplayName(), currentUser
                 .getPhotoUrl().toString(), currentUser.getEmail(), "", "", "");
-        DocumentReference docRef = UserCallData.getAllUsers().getFirestore().collection("users")
+        DocumentReference docRef = userCallData.getAllUsers().getFirestore().collection("users")
                 .document(currentUser.getUid());
         docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
@@ -229,7 +238,7 @@ public class DetailRepository implements IDetailRepository {
 
     public void isRestaurantChosen(String restaurantId) {
         FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
-        DocumentReference docRef = UserCallData.getAllUsers().getFirestore().collection("users").document(currentUser.getUid());
+        DocumentReference docRef = userCallData.getAllUsers().getFirestore().collection("users").document(currentUser.getUid());
         docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
             public void onComplete(@NonNull Task<DocumentSnapshot> task) {
@@ -253,7 +262,7 @@ public class DetailRepository implements IDetailRepository {
             Map<String, Object> favoriteRestaurant = new HashMap<>();
             favoriteRestaurant.put("favoritesRestaurant", restaurantId);
             FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
-            DocumentReference docRef = UserCallData.getAllUsers().getFirestore().collection("users").document(firebaseUser.getUid());
+            DocumentReference docRef = userCallData.getAllUsers().getFirestore().collection("users").document(firebaseUser.getUid());
             docRef.set(favoriteRestaurant, SetOptions.merge()).addOnCompleteListener(new OnCompleteListener<Void>() {
                 @Override
                 public void onComplete(@NonNull Task<Void> task) {
@@ -273,7 +282,7 @@ public class DetailRepository implements IDetailRepository {
             Map<String, Object> favoriteRestaurant = new HashMap<>();
             favoriteRestaurant.put("favoritesRestaurant", "");
             FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
-            DocumentReference docRef = UserCallData.getAllUsers().getFirestore().collection("users").document(firebaseUser.getUid());
+            DocumentReference docRef = userCallData.getAllUsers().getFirestore().collection("users").document(firebaseUser.getUid());
             docRef.set(favoriteRestaurant, SetOptions.merge()).addOnCompleteListener(new OnCompleteListener<Void>() {
                 @Override
                 public void onComplete(@NonNull Task<Void> task) {
@@ -302,7 +311,7 @@ public class DetailRepository implements IDetailRepository {
     public MutableLiveData<List<String>> getListOfColleaguesWhoEatWithCurrentUser(String restaurantId) {
         datasetColleagues.clear();
         FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
-        UserCallData.getAllUsers().get()
+        userCallData.getAllUsers().get()
                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                     @Override
                     public void onComplete(@NonNull Task<QuerySnapshot> task) {
