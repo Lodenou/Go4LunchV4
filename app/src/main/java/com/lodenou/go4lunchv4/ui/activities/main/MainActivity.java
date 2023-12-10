@@ -225,6 +225,12 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        // Use to get updated info for user after changing it in DetailActivity
+        observeGetUser();
+    }
 
     private void clickYourLunch() {
         if (bool) {

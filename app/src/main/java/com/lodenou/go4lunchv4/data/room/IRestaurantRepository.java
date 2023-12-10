@@ -14,10 +14,6 @@ import java.util.List;
 
 public interface IRestaurantRepository {
 
-    void insertRestaurant(Restaurant restaurant);
-
-    void updateRestaurants(Restaurant restaurant, Boolean isAddition);
-
     LiveData<Restaurant> getRestaurantById(String restaurantId);
 
     void deleteAllRestaurants();

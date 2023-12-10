@@ -8,6 +8,7 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.lodenou.go4lunchv4.data.room.RestaurantRepository;
 import com.lodenou.go4lunchv4.data.user.UserCallData;
@@ -27,7 +28,8 @@ public class ViewModelMap extends AndroidViewModel {
         super(application);
         FirebaseFirestore firebaseFirestore = FirebaseFirestore.getInstance();
         UserCallData userCallData = new UserCallData(firebaseFirestore);
-        mRestaurantRepository = new RestaurantRepository(application, userCallData);
+        String idUser = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        mRestaurantRepository = new RestaurantRepository(application, userCallData, idUser);
     }
 
 

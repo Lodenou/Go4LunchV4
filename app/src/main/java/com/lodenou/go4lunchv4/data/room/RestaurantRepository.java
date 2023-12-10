@@ -15,6 +15,7 @@ import androidx.lifecycle.MutableLiveData;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.lodenou.go4lunchv4.BuildConfig;
@@ -45,6 +46,8 @@ public class RestaurantRepository implements IRestaurantRepository {
     MutableLiveData<List<Restaurant>> dataRestaurants = new MutableLiveData<>();
     private ArrayList<Restaurant> datasetRestaurants = new ArrayList<>();
 
+    MutableLiveData<User> dataUser = new MutableLiveData<>();
+
 
     private ArrayList<Result> dataset = new ArrayList<>();
 
@@ -56,39 +59,33 @@ public class RestaurantRepository implements IRestaurantRepository {
     private LiveData<Restaurant> mRestaurantLiveData;
 
     private UserCallData userCallData;
+    private String idUser;
 
-    public RestaurantRepository(Application application, UserCallData userCallData) {
+    User mUser;
+
+    public RestaurantRepository(Application application, UserCallData userCallData, String idUser) {
         // Room injection
         RestaurantRoomDatabase mRestaurantRoomDatabase = RestaurantRoomDatabase.getDatabase(application);
         this.mRestaurantDao = mRestaurantRoomDatabase.mRestaurantDao();
         this.mListRestaurantLiveData = mRestaurantDao.getAllRestaurants();
-
         //  UserCallData injection
         this.userCallData = userCallData;
+        this.idUser = idUser;
+
     }
 
     // Room
-    //TODO USELESS ATM
-    public void insertRestaurant(Restaurant restaurant) {
-        RestaurantRoomDatabase.databaseWriteExecutor.execute(() -> mRestaurantDao.insert(restaurant));
-    }
+    public MutableLiveData<User> getUser() {
 
-
-    //TODO USELESS atm
-    public void updateRestaurants(Restaurant restaurant, Boolean isAddition){
-
-        RestaurantRoomDatabase.databaseWriteExecutor.execute(() -> {
-            int newUserNumber = 0;
-            if (isAddition) {
-                newUserNumber = restaurant.getRestaurantUserNumber() + 1;
+        userCallData.getUser(idUser).addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+            @Override
+            public void onSuccess(DocumentSnapshot documentSnapshot) {
+                mUser = documentSnapshot.toObject(User.class);
+                dataUser.setValue(mUser);
             }
-            else {
-                newUserNumber = restaurant.getRestaurantUserNumber() - 1;
-            }
-            mRestaurantDao.updateRestaurant(
-                newUserNumber, restaurant.getPlaceId());});
+        });
+        return dataUser;
     }
-
 
     public LiveData<Restaurant> getRestaurantById(String restaurantId){
       mRestaurantLiveData =  mRestaurantDao.getRestaurantById(restaurantId);

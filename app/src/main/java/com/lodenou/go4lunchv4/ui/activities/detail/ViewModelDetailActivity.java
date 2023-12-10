@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.lodenou.go4lunchv4.data.detail.DetailRepository;
 import com.lodenou.go4lunchv4.data.user.UserCallData;
@@ -31,8 +32,12 @@ public class ViewModelDetailActivity extends ViewModel {
             return;
         }
         FirebaseFirestore firebaseFirestore = FirebaseFirestore.getInstance();
+        String idUser = FirebaseAuth.getInstance().getCurrentUser().getUid();
         UserCallData userCallData = new UserCallData(firebaseFirestore);
-        detailRepository = DetailRepository.getInstance(userCallData);
+
+        mMutableLiveDataRestaurantDetail = new MutableLiveData<>();
+
+        detailRepository = DetailRepository.getInstance(userCallData, idUser, mMutableLiveDataRestaurantDetail);
         mMutableLiveDataRestaurantDetail = detailRepository.getRestaurantDetails(restaurantId);
         mMutableLiveDataUsers = detailRepository.getUsersEatingHere(restaurantId);
         mMutableLiveDataBooleanFab = detailRepository.isCurrentUserHasChosenThisRestaurant(restaurantId);

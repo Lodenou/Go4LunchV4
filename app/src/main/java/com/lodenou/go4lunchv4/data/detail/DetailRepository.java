@@ -57,14 +57,20 @@ public class DetailRepository implements IDetailRepository {
 
     private UserCallData userCallData;
 
+    private String idUser;
+
     // Constructor for injection
-    private DetailRepository(UserCallData userCallData) {
+    private DetailRepository(UserCallData userCallData, String idUser, MutableLiveData<com.lodenou.go4lunchv4.model.detail.Result> data) {
         this.userCallData = userCallData;
+        this.idUser = idUser;
+        this.dataDetail = data;
     }
     // Singleton model with injection
-    public static synchronized DetailRepository getInstance(UserCallData userCallData) {
+    public static synchronized DetailRepository getInstance(UserCallData userCallData,  String idUser,
+                                                            MutableLiveData<com.lodenou.go4lunchv4.
+                                                                    model.detail.Result> dataDetail) {
         if (instance == null) {
-            instance = new DetailRepository(userCallData);
+            instance = new DetailRepository(userCallData, idUser, dataDetail);
         }
         return instance;
     }
@@ -98,14 +104,8 @@ public class DetailRepository implements IDetailRepository {
         return dataDetail;
     }
 
-    @Nullable
-    private FirebaseUser getCurrentUser() {
-        return FirebaseAuth.getInstance().getCurrentUser();
-    }
-
     public MutableLiveData<User> getUser() {
-        String userId = Objects.requireNonNull(getCurrentUser()).getUid();
-        userCallData.getUser(userId).addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+        userCallData.getUser(idUser).addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
             @Override
             public void onSuccess(DocumentSnapshot documentSnapshot) {
                 mUser = documentSnapshot.toObject(User.class);
@@ -140,15 +140,14 @@ public class DetailRepository implements IDetailRepository {
 
 
     public void addUserChoiceToDatabase(String restaurantId) {
-        if (FirebaseAuth.getInstance().getCurrentUser() != null) {
-            String restaurantName = getRestaurantDetails(restaurantId).getValue().getName();
+        if (idUser != null) {
+            String restaurantName = Objects.requireNonNull(dataDetail.getValue()).getName();
 
             Map<String, Object> chosenRestaurant = new HashMap<>();
             chosenRestaurant.put("restaurantChosenId", restaurantId);
             chosenRestaurant.put("restaurantChosenName", restaurantName);
-            FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
             DocumentReference docRef = userCallData.getAllUsers().getFirestore().collection("users")
-                    .document(firebaseUser.getUid());
+                    .document(idUser);
             docRef.set(chosenRestaurant, SetOptions.merge()).addOnCompleteListener(new OnCompleteListener<Void>() {
                 @Override
                 public void onComplete(@NonNull Task<Void> task) {
@@ -166,12 +165,11 @@ public class DetailRepository implements IDetailRepository {
     }
 
     public void removeUserChoiceFromDatabase() {
-        if (FirebaseAuth.getInstance().getCurrentUser() != null) {
+        if (idUser != null) {
             Map<String, Object> chosenRestaurant = new HashMap<>();
             chosenRestaurant.put("restaurantChosenId", "");
             chosenRestaurant.put("restaurantChosenName", "");
-            FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
-            DocumentReference docRef = userCallData.getAllUsers().getFirestore().collection("users").document(firebaseUser.getUid());
+            DocumentReference docRef = userCallData.getAllUsers().getFirestore().collection("users").document(idUser);
             docRef.set(chosenRestaurant, SetOptions.merge()).addOnCompleteListener(new OnCompleteListener<Void>() {
                 @Override
                 public void onComplete(@NonNull Task<Void> task) {
@@ -189,8 +187,8 @@ public class DetailRepository implements IDetailRepository {
     }
 
     public MutableLiveData<Boolean> isCurrentUserHasChosenThisRestaurant(String restaurantId) {
-        String currentUserId = FirebaseAuth.getInstance().getCurrentUser().getUid();
-        DocumentReference docRef = userCallData.getAllUsers().getFirestore().collection("users").document(currentUserId);
+
+        DocumentReference docRef = userCallData.getAllUsers().getFirestore().collection("users").document(idUser);
         docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
             public void onComplete(@NonNull Task<DocumentSnapshot> task) {
@@ -303,8 +301,6 @@ public class DetailRepository implements IDetailRepository {
         } else {
             dataIsFav.setValue(false);
         }
-
-
         return dataIsFav;
     }
 
@@ -338,5 +334,7 @@ public class DetailRepository implements IDetailRepository {
                 });
         return dataColleagues;
     }
+
+
 
 }
