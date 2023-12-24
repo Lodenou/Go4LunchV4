@@ -52,7 +52,6 @@ public class DetailActivity extends AppCompatActivity {
     private final String CHANNEL_ID = "122";
     private Boolean bool;
     private Result mResult;
-    private boolean permissionGranted = false;
 
 
     @Override
