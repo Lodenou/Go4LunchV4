@@ -14,6 +14,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -50,7 +51,6 @@ public class DetailActivity extends AppCompatActivity {
     private static int PERMISSION_CODE = 100;
     private final String CHANNEL_ID = "122";
     private Boolean bool;
-    private User mUser;
     private Result mResult;
     private boolean permissionGranted = false;
 
@@ -175,40 +175,40 @@ public class DetailActivity extends AppCompatActivity {
 
     }
     // END OF FAB SETTING PART
-
-
-    private void setOnClickOnCallButton(Result result) {
-        this.mResult = result;
-        mBinding.callButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (permissionGranted) {
-                    String phoneNumber = result.getInternationalPhoneNumber();
-                    Intent callIntent = new Intent(Intent.ACTION_CALL);
-                    callIntent.setData(Uri.parse("tel:" + phoneNumber));
-                    startActivity(callIntent);
-                } else {
-                    if (ContextCompat.checkSelfPermission(DetailActivity.this, Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED) {
-                        ActivityCompat.requestPermissions(DetailActivity.this, new String[]{Manifest.permission.CALL_PHONE}, PERMISSION_CODE);
-                    }
-                }
+private void setOnClickOnCallButton(Result result){
+    mBinding.callButton.setOnClickListener(new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+            if (ContextCompat.checkSelfPermission(DetailActivity.this, Manifest.permission.CALL_PHONE) == PackageManager.PERMISSION_GRANTED) {
+                // Permission granted => make the call
+                makeCall(result.getInternationalPhoneNumber());
+            } else {
+                // Ask for permission
+                ActivityCompat.requestPermissions(DetailActivity.this, new String[]{Manifest.permission.CALL_PHONE}, PERMISSION_CODE);
             }
-        });
+        }
+    });
+}
+
+    private void makeCall(String phoneNumber) {
+        Intent callIntent = new Intent(Intent.ACTION_CALL);
+        callIntent.setData(Uri.parse("tel:" + phoneNumber));
+        startActivity(callIntent);
     }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
         if (requestCode == PERMISSION_CODE) {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                permissionGranted = true;
-                String phoneNumber = mResult.getInternationalPhoneNumber();
-                Intent callIntent = new Intent(Intent.ACTION_CALL);
-                callIntent.setData(Uri.parse("tel:" + phoneNumber));
-                startActivity(callIntent);
+                makeCall(mResult.getInternationalPhoneNumber());
+            } else {
+                Toast.makeText(this, "Call permission denied", Toast.LENGTH_SHORT).show();
             }
         }
     }
+
 
     private void setOnClickOnWebsiteButton(Result result) {
         mBinding.websiteButton.setOnClickListener(new View.OnClickListener() {
