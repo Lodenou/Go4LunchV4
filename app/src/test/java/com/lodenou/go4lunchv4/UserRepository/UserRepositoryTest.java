@@ -1,4 +1,4 @@
-package com.lodenou.go4lunchv4;
+package com.lodenou.go4lunchv4.UserRepository;
 
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.mock;

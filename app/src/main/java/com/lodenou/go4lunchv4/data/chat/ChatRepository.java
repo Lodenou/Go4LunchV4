@@ -104,10 +104,7 @@ public void createNewMessage(String message){
             }
         }
     });
-
-
 }
-
 
     @Nullable
     public FirebaseUser getCurrentUser() {

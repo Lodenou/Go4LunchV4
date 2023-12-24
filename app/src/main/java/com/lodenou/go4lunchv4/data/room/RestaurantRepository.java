@@ -71,10 +71,9 @@ public class RestaurantRepository implements IRestaurantRepository {
         //  UserCallData injection
         this.userCallData = userCallData;
         this.idUser = idUser;
-
     }
 
-    // Room
+
     public MutableLiveData<User> getUser() {
 
         userCallData.getUser(idUser).addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
@@ -87,6 +86,7 @@ public class RestaurantRepository implements IRestaurantRepository {
         return dataUser;
     }
 
+    // Room
     public LiveData<Restaurant> getRestaurantById(String restaurantId){
       mRestaurantLiveData =  mRestaurantDao.getRestaurantById(restaurantId);
       return mRestaurantLiveData;

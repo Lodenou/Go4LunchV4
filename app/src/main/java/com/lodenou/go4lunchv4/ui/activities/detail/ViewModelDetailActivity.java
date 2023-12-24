@@ -31,13 +31,17 @@ public class ViewModelDetailActivity extends ViewModel {
                 && mMutableLiveDataBooleanFab != null && mMutableLiveDataUser != null){
             return;
         }
+        // Here we get info to inject in repository to avoid data calls in repository, tests purpose
         FirebaseFirestore firebaseFirestore = FirebaseFirestore.getInstance();
         String idUser = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        String userName = FirebaseAuth.getInstance().getCurrentUser().getDisplayName();
+        String userPhotoUrl = FirebaseAuth.getInstance().getCurrentUser().getPhotoUrl().toString();
+        String userEmail = FirebaseAuth.getInstance().getCurrentUser().getEmail();
         UserCallData userCallData = new UserCallData(firebaseFirestore);
-
         mMutableLiveDataRestaurantDetail = new MutableLiveData<>();
+        detailRepository = DetailRepository.getInstance(userCallData, idUser, userName, userPhotoUrl,
+                userEmail, mMutableLiveDataRestaurantDetail);
 
-        detailRepository = DetailRepository.getInstance(userCallData, idUser, mMutableLiveDataRestaurantDetail);
         mMutableLiveDataRestaurantDetail = detailRepository.getRestaurantDetails(restaurantId);
         mMutableLiveDataUsers = detailRepository.getUsersEatingHere(restaurantId);
         mMutableLiveDataBooleanFab = detailRepository.isCurrentUserHasChosenThisRestaurant(restaurantId);

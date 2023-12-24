@@ -38,6 +38,6 @@ public class GetRestaurantDetailsTest {
         RxAndroidPlugins.setInitMainThreadSchedulerHandler(scheduler -> Schedulers.trampoline());
 
         MutableLiveData<com.lodenou.go4lunchv4.model.detail.Result> mockDataDetail = new MutableLiveData<>();
-        detailRepository = DetailRepository.getInstance(userCallData, "userUid", mockDataDetail);
+        detailRepository = DetailRepository.getInstance(userCallData, "userUid","username", "userPhotoUrl", "UserEmail", mockDataDetail);
     }
 }

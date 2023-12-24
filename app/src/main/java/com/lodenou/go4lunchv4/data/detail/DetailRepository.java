@@ -59,18 +59,28 @@ public class DetailRepository implements IDetailRepository {
 
     private String idUser;
 
+    private String userName;
+    private String userPhotoUrl;
+    private String userEmail;
+
+
     // Constructor for injection
-    private DetailRepository(UserCallData userCallData, String idUser, MutableLiveData<com.lodenou.go4lunchv4.model.detail.Result> data) {
+    private DetailRepository(UserCallData userCallData, String idUser,String userName,String userPhotoUrl,String userEmail,
+                             MutableLiveData<com.lodenou.go4lunchv4.model.detail.Result> data) {
         this.userCallData = userCallData;
         this.idUser = idUser;
         this.dataDetail = data;
+        this.userName = userName;
+        this.userPhotoUrl = userPhotoUrl;
+        this.userEmail = userEmail;
     }
     // Singleton model with injection
-    public static synchronized DetailRepository getInstance(UserCallData userCallData,  String idUser,
+    public static synchronized DetailRepository getInstance(UserCallData userCallData,  String idUser, String userName,
+                                                            String userPhotoUrl,String userEmail,
                                                             MutableLiveData<com.lodenou.go4lunchv4.
                                                                     model.detail.Result> dataDetail) {
         if (instance == null) {
-            instance = new DetailRepository(userCallData, idUser, dataDetail);
+            instance = new DetailRepository(userCallData, idUser,userName, userPhotoUrl, userEmail, dataDetail);
         }
         return instance;
     }
@@ -201,11 +211,9 @@ public class DetailRepository implements IDetailRepository {
     }
 
     public void updateUserList() {
-        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
-        User currentUserMapped = new User(currentUser.getUid(), currentUser.getDisplayName(), currentUser
-                .getPhotoUrl().toString(), currentUser.getEmail(), "", "", "");
+        User currentUserMapped = new User(idUser, userName, userPhotoUrl, userEmail, "", "", "");
         DocumentReference docRef = userCallData.getAllUsers().getFirestore().collection("users")
-                .document(currentUser.getUid());
+                .document(idUser);
         docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
             public void onComplete(@NonNull Task<DocumentSnapshot> task) {
@@ -235,8 +243,7 @@ public class DetailRepository implements IDetailRepository {
 
 
     public void isRestaurantChosen(String restaurantId) {
-        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
-        DocumentReference docRef = userCallData.getAllUsers().getFirestore().collection("users").document(currentUser.getUid());
+        DocumentReference docRef = userCallData.getAllUsers().getFirestore().collection("users").document(idUser);
         docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
             public void onComplete(@NonNull Task<DocumentSnapshot> task) {
@@ -256,11 +263,10 @@ public class DetailRepository implements IDetailRepository {
     }
 
     public void addUserFavoriteToDatabase(String restaurantId) {
-        if (FirebaseAuth.getInstance().getCurrentUser() != null) {
+        if (idUser != null) {
             Map<String, Object> favoriteRestaurant = new HashMap<>();
             favoriteRestaurant.put("favoritesRestaurant", restaurantId);
-            FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
-            DocumentReference docRef = userCallData.getAllUsers().getFirestore().collection("users").document(firebaseUser.getUid());
+            DocumentReference docRef = userCallData.getAllUsers().getFirestore().collection("users").document(idUser);
             docRef.set(favoriteRestaurant, SetOptions.merge()).addOnCompleteListener(new OnCompleteListener<Void>() {
                 @Override
                 public void onComplete(@NonNull Task<Void> task) {
@@ -276,11 +282,10 @@ public class DetailRepository implements IDetailRepository {
     }
 
     public void removeUserFavoriteFromDatabase() {
-        if (FirebaseAuth.getInstance().getCurrentUser() != null) {
+        if (idUser != null) {
             Map<String, Object> favoriteRestaurant = new HashMap<>();
             favoriteRestaurant.put("favoritesRestaurant", "");
-            FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
-            DocumentReference docRef = userCallData.getAllUsers().getFirestore().collection("users").document(firebaseUser.getUid());
+            DocumentReference docRef = userCallData.getAllUsers().getFirestore().collection("users").document(idUser);
             docRef.set(favoriteRestaurant, SetOptions.merge()).addOnCompleteListener(new OnCompleteListener<Void>() {
                 @Override
                 public void onComplete(@NonNull Task<Void> task) {
@@ -306,7 +311,6 @@ public class DetailRepository implements IDetailRepository {
 
     public MutableLiveData<List<String>> getListOfColleaguesWhoEatWithCurrentUser(String restaurantId) {
         datasetColleagues.clear();
-        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
         userCallData.getAllUsers().get()
                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                     @Override
@@ -317,7 +321,7 @@ public class DetailRepository implements IDetailRepository {
                                 User mUser = document.toObject(User.class);
                                 // if resto id != provided && user != current user to avoid adding current user to the list
                                 if (Objects.equals(mUser.getRestaurantChosenId(), restaurantId) &&
-                                        !Objects.equals(mUser.getUid(), Objects.requireNonNull(currentUser).getUid())) {
+                                        !Objects.equals(mUser.getUid(), Objects.requireNonNull(idUser))) {
                                     datasetColleagues.add(mUser.getUserName());
                                     Log.d("123", "onComplete: user add to recyclerView ");
                                 }

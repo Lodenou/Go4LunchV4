@@ -104,6 +104,7 @@ public class RemoveUserChoiceFromDatabaseTest {
         when(mockDocumentReference.set(eq(emptyChoice), any(SetOptions.class))).thenReturn(mockSetTask);
 
         MutableLiveData<Result> mockDataDetail = new MutableLiveData<>();
-        detailRepository = DetailRepository.getInstance(userCallData, "userUid", mockDataDetail);
+        detailRepository = DetailRepository.getInstance(userCallData, "userUid","username",
+                "userPhotoUrl", "UserEmail", mockDataDetail);
     }
 }

@@ -88,7 +88,8 @@ public class IsCurrentUserHasChosenThisRestaurantTest {
         when(mockUserCallResult.getFirestore()).thenReturn(mockFirebaseFirestore);
 
         MutableLiveData<Result> mockDataDetail = new MutableLiveData<>();
-        detailRepository = DetailRepository.getInstance(userCallData, "userUid", mockDataDetail);
+        detailRepository = DetailRepository.getInstance(userCallData, "userUid","username",
+                "userPhotoUrl", "UserEmail", mockDataDetail);
 
         // Mocks setup DocumentSnapshot / DocumentReference
         String restaurantId = "restaurantId";
