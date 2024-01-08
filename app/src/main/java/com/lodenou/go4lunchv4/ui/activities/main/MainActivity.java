@@ -64,7 +64,6 @@ public class MainActivity extends AppCompatActivity {
     Boolean bool;
     User mUser;
     private static final String PREFS_NAME = "MyPrefsFile";
-    private static final String PREFS_IS_FIRST_LAUNCH = "isFirstLaunch";
     SharedPreferences.Editor editor;
 
     @Override
@@ -83,7 +82,6 @@ public class MainActivity extends AppCompatActivity {
         initViewModel();
         setNavigationView();
         observeGetUser();
-
     }
 
     @Override
@@ -147,7 +145,8 @@ public class MainActivity extends AppCompatActivity {
     // 2 - Configure Drawer Layout
     private void setDrawerLayout() {
         this.drawerLayout = mBinding.activityMainDrawerLayout;
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar,
+                R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         toggle.getDrawerArrowDrawable().setColor(getResources().getColor(R.color.white));
         drawerLayout.addDrawerListener(toggle);
         toggle.syncState();
@@ -164,7 +163,6 @@ public class MainActivity extends AppCompatActivity {
                 switch (id) {
                     case R.id.nav_yourlunch:
                         clickYourLunch();
-//                        mViewModelMainActivity.fetchUser();
                         break;
                     case R.id.nav_settings:
                         Intent intent = new Intent(MainActivity.this, SettingsActivity.class);
@@ -190,26 +188,10 @@ public class MainActivity extends AppCompatActivity {
         mViewModelMainActivity.init();
     }
 
-    private void fetchAllRestaurants(){
-        // get SharedPreferences
-        SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
-        boolean isFirstLaunch = settings.getBoolean(PREFS_IS_FIRST_LAUNCH, true);
-        if (isFirstLaunch) {
-            mViewModelMainActivity.fetchAllRestaurants(getTask(), getPermission(), getApplicationContext());
-            // This is the first launch of the application
-            // Save that it's no longer the first launch of the application
-            SharedPreferences.Editor editor = settings.edit();
-            editor.putBoolean(PREFS_IS_FIRST_LAUNCH, false);
-            editor.apply();
-    }
-    }
-
 
     @Override
     public void onDestroy() {
         super.onDestroy();
-        //FIXME the logout actually cause pb with the phone rotation, the app goes to the connexion at each rotation.
-        logOut();
         // Delete restaurants from db to avoid getting wrong restaurant list if the user change his location
         mViewModelMainActivity.deleteAllRestaurants();
     }
@@ -289,28 +271,5 @@ public class MainActivity extends AppCompatActivity {
         Intent intent = new Intent(MainActivity.this, ConnexionActivity.class);
         finish();
         startActivity(intent);
-    }
-
-
-    private Boolean getPermission() {
-
-        Boolean isPermission = ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_FINE_LOCATION) !=
-                PackageManager.PERMISSION_GRANTED
-                && ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_COARSE_LOCATION) !=
-                PackageManager.PERMISSION_GRANTED;
-
-        Boolean isPermissionOk = !(isPermission);
-        return isPermissionOk;
-    }
-
-    private Task getTask() {
-        FusedLocationProviderClient fusedLocationProviderClient = LocationServices
-                .getFusedLocationProviderClient(getApplicationContext());
-
-        if (ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_FINE_LOCATION)
-                != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getApplicationContext(),
-                Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-        }
-        return fusedLocationProviderClient.getLastLocation();
     }
 }

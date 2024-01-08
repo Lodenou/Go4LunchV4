@@ -15,7 +15,7 @@
     <string name="hello_first_fragment">Hello first fragment</string>
     <string name="hello_second_fragment">Hello second fragment. Arg: %1$s</string>
 
-    <string name="requestidtoken">538588114262-laoq3qcra2bhl7cg6temqgsl8a85dehf.apps.googleusercontent.com</string>
+    <string name="requestidtoken" translatable="false">538588114262-laoq3qcra2bhl7cg6temqgsl8a85dehf.apps.googleusercontent.com</string>
     <string name="allow_notif">Allow notifications</string>
     <string name="settings">Settings</string>
     <string name="yes_toggle">yes</string>
