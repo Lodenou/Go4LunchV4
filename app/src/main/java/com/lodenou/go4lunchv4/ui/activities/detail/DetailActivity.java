@@ -37,9 +37,13 @@ import com.lodenou.go4lunchv4.model.detail.Result;
 import com.lodenou.go4lunchv4.ui.activities.main.ViewModelMainActivity;
 
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 
 public class DetailActivity extends AppCompatActivity {
@@ -95,7 +99,6 @@ public class DetailActivity extends AppCompatActivity {
         });
         // observe the user list eating here & set it to the recycler view
         observeUsersList();
-
         // observe boolean , set click & update the ui with it
         observeIfCurrentUserHasChosenThisRestaurant();
     }
@@ -171,7 +174,6 @@ public class DetailActivity extends AppCompatActivity {
             mViewModelDetailActivity.removeUserChoiceFromDatabase();
             mBinding.fab.setImageResource(R.drawable.ic_baseline_crop_din_24);
         }
-
     }
     // END OF FAB SETTING PART
 private void setOnClickOnCallButton(Result result){
@@ -309,6 +311,7 @@ private void setOnClickOnCallButton(Result result){
         ArrayList<String> colleaguesArray = new ArrayList<>(colleagues);
 
         Intent notificationIntent = new Intent(this, NotificationReceiver.class);
+        notificationIntent.setAction("com.example.notification.NOTIFICATION_ACTION");
         notificationIntent.putExtra("restaurantName", restaurantName);
         notificationIntent.putExtra("restaurantAddress", restaurantAddress);
         notificationIntent.putStringArrayListExtra("colleagues", colleaguesArray);
@@ -319,8 +322,9 @@ private void setOnClickOnCallButton(Result result){
         AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
 
         Calendar notificationTime = Calendar.getInstance();
-        notificationTime.set(Calendar.HOUR_OF_DAY, 12);
-        notificationTime.set(Calendar.MINUTE, 0);
+
+        notificationTime.set(Calendar.HOUR_OF_DAY, 1);
+        notificationTime.set(Calendar.MINUTE, 37);
         notificationTime.set(Calendar.SECOND, 0);
 
         // Check if the Calendar time is in the past
@@ -330,16 +334,19 @@ private void setOnClickOnCallButton(Result result){
         }
 
         long triggerTime = notificationTime.getTimeInMillis();
+        DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
+        String formattedTime = formatter.format(new Date(triggerTime));
 
+        Log.d("123", "Alarm set for: " + formattedTime);
         // Set the alarm to trigger the pending intent at the specified time
         alarmManager.set(AlarmManager.RTC_WAKEUP, triggerTime, pendingIntent);
-
     }
 
     private void getRestaurantDetail(List<String> colleagues) {
         mViewModelDetailActivity.getRestaurantsDetail().observe(this, new Observer<Result>() {
             @Override
             public void onChanged(Result result) {
+                Log.d("123", "JJJJJJJJJJJJJ " + result.getName() + result.getVicinity());
                 setNotifications(result.getName(), result.getVicinity(), colleagues);
             }
         });

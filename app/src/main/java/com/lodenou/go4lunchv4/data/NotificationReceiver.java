@@ -60,6 +60,7 @@ public class NotificationReceiver extends BroadcastReceiver {
                 NotificationManagerCompat notificationManager = NotificationManagerCompat.from(context);
                 notificationManager.notify(notificationId, builder.build());
             }
+            // When we already post notification, delete it to avoid repetitions
             AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
 
             Intent notificationIntent = new Intent(context, NotificationReceiver.class);
