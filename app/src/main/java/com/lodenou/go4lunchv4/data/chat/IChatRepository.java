@@ -16,5 +16,4 @@ public interface IChatRepository {
 
     void createNewMessage(String message);
 
-    FirebaseUser getCurrentUser();
 }

@@ -4,7 +4,9 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.lodenou.go4lunchv4.data.chat.ChatCallData;
 import com.lodenou.go4lunchv4.data.chat.ChatRepository;
 import com.lodenou.go4lunchv4.data.detail.DetailRepository;
 import com.lodenou.go4lunchv4.data.user.UserCallData;
@@ -23,7 +25,9 @@ public class ViewModelChat extends ViewModel {
         }
         FirebaseFirestore firebaseFirestore = FirebaseFirestore.getInstance();
         UserCallData userCallData = new UserCallData(firebaseFirestore);
-        mChatRepository = new ChatRepository(userCallData);
+        ChatCallData chatCallData = new ChatCallData(firebaseFirestore);
+        String idUser = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        mChatRepository = new ChatRepository(userCallData,chatCallData, idUser);
         mQueryLiveData = mChatRepository.getAllMessageForChat();
     }
 

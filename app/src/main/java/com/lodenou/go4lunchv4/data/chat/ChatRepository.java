@@ -32,19 +32,21 @@ public class ChatRepository implements IChatRepository {
     MutableLiveData<User> dataUser = new MutableLiveData<>();
     User mUser;
     Message message;
-
-
+    private final ChatCallData chatCallData;
+    private String idUser;
 
     private UserCallData userCallData;
 
     // Constructor for injection
-    public ChatRepository(UserCallData userCallData) {
+    public ChatRepository(UserCallData userCallData, ChatCallData chatCallData, String idUser) {
         this.userCallData = userCallData;
+        this.chatCallData = chatCallData;
+        this.idUser = idUser;
     }
 
     public MutableLiveData<List<Message>> getAllMessageForChat() {
 
-        ChatCallData.getAllMessages().get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+        chatCallData.getAllMessages().get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
             @Override
             public void onComplete(@NonNull Task<QuerySnapshot> task) {
                 if (task.isSuccessful()) {
@@ -56,7 +58,7 @@ public class ChatRepository implements IChatRepository {
                             mDatasetMessages.add(message);
                         }
                     }
-                        dataMessages.setValue(mDatasetMessages);
+                    dataMessages.setValue(mDatasetMessages);
                 }
             }
         });
@@ -64,8 +66,7 @@ public class ChatRepository implements IChatRepository {
     }
 
     public MutableLiveData<User> getUser() {
-        String userId = Objects.requireNonNull(getCurrentUser()).getUid();
-        userCallData.getUser(userId).addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+        userCallData.getUser(idUser).addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
             public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                 if (task.isSuccessful()) {
@@ -79,32 +80,27 @@ public class ChatRepository implements IChatRepository {
     }
 
 
-public void createNewMessage(String message){
-    Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
-    Date date = calendar.getTime();
+    public void createNewMessage(String message) {
+        Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+        Date date = calendar.getTime();
 
-    String userId = Objects.requireNonNull(getCurrentUser()).getUid();
-    userCallData.getUser(userId).addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-        @Override
-        public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-            if (task.isSuccessful()) {
-                DocumentSnapshot document = task.getResult();
-                mUser = document.toObject(User.class);
-                dataUser.setValue(mUser);
-                ChatCallData.getMessagesCollection().add(new Message(message,mUser, date)).addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
-                    @Override
-                    public void onSuccess(DocumentReference documentReference) {
-                        getAllMessageForChat();
-                        Log.d("123", "DocumentSnapshot added with ID: " + documentReference.getId());
-                    }
-                });
+
+        userCallData.getUser(idUser).addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                if (task.isSuccessful()) {
+                    DocumentSnapshot document = task.getResult();
+                    mUser = document.toObject(User.class);
+                    dataUser.setValue(mUser);
+                    chatCallData.getMessagesCollection().add(new Message(message, mUser, date)).addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+                        @Override
+                        public void onSuccess(DocumentReference documentReference) {
+                            getAllMessageForChat();
+                            Log.d("123", "DocumentSnapshot added with ID: " + documentReference.getId());
+                        }
+                    });
+                }
             }
-        }
-    });
-}
-
-    @Nullable
-    public FirebaseUser getCurrentUser() {
-        return FirebaseAuth.getInstance().getCurrentUser();
+        });
     }
 }
