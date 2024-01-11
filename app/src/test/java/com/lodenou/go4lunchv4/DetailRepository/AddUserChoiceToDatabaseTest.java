@@ -42,10 +42,6 @@ public class AddUserChoiceToDatabaseTest {
     @Mock
     private UserCallData userCallData;
     @Mock
-    private FirebaseAuth mockFirebaseAuth;
-    @Mock
-    private FirebaseUser mockFirebaseUser;
-    @Mock
     private FirebaseFirestore mockFirebaseFirestore;
     @Mock
     private CollectionReference mockCollectionReference;
@@ -71,10 +67,6 @@ public class AddUserChoiceToDatabaseTest {
                     .build();
             FirebaseApp.initializeApp(context, options);
         }
-
-        // Mocks setup FirebaseAuth / FirebaseUser
-//        when(mockFirebaseAuth.getCurrentUser()).thenReturn(mockFirebaseUser);
-//        when(mockFirebaseUser.getUid()).thenReturn("userUid");
 
         // Mocks setup FirebaseFirestore
         when(mockFirebaseFirestore.collection(anyString())).thenReturn(mockCollectionReference);
