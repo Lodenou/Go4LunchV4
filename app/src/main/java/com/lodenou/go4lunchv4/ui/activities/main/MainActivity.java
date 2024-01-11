@@ -78,7 +78,7 @@ public class MainActivity extends AppCompatActivity {
         setToolBar();
         setDrawerLayout();
         setNavigationViewClickListener();
-        resetSharePref();
+//        resetSharePref();
         initViewModel();
         setNavigationView();
         observeGetUser();
@@ -94,12 +94,12 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void resetSharePref(){
-        SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
-         editor = settings.edit();
-        editor.clear();
-        editor.apply();
-    }
+//    private void resetSharePref(){
+//        SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
+//         editor = settings.edit();
+//        editor.clear();
+//        editor.apply();
+//    }
 
 
     // restart connexion activity if the user isn't connected

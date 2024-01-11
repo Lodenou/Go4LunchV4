@@ -60,7 +60,6 @@ public class ConnexionRepository implements IConnexionRepository {
             final String username = this.getCurrentUser().getDisplayName();
             final String uid = this.getCurrentUser().getUid();
             final String email = this.getCurrentUser().getEmail();
-
             userCallData.getUser(uid).addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                 @Override
                 public void onSuccess(DocumentSnapshot documentSnapshot) {

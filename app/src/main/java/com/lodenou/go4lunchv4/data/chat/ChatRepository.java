@@ -27,11 +27,9 @@ import java.util.Objects;
 import java.util.TimeZone;
 
 public class ChatRepository implements IChatRepository {
-    private static ChatRepository instance;
     private MutableLiveData<List<Message>> dataMessages = new MutableLiveData<>();
     private ArrayList<Message> mDatasetMessages = new ArrayList<>();
     MutableLiveData<User> dataUser = new MutableLiveData<>();
-    MutableLiveData<Message> dataMessage = new MutableLiveData<>();
     User mUser;
     Message message;
 
@@ -59,7 +57,6 @@ public class ChatRepository implements IChatRepository {
                         }
                     }
                         dataMessages.setValue(mDatasetMessages);
-
                 }
             }
         });
