@@ -19,17 +19,19 @@ import java.util.Objects;
 
 public class ConnexionRepository implements IConnexionRepository {
 
-    private FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
     User mUser;
 
+    private FirebaseAuth firebaseAuth;
     private UserCallData userCallData;
 
     // Constructor for injection
-    public ConnexionRepository(UserCallData userCallData) {
+    public ConnexionRepository(UserCallData userCallData, FirebaseAuth firebaseAuth) {
         this.userCallData = userCallData;
+        this.firebaseAuth = firebaseAuth;
     }
 
     public MutableLiveData<User> firebaseSignInWithGoogle(AuthCredential googleAuthCredential) {
+//        FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
         MutableLiveData<User> authenticatedUserMutableLiveData = new MutableLiveData<>();
         firebaseAuth.signInWithCredential(googleAuthCredential).addOnCompleteListener(authTask -> {
             if (authTask.isSuccessful()) {
@@ -51,7 +53,8 @@ public class ConnexionRepository implements IConnexionRepository {
 
     @Nullable
     public FirebaseUser getCurrentUser() {
-        return FirebaseAuth.getInstance().getCurrentUser();
+//        return FirebaseAuth.getInstance().getCurrentUser();
+        return firebaseAuth.getCurrentUser();
     }
 
     public void createUserInFirestoreIfNotExists() {
