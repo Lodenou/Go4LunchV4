@@ -68,23 +68,21 @@ public class ConnexionRepositoryTest {
         when(mockAuthResultTask.isSuccessful()).thenReturn(true);
         when(mockFirebaseAuth.getCurrentUser()).thenReturn(mockFirebaseUser);
 
-        // Configurez les détails de l'utilisateur mocké
+        // Set up user
         when(mockFirebaseUser.getUid()).thenReturn("uid");
         when(mockFirebaseUser.getDisplayName()).thenReturn("name");
         when(mockFirebaseUser.getPhotoUrl()).thenReturn(Uri.parse("https://photo.url"));
         when(mockFirebaseUser.getEmail()).thenReturn("email@example.com");
 
-        // Appeler firebaseSignInWithGoogle
         MutableLiveData<User> result = connexionRepository.firebaseSignInWithGoogle(mockGoogleAuthCredential);
 
-        // Simuler le déclenchement du callback onComplete
+        // Simulate onComplete
         when(mockAuthResultTask.addOnCompleteListener(any())).thenAnswer(invocation -> {
             OnCompleteListener<AuthResult> listener = invocation.getArgument(0);
             listener.onComplete(mockAuthResultTask);
             return null;
         });
 
-        // Vérifier que l'utilisateur authentifié est retourné
         result.observeForever(user -> {
             assertNotNull(user);
             assertEquals("uid", user.getUid());
@@ -93,7 +91,7 @@ public class ConnexionRepositoryTest {
             assertEquals("email@example.com", user.getUserEmail());
         });
 
-        // Vérifiez les interactions avec FirebaseAuth
+
         verify(mockFirebaseAuth).signInWithCredential(mockGoogleAuthCredential);
         verify(mockAuthResultTask).addOnCompleteListener(any());
     }
@@ -108,14 +106,14 @@ public class ConnexionRepositoryTest {
         DocumentSnapshot mockDocumentSnapshot = mock(DocumentSnapshot.class);
         Task<Void> mockVoidTask = mock(Task.class);
 
-        // Configuration des mocks Firebase Auth
+        // set up firebase auth
         when(mockFirebaseAuth.getCurrentUser()).thenReturn(mockFirebaseUser);
         when(mockFirebaseUser.getUid()).thenReturn("uid");
         when(mockFirebaseUser.getDisplayName()).thenReturn("username");
         when(mockFirebaseUser.getPhotoUrl()).thenReturn(Uri.parse("https://photo.url"));
         when(mockFirebaseUser.getEmail()).thenReturn("email@example.com");
 
-        // Configuration de UserCallData
+        // Set up usercalldata
         when(mockUserCallData.getUser(anyString())).thenReturn(mockDocumentSnapshotTask);
         when(mockDocumentSnapshotTask.isSuccessful()).thenReturn(true);
         when(mockDocumentSnapshotTask.getResult()).thenReturn(mockDocumentSnapshot);
@@ -124,7 +122,7 @@ public class ConnexionRepositoryTest {
         when(mockUserCallData.createUser(anyString(), anyString(), anyString(), anyString(),
                 anyString(), anyString(), anyString())).thenReturn(mockVoidTask);
 
-        // Configuration des callbacks
+        // Set up callbacks
         when(mockDocumentSnapshotTask.addOnSuccessListener(any())).thenAnswer(invocation -> {
             OnSuccessListener<DocumentSnapshot> listener = invocation.getArgument(0);
             listener.onSuccess(mockDocumentSnapshot);
@@ -136,13 +134,9 @@ public class ConnexionRepositoryTest {
             return null;
         });
 
-        // Création de ConnexionRepository
         ConnexionRepository connexionRepository = new ConnexionRepository(mockUserCallData, mockFirebaseAuth);
-
-        // Appeler createUserInFirestoreIfNotExists
         connexionRepository.createUserInFirestoreIfNotExists();
 
-        // Vérification des interactions avec UserCallData
         verify(mockUserCallData).getUser("uid");
         verify(mockUserCallData).createUser(eq("uid"), eq("username"),
                 eq("https://photo.url"), eq("email@example.com"), eq(" "),

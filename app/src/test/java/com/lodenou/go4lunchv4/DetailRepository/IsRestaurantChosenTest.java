@@ -48,10 +48,6 @@ public class IsRestaurantChosenTest {
     @Mock
     private UserCallData userCallData;
     @Mock
-    private FirebaseAuth mockFirebaseAuth;
-    @Mock
-    private FirebaseUser mockFirebaseUser;
-    @Mock
     private FirebaseFirestore mockFirebaseFirestore;
     @Mock
     private CollectionReference mockCollectionReference;
@@ -63,7 +59,7 @@ public class IsRestaurantChosenTest {
     private DocumentSnapshot mockDocumentSnapshot;
 
     private DetailRepository detailRepository;
-    private MutableLiveData<Boolean> dataCurrent;
+
 
 
     @Before

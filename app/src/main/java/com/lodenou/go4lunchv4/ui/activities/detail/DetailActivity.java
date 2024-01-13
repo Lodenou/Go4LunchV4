@@ -72,7 +72,6 @@ public class DetailActivity extends AppCompatActivity {
         addUserToNotificationsCalls();
     }
 
-
     private String getRestaurantId() {
         Bundle extras = getIntent().getExtras();
         return extras.getString("idrestaurant");
@@ -180,12 +179,14 @@ private void setOnClickOnCallButton(Result result){
     mBinding.callButton.setOnClickListener(new View.OnClickListener() {
         @Override
         public void onClick(View view) {
-            if (ContextCompat.checkSelfPermission(DetailActivity.this, Manifest.permission.CALL_PHONE) == PackageManager.PERMISSION_GRANTED) {
+            if (ContextCompat.checkSelfPermission(DetailActivity.this,
+                    Manifest.permission.CALL_PHONE) == PackageManager.PERMISSION_GRANTED) {
                 // Permission granted => make the call
                 makeCall(result.getInternationalPhoneNumber());
             } else {
                 // Ask for permission
-                ActivityCompat.requestPermissions(DetailActivity.this, new String[]{Manifest.permission.CALL_PHONE}, PERMISSION_CODE);
+                ActivityCompat.requestPermissions(DetailActivity.this, new String[]
+                        {Manifest.permission.CALL_PHONE}, PERMISSION_CODE);
             }
         }
     });
@@ -198,7 +199,8 @@ private void setOnClickOnCallButton(Result result){
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
+                                           @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
 
         if (requestCode == PERMISSION_CODE) {
@@ -227,27 +229,29 @@ private void setOnClickOnCallButton(Result result){
     // FAVORITE BUTTON PART
     private void getUser() {
         String userId = Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getUid();
+        Log.d("connected user", "getUser: "+ userId);
         mViewModelDetailActivity.getUser(userId).observe(this, new Observer<User>() {
             @Override
             public void onChanged(User user) {
-                setOnClickFavoriteButton(user);
+                setOnClickFavoriteButton();
                 setUserFavStarUi(user);
             }
         });
     }
 
-    private void setOnClickFavoriteButton(User user) {
+    private void setOnClickFavoriteButton() {
         mBinding.starButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                isUserFav(user);
+                isUserFav();
             }
         });
     }
 
-    private void isUserFav(User user) {
+    private void isUserFav() {
         // We need a boolean which uses data from repository to get the update version of user.getFavoriteRestaurant()
-        mViewModelDetailActivity.isRestaurantEgalToUserFavorite(getRestaurantId()).observe(this, new Observer<Boolean>() {
+        mViewModelDetailActivity.isRestaurantEgalToUserFavorite(getRestaurantId())
+                .observe(this, new Observer<Boolean>() {
             @Override
             public void onChanged(Boolean aBoolean) {
                 if (aBoolean) {
@@ -269,6 +273,7 @@ private void setOnClickOnCallButton(Result result){
             mBinding.imageStar.setVisibility(View.INVISIBLE);
         }
     }
+
     // END OF FAVORITE BUTTON PART
 
 
@@ -323,8 +328,8 @@ private void setOnClickOnCallButton(Result result){
 
         Calendar notificationTime = Calendar.getInstance();
 
-        notificationTime.set(Calendar.HOUR_OF_DAY, 1);
-        notificationTime.set(Calendar.MINUTE, 37);
+        notificationTime.set(Calendar.HOUR_OF_DAY, 0);
+        notificationTime.set(Calendar.MINUTE, 45);
         notificationTime.set(Calendar.SECOND, 0);
 
         // Check if the Calendar time is in the past
@@ -346,7 +351,7 @@ private void setOnClickOnCallButton(Result result){
         mViewModelDetailActivity.getRestaurantsDetail().observe(this, new Observer<Result>() {
             @Override
             public void onChanged(Result result) {
-                Log.d("123", "JJJJJJJJJJJJJ " + result.getName() + result.getVicinity());
+                Log.d("123", "on changed restaurant detail set notification " + result.getName() + result.getVicinity());
                 setNotifications(result.getName(), result.getVicinity(), colleagues);
             }
         });

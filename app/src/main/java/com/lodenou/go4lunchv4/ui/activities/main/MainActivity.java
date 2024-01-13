@@ -38,6 +38,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.lodenou.go4lunchv4.R;
+import com.lodenou.go4lunchv4.data.detail.DetailRepository;
 import com.lodenou.go4lunchv4.data.room.RestaurantRoomDatabase;
 import com.lodenou.go4lunchv4.data.user.UserCallData;
 import com.lodenou.go4lunchv4.data.user.UserRepository;
@@ -89,6 +90,9 @@ public class MainActivity extends AppCompatActivity {
         super.onStart();
         // Check if user is signed in (non-null) and update UI accordingly.
         FirebaseUser currentUser = mAuth.getCurrentUser();
+        if (currentUser != null){
+            Log.d("connected user", "onStart: you are auth with "+currentUser.getEmail());
+        }
         if (currentUser == null) {
             reload();
         }
@@ -258,19 +262,22 @@ public class MainActivity extends AppCompatActivity {
                 .into(mUserPhoto);
     }
 
-    private void logOut() {
+private void logOut() {
+    // FIREBASE LOGOUT
+    FirebaseAuth.getInstance().signOut();
 
-        // FIREBASE LOGOUT
-        FirebaseAuth.getInstance().signOut();
-        // GOOGLE LOGOUT
-        GoogleSignInOptions gso = new GoogleSignInOptions.
-                Builder(GoogleSignInOptions.DEFAULT_SIGN_IN).
-                build();
+    // GOOGLE LOGOUT
+    GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN).build();
+    GoogleSignInClient googleSignInClient = GoogleSignIn.getClient(MainActivity.this, gso);
+    googleSignInClient.signOut();
 
-        GoogleSignInClient googleSignInClient = GoogleSignIn.getClient(MainActivity.this, gso);
-        googleSignInClient.signOut();
-        Intent intent = new Intent(MainActivity.this, ConnexionActivity.class);
-        finish();
-        startActivity(intent);
-    }
+    Intent intent = new Intent(MainActivity.this, ConnexionActivity.class);
+
+    // To avoid unwanted behavior from singleton variables like idUser in detail activity
+    DetailRepository.resetInstance();
+
+    finish();
+
+    startActivity(intent);
+}
 }

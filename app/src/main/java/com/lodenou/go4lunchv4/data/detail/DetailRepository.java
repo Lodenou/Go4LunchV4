@@ -65,7 +65,7 @@ public class DetailRepository implements IDetailRepository {
 
 
     // Constructor for injection
-    private DetailRepository(UserCallData userCallData, String idUser,String userName,String userPhotoUrl,String userEmail,
+    private DetailRepository(UserCallData userCallData, String idUser, String userName, String userPhotoUrl, String userEmail,
                              MutableLiveData<com.lodenou.go4lunchv4.model.detail.Result> data) {
         this.userCallData = userCallData;
         this.idUser = idUser;
@@ -74,15 +74,21 @@ public class DetailRepository implements IDetailRepository {
         this.userPhotoUrl = userPhotoUrl;
         this.userEmail = userEmail;
     }
-    // Singleton model with injection
-    public static synchronized DetailRepository getInstance(UserCallData userCallData,  String idUser, String userName,
-                                                            String userPhotoUrl,String userEmail,
+
+    // Singleton model with injection used for ROOM
+    public static synchronized DetailRepository getInstance(UserCallData userCallData, String idUser, String userName,
+                                                            String userPhotoUrl, String userEmail,
                                                             MutableLiveData<com.lodenou.go4lunchv4.
                                                                     model.detail.Result> dataDetail) {
         if (instance == null) {
-            instance = new DetailRepository(userCallData, idUser,userName, userPhotoUrl, userEmail, dataDetail);
+            instance = new DetailRepository(userCallData, idUser, userName, userPhotoUrl, userEmail, dataDetail);
         }
         return instance;
+    }
+
+    // To reset idUser and avoid unwanted behaviors
+    public static void resetInstance() {
+        instance = null;
     }
 
     public MutableLiveData<com.lodenou.go4lunchv4.model.detail.Result> getRestaurantDetails(String restaurantId) {
@@ -115,6 +121,7 @@ public class DetailRepository implements IDetailRepository {
     }
 
     public MutableLiveData<User> getUser() {
+
         userCallData.getUser(idUser).addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
             @Override
             public void onSuccess(DocumentSnapshot documentSnapshot) {
@@ -138,19 +145,20 @@ public class DetailRepository implements IDetailRepository {
                         mUser = document.toObject(User.class);
                         if (Objects.equals(mUser.getRestaurantChosenId(), restaurantId)) {
                             datasetUsers.add(mUser);
-                            Log.d("123", "onComplete: user add to recyclerView ");
-                        }
-                    }
-                    dataUsers.setValue(datasetUsers);
-                }
-            }
-        });
-        return dataUsers;
+                                     Log.d("123", "onComplete: user add to recyclerView ");
+        }
     }
+                    dataUsers.setValue(datasetUsers);
+}
+            }
+                    });
+                    return dataUsers;
+                    }
 
 
-    public void addUserChoiceToDatabase(String restaurantId) {
+public void addUserChoiceToDatabase(String restaurantId) {
         if (idUser != null) {
+
             String restaurantName = Objects.requireNonNull(dataDetail.getValue()).getName();
 
             Map<String, Object> chosenRestaurant = new HashMap<>();
@@ -338,7 +346,6 @@ public class DetailRepository implements IDetailRepository {
                 });
         return dataColleagues;
     }
-
 
 
 }

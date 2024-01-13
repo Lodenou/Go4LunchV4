@@ -31,7 +31,6 @@ public class ConnexionRepository implements IConnexionRepository {
     }
 
     public MutableLiveData<User> firebaseSignInWithGoogle(AuthCredential googleAuthCredential) {
-//        FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
         MutableLiveData<User> authenticatedUserMutableLiveData = new MutableLiveData<>();
         firebaseAuth.signInWithCredential(googleAuthCredential).addOnCompleteListener(authTask -> {
             if (authTask.isSuccessful()) {
@@ -53,7 +52,6 @@ public class ConnexionRepository implements IConnexionRepository {
 
     @Nullable
     public FirebaseUser getCurrentUser() {
-//        return FirebaseAuth.getInstance().getCurrentUser();
         return firebaseAuth.getCurrentUser();
     }
 
