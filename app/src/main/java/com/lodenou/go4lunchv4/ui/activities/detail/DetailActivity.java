@@ -226,10 +226,15 @@ private void setOnClickOnCallButton(Result result){
         mBinding.websiteButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                String website = result.getWebsite();
-                Intent i = new Intent(Intent.ACTION_VIEW);
-                i.setData(Uri.parse(website));
-                startActivity(i);
+                if (result.getWebsite() != null) {
+                    String website = result.getWebsite();
+                    Intent i = new Intent(Intent.ACTION_VIEW);
+                    i.setData(Uri.parse(website));
+                    startActivity(i);
+                }
+                else {
+                    Toast.makeText(getApplicationContext(), "No website available", Toast.LENGTH_LONG).show();
+                }
             }
         });
     }
