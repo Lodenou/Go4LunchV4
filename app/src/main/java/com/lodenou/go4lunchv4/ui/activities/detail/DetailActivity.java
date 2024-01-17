@@ -91,6 +91,9 @@ public class DetailActivity extends AppCompatActivity {
         mViewModelDetailActivity.getRestaurantsDetail().observe(this, new Observer<Result>() {
             @Override
             public void onChanged(Result result) {
+                // phone purpose
+                mResult = result;
+
                 fillWithRestaurantInfo(result);
                 setOnClickOnCallButton(result);
                 setOnClickOnWebsiteButton(result);
@@ -195,8 +198,14 @@ private void setOnClickOnCallButton(Result result){
     private void makeCall(String phoneNumber) {
         Intent callIntent = new Intent(Intent.ACTION_CALL);
         callIntent.setData(Uri.parse("tel:" + phoneNumber));
-        startActivity(callIntent);
+
+        if (callIntent.resolveActivity(getPackageManager()) != null) {
+            startActivity(callIntent);
+        } else {
+            Toast.makeText(this, "No app can handle this action", Toast.LENGTH_SHORT).show();
+        }
     }
+
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
