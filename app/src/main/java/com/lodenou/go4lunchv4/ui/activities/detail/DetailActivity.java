@@ -320,16 +320,17 @@ private void setOnClickOnCallButton(Result result){
         notificationIntent.putExtra("restaurantName", restaurantName);
         notificationIntent.putExtra("restaurantAddress", restaurantAddress);
         notificationIntent.putStringArrayListExtra("colleagues", colleaguesArray);
+
         PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 0, notificationIntent,
-                PendingIntent.FLAG_UPDATE_CURRENT);
+                PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
 
         // Get an instance of the AlarmManager service
         AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
 
         Calendar notificationTime = Calendar.getInstance();
 
-        notificationTime.set(Calendar.HOUR_OF_DAY, 0);
-        notificationTime.set(Calendar.MINUTE, 45);
+        notificationTime.set(Calendar.HOUR_OF_DAY, 12);
+        notificationTime.set(Calendar.MINUTE, 0);
         notificationTime.set(Calendar.SECOND, 0);
 
         // Check if the Calendar time is in the past
@@ -373,7 +374,7 @@ private void setOnClickOnCallButton(Result result){
         AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
         Intent notificationIntent = new Intent(this, NotificationReceiver.class);
         PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 0, notificationIntent,
-                PendingIntent.FLAG_UPDATE_CURRENT);
+                PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
         alarmManager.cancel(pendingIntent);
     }
 }

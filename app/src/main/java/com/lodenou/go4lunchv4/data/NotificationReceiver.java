@@ -65,7 +65,7 @@ public class NotificationReceiver extends BroadcastReceiver {
 
             Intent notificationIntent = new Intent(context, NotificationReceiver.class);
             PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 0, notificationIntent,
-                    PendingIntent.FLAG_UPDATE_CURRENT);
+                    PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
             alarmManager.cancel(pendingIntent);
         }
     }
