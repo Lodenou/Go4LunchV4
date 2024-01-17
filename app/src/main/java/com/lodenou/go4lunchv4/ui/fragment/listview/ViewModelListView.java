@@ -17,7 +17,7 @@ import java.util.List;
 
 public class ViewModelListView extends AndroidViewModel {
 
-//TODO USELESS SEE IF THE DELETE IS POSSIBLE
+//Useless atm
 
     private MutableLiveData<List<Result>> mMutableLiveData;
     private MutableLiveData<Location> mMutableLiveDataLocation;

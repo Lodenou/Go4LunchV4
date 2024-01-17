@@ -108,12 +108,7 @@ public class ListViewRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerVi
         ((ListViewViewHolder) holder).mOpeningHours.setText(restaurant.getOpeningHours());
 
         //Workmates number
-//            if (restaurant.getRestaurantUserNumber() != 0 && restaurant.getRestaurantUserNumber() != null) {
-//                ((ListViewViewHolder) holder).mWorkmatesNumber.setText(String.valueOf(restaurant.getRestaurantUserNumber()));
-//            }
-//            else {
-//                ((ListViewViewHolder) holder).mWorkmatesNumber.setText(String.valueOf(0));
-//            }
+
         ((ListViewViewHolder) holder).mWorkmatesNumber.setText(String.valueOf(restaurant.getRestaurantUserNumber()));
 
         // click

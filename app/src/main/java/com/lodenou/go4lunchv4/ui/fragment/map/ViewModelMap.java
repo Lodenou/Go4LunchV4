@@ -34,7 +34,7 @@ public class ViewModelMap extends AndroidViewModel {
 
 
     public void init(String location){
-        //TODO DELETE
+        //useless atm
     }
 
 

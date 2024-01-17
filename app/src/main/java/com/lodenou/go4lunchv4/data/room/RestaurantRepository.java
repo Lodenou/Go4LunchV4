@@ -38,8 +38,6 @@ import io.reactivex.schedulers.Schedulers;
 
 public class RestaurantRepository implements IRestaurantRepository {
 
-    private static final String PREFS_NAME = "MyPrefsFile";
-    private static final String PREFS_IS_FIRST_LAUNCH = "isFirstLaunch";
 
     MutableLiveData<Location> dataLocation = new MutableLiveData<>();
 

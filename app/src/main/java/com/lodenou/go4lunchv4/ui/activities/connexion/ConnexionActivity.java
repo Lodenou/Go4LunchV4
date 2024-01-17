@@ -106,26 +106,6 @@ public class ConnexionActivity extends AppCompatActivity {
         startActivity(intent);
         finish();
     }
-
-    @Override
-    public void onStart() {
-        super.onStart();
-        // Check if user is signed in (non-null) and update UI accordingly.
-        FirebaseUser currentUser = mAuth.getCurrentUser();
-//        updateUI(currentUser);
-    }
-
-
-// useless atm keeps it just in case we need it
-//    private void updateUI(FirebaseUser user) {
-//        if (user != null) {
-//            Toast.makeText(this, "You Signed In successfully", Toast.LENGTH_LONG).show();
-//            Intent intent = new Intent(ConnexionActivity.this, MainActivity.class);
-//            startActivity(intent);
-//        } else {
-//            Toast.makeText(this, "You didnt signed in", Toast.LENGTH_LONG).show();
-//        }
-//    }
 }
 
 

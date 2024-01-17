@@ -87,6 +87,5 @@ public class AddUserChoiceToDatabaseTest {
         mockResult.setName("Test Restaurant");
         mockDataDetail.setValue(mockResult);
         detailRepository = DetailRepository.getInstance(userCallData, "userUid","username", "userPhotoUrl", "UserEmail", mockDataDetail);
-
     }
 }

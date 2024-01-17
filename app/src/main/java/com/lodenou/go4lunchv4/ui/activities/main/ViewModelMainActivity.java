@@ -20,11 +20,10 @@ import java.util.List;
 
 public class ViewModelMainActivity extends AndroidViewModel {
 
-    private DetailRepository mDetailRepository;
     private RestaurantRepository mRestaurantRepository;
     private LiveData<List<Restaurant>> mListRestaurantsLiveData;
     private LiveData<User> mUserLiveData;
-    private LiveData<Restaurant> mRestaurantLiveData;
+
 
     public ViewModelMainActivity(@NonNull Application application) {
         super(application);
@@ -36,8 +35,9 @@ public class ViewModelMainActivity extends AndroidViewModel {
 
 
     public void init() {
-
+            //useless atm
     }
+
     public LiveData<User> getUser() {
         mUserLiveData = mRestaurantRepository.getUser();
         return mUserLiveData;
@@ -57,13 +57,6 @@ public class ViewModelMainActivity extends AndroidViewModel {
         mRestaurantRepository.deleteAllRestaurants();
     }
 
-
-
-
-    public LiveData<Restaurant> getRestaurantById(String restaurantId){
-        mRestaurantLiveData = mRestaurantRepository.getRestaurantById(restaurantId);
-        return mRestaurantLiveData;
-    }
 
 
 }
