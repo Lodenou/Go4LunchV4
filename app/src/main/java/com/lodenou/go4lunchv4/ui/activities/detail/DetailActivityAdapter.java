@@ -14,15 +14,15 @@ import com.bumptech.glide.Glide;
 import com.lodenou.go4lunchv4.R;
 import com.lodenou.go4lunchv4.model.User;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class DetailActivityAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>{
 
-    private List<User> mUsers;
+    private List<User> mUsers = new ArrayList<>();
     Context mContext;
 
-    public DetailActivityAdapter(Context context,List<User> users) {
-        this.mUsers = users;
+    public DetailActivityAdapter(Context context) {
         this.mContext = context;
     }
 

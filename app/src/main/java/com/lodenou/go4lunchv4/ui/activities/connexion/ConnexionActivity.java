@@ -21,6 +21,9 @@ import com.lodenou.go4lunchv4.R;
 import com.lodenou.go4lunchv4.databinding.ActivityConnexionBinding;
 import com.lodenou.go4lunchv4.ui.activities.main.MainActivity;
 
+/**
+ * ConnexionActivity handles user authentication, including Google Sign-In.
+ */
 
 public class ConnexionActivity extends AppCompatActivity {
 
@@ -42,6 +45,9 @@ public class ConnexionActivity extends AppCompatActivity {
         initGoogleSignInClient();
     }
 
+    /**
+     * Initialize the Google Sign-In button click listener.
+     */
     private void initGoogleSignInButton() {
         mBinding.googleButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -51,11 +57,17 @@ public class ConnexionActivity extends AppCompatActivity {
         });
     }
 
+    /**
+     * Initialize the ViewModel for managing authentication and user data.
+     */
     private void initViewModel() {
         mViewModelConnexionActivity = new ViewModelProvider(this).get(ViewModelConnexionActivity.class);
         mViewModelConnexionActivity.init();
     }
 
+    /**
+     * Initialize the Google Sign-In client with appropriate options.
+     */
     private void initGoogleSignInClient() {
         GoogleSignInOptions googleSignInOptions = new GoogleSignInOptions
                 .Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
@@ -66,6 +78,9 @@ public class ConnexionActivity extends AppCompatActivity {
         mGoogleSignInClient = GoogleSignIn.getClient(this, googleSignInOptions);
     }
 
+    /**
+     * Start the Google Sign-In flow.
+     */
     private void signIn() {
         Intent signInIntent = mGoogleSignInClient.getSignInIntent();
         startActivityForResult(signInIntent, RC_SIGN_IN);
@@ -87,12 +102,22 @@ public class ConnexionActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Retrieve the Google Auth Credential from the Google Sign-In account.
+     *
+     * @param googleSignInAccount The Google Sign-In account.
+     */
     private void getGoogleAuthCredential(GoogleSignInAccount googleSignInAccount) {
         String googleTokenId = googleSignInAccount.getIdToken();
         AuthCredential googleAuthCredential = GoogleAuthProvider.getCredential(googleTokenId, null);
         signInWithGoogleAuthCredential(googleAuthCredential);
     }
 
+    /**
+     * Sign in to Firebase with the Google Auth Credential.
+     *
+     * @param googleAuthCredential The Google Auth Credential.
+     */
     private void signInWithGoogleAuthCredential(AuthCredential googleAuthCredential) {
         mViewModelConnexionActivity.signInWithGoogle(googleAuthCredential);
         mViewModelConnexionActivity.authenticatedUserLiveData.observe(this, authenticatedUser -> {
@@ -101,6 +126,9 @@ public class ConnexionActivity extends AppCompatActivity {
         });
     }
 
+    /**
+     * Navigate to the main activity upon successful authentication.
+     */
     private void goToMainActivity() {
         Intent intent = new Intent(ConnexionActivity.this, MainActivity.class);
         startActivity(intent);

@@ -17,6 +17,9 @@ import com.lodenou.go4lunchv4.model.User;
 
 import java.util.Objects;
 
+/**
+ * This class implements the ConnexionRepository interface and provides methods for user authentication and user data management.
+ */
 public class ConnexionRepository implements IConnexionRepository {
 
     User mUser;
@@ -24,12 +27,23 @@ public class ConnexionRepository implements IConnexionRepository {
     private FirebaseAuth firebaseAuth;
     private UserCallData userCallData;
 
-    // Constructor for injection
+    /**
+     * Constructs a ConnexionRepository instance.
+     *
+     * @param userCallData    The UserCallData instance for user-related operations.
+     * @param firebaseAuth    The FirebaseAuth instance for authentication.
+     */
     public ConnexionRepository(UserCallData userCallData, FirebaseAuth firebaseAuth) {
         this.userCallData = userCallData;
         this.firebaseAuth = firebaseAuth;
     }
 
+    /**
+     * Signs in a user with Google credentials.
+     *
+     * @param googleAuthCredential The Google authentication credential.
+     * @return A MutableLiveData containing the authenticated user.
+     */
     public MutableLiveData<User> firebaseSignInWithGoogle(AuthCredential googleAuthCredential) {
         MutableLiveData<User> authenticatedUserMutableLiveData = new MutableLiveData<>();
         firebaseAuth.signInWithCredential(googleAuthCredential).addOnCompleteListener(authTask -> {
@@ -43,18 +57,24 @@ public class ConnexionRepository implements IConnexionRepository {
                     User user = new User(uid, name, avatar, email, "", "", "");
                     authenticatedUserMutableLiveData.setValue(user);
                 }
-            } else {
-                Log.d("123", "OnFailure: Login failed" + Objects.requireNonNull(authTask.getException()).getMessage());
             }
         });
         return authenticatedUserMutableLiveData;
     }
 
+    /**
+     * Retrieves the currently authenticated Firebase user.
+     *
+     * @return The currently authenticated Firebase user or null if not authenticated.
+     */
     @Nullable
     public FirebaseUser getCurrentUser() {
         return firebaseAuth.getCurrentUser();
     }
 
+    /**
+     * Creates a user in Firestore if the user does not exist.
+     */
     public void createUserInFirestoreIfNotExists() {
         if (this.getCurrentUser() != null) {
             final String urlPicture = (this.getCurrentUser().getPhotoUrl() != null) ? this.getCurrentUser().getPhotoUrl().toString() : null;
@@ -67,7 +87,6 @@ public class ConnexionRepository implements IConnexionRepository {
                     mUser = documentSnapshot.toObject(User.class);
                     if (mUser == null) {
                         userCallData.createUser(uid, username, urlPicture, email, " ", "", "").addOnFailureListener(e -> {
-                            Log.d("TAG", "onFailure: firestore error 1 ");
                         });
                     }
                 }

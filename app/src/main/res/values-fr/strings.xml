@@ -2,9 +2,9 @@
 <resources>
     <string name="app_name">Go4LunchV4</string>
     <string name="hello_blank_fragment">Salut fragment vide</string>
-    <string name="workmates">Workmates</string>
-    <string name="list_view">List View</string>
-    <string name="map_view">Map View</string>
+    <string name="workmates">Collègues</string>
+    <string name="list_view">Liste</string>
+    <string name="map_view">Carte</string>
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
     <string name="title_activity_connexion">ConnexionActivity</string>
@@ -35,7 +35,7 @@
     <string name="has_not_yet_chosen">&#160;n\'a pas encore choisi de restaurant</string>
     <string name="find_a_nice_restaurant_and_invite_your_coworkers_for_lunch">Trouve un bon restaurant pour y manger avec tes collègues</string>
     <string name="go4lunch">Go4Lunch</string>
-    <string name="sign_in_with_google">Sign in with google</string>
+    <string name="sign_in_with_google">Connexion avec google</string>
     <string name="your_restaurant">Votre restaurant</string>
     <string name="french_restaurant_10_rue_de_la_mariniere">french restaurant 10 rue de la mariniere</string>
     <string name="call">Appel</string>
@@ -44,4 +44,9 @@
     <string name="your_lunch">Votre repas</string>
     <string name="logout">Déconnexion</string>
     <string name="chat">Chat</string>
+
+    <string name="You_are_going_to_eat">Tu vas manger à\u00A0 </string>
+    <string name="with"> \u00A0avec\u00A0 </string>
+    <string name="alone"> \u00A0seul(e)</string>
+    <string name="im_hungry"> J\'ai faim</string>
 </resources>

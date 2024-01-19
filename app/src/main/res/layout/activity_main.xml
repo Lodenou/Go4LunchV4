@@ -24,7 +24,7 @@
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             android:background="?attr/colorPrimary"
-            app:title="I'm hungry"
+            app:title="@string/im_hungry"
             app:theme="@style/AppTheme.PopupOverlay"/>
 
         <!-- FrameLayout for our fragments -->

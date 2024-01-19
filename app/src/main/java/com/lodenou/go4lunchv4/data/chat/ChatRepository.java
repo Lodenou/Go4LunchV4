@@ -25,7 +25,9 @@ import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 import java.util.TimeZone;
-
+/**
+ * This class implements the ChatRepository interface and provides methods for managing chat messages and users.
+ */
 public class ChatRepository implements IChatRepository {
     private MutableLiveData<List<Message>> dataMessages = new MutableLiveData<>();
     private ArrayList<Message> mDatasetMessages = new ArrayList<>();
@@ -37,13 +39,24 @@ public class ChatRepository implements IChatRepository {
 
     private UserCallData userCallData;
 
-    // Constructor for injection
+    /**
+     * Constructs a ChatRepository instance.
+     *
+     * @param userCallData  The UserCallData instance for user-related operations.
+     * @param chatCallData  The ChatCallData instance for chat-related operations.
+     * @param idUser        The unique identifier for the user.
+     */
     public ChatRepository(UserCallData userCallData, ChatCallData chatCallData, String idUser) {
         this.userCallData = userCallData;
         this.chatCallData = chatCallData;
         this.idUser = idUser;
     }
 
+    /**
+     * Retrieves all chat messages for a chat.
+     *
+     * @return A MutableLiveData containing a list of chat messages.
+     */
     public MutableLiveData<List<Message>> getAllMessageForChat() {
 
         chatCallData.getAllMessages().get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
@@ -52,7 +65,6 @@ public class ChatRepository implements IChatRepository {
                 if (task.isSuccessful()) {
                     mDatasetMessages.clear();
                     for (QueryDocumentSnapshot document : task.getResult()) {
-                        Log.d("123", document.getId() + " => " + document.getData());
                         message = document.toObject(Message.class);
                         if (message.getMessage() != null) {
                             mDatasetMessages.add(message);
@@ -65,6 +77,11 @@ public class ChatRepository implements IChatRepository {
         return dataMessages;
     }
 
+    /**
+     * Retrieves user information.
+     *
+     * @return A MutableLiveData containing user information.
+     */
     public MutableLiveData<User> getUser() {
         userCallData.getUser(idUser).addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
@@ -80,6 +97,11 @@ public class ChatRepository implements IChatRepository {
     }
 
 
+    /**
+     * Creates a new chat message.
+     *
+     * @param message The content of the chat message.
+     */
     public void createNewMessage(String message) {
         Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
         Date date = calendar.getTime();
@@ -96,7 +118,6 @@ public class ChatRepository implements IChatRepository {
                         @Override
                         public void onSuccess(DocumentReference documentReference) {
                             getAllMessageForChat();
-                            Log.d("123", "DocumentSnapshot added with ID: " + documentReference.getId());
                         }
                     });
                 }

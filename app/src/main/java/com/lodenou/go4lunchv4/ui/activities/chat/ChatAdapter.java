@@ -16,23 +16,20 @@ import com.lodenou.go4lunchv4.R;
 import com.lodenou.go4lunchv4.model.Message;
 import com.lodenou.go4lunchv4.ui.Utils;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
 
     // VIEW TYPES
-    private List<Message> messages;
+    private List<Message> messages = new ArrayList<>();
     private Context context;
 
 
-    public ChatAdapter(Context context, List<Message> messages) {
-        this.messages = messages;
+    public ChatAdapter(Context context) {
         this.context = context;
     }
-
-
-
 
     @Override
     public MessageViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {

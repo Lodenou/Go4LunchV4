@@ -7,7 +7,9 @@ def apikeyPropertiesFile = rootProject.file("local.properties")
 def apikeyProperties = new Properties()
 apikeyProperties.load(new FileInputStream(apikeyPropertiesFile))
 
-
+def localPropertiesFile = rootProject.file("local.properties")
+def localProperties = new Properties()
+localProperties.load(new FileInputStream(localPropertiesFile))
 
  android {
     compileSdk 33
@@ -24,6 +26,7 @@ apikeyProperties.load(new FileInputStream(apikeyPropertiesFile))
         // To access api key in manifest
         resValue "string", "google_map_id", apikeyProperties.getProperty("API_KEY")
 
+        buildConfigField("String", "RESTAURANT_PHOTO_URL", localProperties['RESTAURANT_PHOTO_URL'])
     }
 
     buildFeatures {

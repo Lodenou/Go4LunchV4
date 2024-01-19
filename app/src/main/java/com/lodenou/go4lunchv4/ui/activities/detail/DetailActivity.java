@@ -12,7 +12,6 @@ import android.graphics.Color;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
@@ -45,7 +44,10 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
-
+/**
+ * This activity displays detailed information about a restaurant, including its name, address,
+ * photo, opening hours, and user reviews.
+ */
 public class DetailActivity extends AppCompatActivity {
 
     private ActivityDetailBinding mBinding;
@@ -72,17 +74,28 @@ public class DetailActivity extends AppCompatActivity {
         addUserToNotificationsCalls();
     }
 
+    /**
+     * Get the restaurant ID from the intent's extras.
+     *
+     * @return The restaurant ID
+     */
     private String getRestaurantId() {
         Bundle extras = getIntent().getExtras();
         return extras.getString("idrestaurant");
     }
 
+    /**
+     * Initialize the RecyclerView and its adapter.
+     */
     private void initRecyclerView() {
-        mAdapter = new DetailActivityAdapter(this, new ArrayList<>());
+        mAdapter = new DetailActivityAdapter(this);
         mBinding.myRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         mBinding.myRecyclerView.setAdapter(this.mAdapter);
     }
 
+    /**
+     * Initialize the ViewModel for this activity.
+     */
     private void initViewModel() {
         mViewModelDetailActivity = new ViewModelProvider(this).get(ViewModelDetailActivity.class);
         mViewModelDetailActivity.init(getRestaurantId());
@@ -105,11 +118,17 @@ public class DetailActivity extends AppCompatActivity {
         observeIfCurrentUserHasChosenThisRestaurant();
     }
 
+    /**
+     * Initialize the ViewModel for the main activity.
+     */
     private void initMainViewModel() {
         mViewModelMainActivity = ViewModelProvider.AndroidViewModelFactory.getInstance(getApplication()).create(ViewModelMainActivity.class);
         mViewModelMainActivity.init();
     }
 
+    /**
+     * Observe if the current user has chosen this restaurant.
+     */
     private void observeIfCurrentUserHasChosenThisRestaurant() {
         mViewModelDetailActivity.isCurrentUserHasChosenThisRestaurant().observe(this, new Observer<Boolean>() {
             @Override
@@ -118,15 +137,17 @@ public class DetailActivity extends AppCompatActivity {
                 if (aBoolean) {
                     mBinding.fab.setImageResource(R.drawable.ic_baseline_check_circle_24);
                     mBinding.fab.setColorFilter(Color.argb(250, 25, 255, 25));
-                    Log.d("123", aBoolean.toString() + " true");
                 } else {
                     mBinding.fab.setImageResource(R.drawable.ic_baseline_crop_din_24);
-                    Log.d("123", aBoolean.toString() + " false");
                 }
             }
         });
     }
 
+
+    /**
+     * Observe the list of users who are eating at this restaurant and update the RecyclerView.
+     */
     private void observeUsersList() {
         mViewModelDetailActivity.getUsersEatingHere().observe(this, new Observer<List<User>>() {
             @Override
@@ -136,6 +157,11 @@ public class DetailActivity extends AppCompatActivity {
         });
     }
 
+    /**
+     * Fill the UI with restaurant information.
+     *
+     * @param result The Result object containing restaurant details.
+     */
     private void fillWithRestaurantInfo(Result result) {
         String address = result.getVicinity();
         String name = result.getName();
@@ -143,7 +169,7 @@ public class DetailActivity extends AppCompatActivity {
         mBinding.restaurantNameYourlunch.setText(name);
 
         if (result.getPhotos() != null) {
-            String restaurantPhoto = "https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&maxheight=400&photoreference=" +
+            String restaurantPhoto =  BuildConfig.RESTAURANT_PHOTO_URL+
                     result.getPhotos().get(0).getPhotoReference() + "&key=" + BuildConfig.API_KEY;
             if (result.getPhotos() != null && result.getPhotos().size() > 0) {
                 Glide.with(getApplicationContext()).load(restaurantPhoto)
@@ -152,6 +178,11 @@ public class DetailActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Set the click listener for the "Chosen Restaurant" button.
+     *
+     * @param bool A boolean indicating whether the current user has chosen this restaurant.
+     */
     private void setClickChosenRestaurantButton(Boolean bool) {
         mBinding.fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -167,34 +198,43 @@ public class DetailActivity extends AppCompatActivity {
             mViewModelDetailActivity.addUserChoiceToDatabase(getRestaurantId());
             mBinding.fab.setImageResource(R.drawable.ic_baseline_check_circle_24);
             mBinding.fab.setColorFilter(Color.argb(250, 25, 255, 25));
-            Log.d("123", isAdded.toString());
         }
 
-        if (isAdded) {
+        else {
             removeUserFromNotificationCall();
-            Log.d("123", isAdded.toString());
             mViewModelDetailActivity.removeUserChoiceFromDatabase();
             mBinding.fab.setImageResource(R.drawable.ic_baseline_crop_din_24);
         }
     }
-    // END OF FAB SETTING PART
-private void setOnClickOnCallButton(Result result){
-    mBinding.callButton.setOnClickListener(new View.OnClickListener() {
-        @Override
-        public void onClick(View view) {
-            if (ContextCompat.checkSelfPermission(DetailActivity.this,
-                    Manifest.permission.CALL_PHONE) == PackageManager.PERMISSION_GRANTED) {
-                // Permission granted => make the call
-                makeCall(result.getInternationalPhoneNumber());
-            } else {
-                // Ask for permission
-                ActivityCompat.requestPermissions(DetailActivity.this, new String[]
-                        {Manifest.permission.CALL_PHONE}, PERMISSION_CODE);
-            }
-        }
-    });
-}
 
+    // END OF FAB SETTING PART
+    /**
+     * Set the click listener for the "Call" button.
+     *
+     * @param result The Result object containing restaurant details.
+     */
+    private void setOnClickOnCallButton(Result result) {
+        mBinding.callButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (ContextCompat.checkSelfPermission(DetailActivity.this,
+                        Manifest.permission.CALL_PHONE) == PackageManager.PERMISSION_GRANTED) {
+                    // Permission granted => make the call
+                    makeCall(result.getInternationalPhoneNumber());
+                } else {
+                    // Ask for permission
+                    ActivityCompat.requestPermissions(DetailActivity.this, new String[]
+                            {Manifest.permission.CALL_PHONE}, PERMISSION_CODE);
+                }
+            }
+        });
+    }
+
+    /**
+     * Make a phone call with the given phone number.
+     *
+     * @param phoneNumber The phone number to call.
+     */
     private void makeCall(String phoneNumber) {
         Intent callIntent = new Intent(Intent.ACTION_CALL);
         callIntent.setData(Uri.parse("tel:" + phoneNumber));
@@ -207,6 +247,13 @@ private void setOnClickOnCallButton(Result result){
     }
 
 
+    /**
+     * Handle the result of permission requests.
+     *
+     * @param requestCode  The request code for the permission request.
+     * @param permissions  The requested permissions.
+     * @param grantResults The results of the permission request.
+     */
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
                                            @NonNull int[] grantResults) {
@@ -221,7 +268,11 @@ private void setOnClickOnCallButton(Result result){
         }
     }
 
-
+    /**
+     * Set the click listener for the "Website" button.
+     *
+     * @param result The Result object containing restaurant details.
+     */
     private void setOnClickOnWebsiteButton(Result result) {
         mBinding.websiteButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -231,19 +282,19 @@ private void setOnClickOnCallButton(Result result){
                     Intent i = new Intent(Intent.ACTION_VIEW);
                     i.setData(Uri.parse(website));
                     startActivity(i);
-                }
-                else {
+                } else {
                     Toast.makeText(getApplicationContext(), "No website available", Toast.LENGTH_LONG).show();
                 }
             }
         });
     }
 
-
     // FAVORITE BUTTON PART
+    /**
+     * Get the current user's information.
+     */
     private void getUser() {
         String userId = Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getUid();
-        Log.d("connected user", "getUser: "+ userId);
         mViewModelDetailActivity.getUser(userId).observe(this, new Observer<User>() {
             @Override
             public void onChanged(User user) {
@@ -253,6 +304,9 @@ private void setOnClickOnCallButton(Result result){
         });
     }
 
+    /**
+     * Set the click listener for the "Favorite" button.
+     */
     private void setOnClickFavoriteButton() {
         mBinding.starButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -262,23 +316,31 @@ private void setOnClickOnCallButton(Result result){
         });
     }
 
+    /**
+     * Check if the user has marked this restaurant as a favorite and update UI accordingly.
+     */
     private void isUserFav() {
         // We need a boolean which uses data from repository to get the update version of user.getFavoriteRestaurant()
         mViewModelDetailActivity.isRestaurantEgalToUserFavorite(getRestaurantId())
                 .observe(this, new Observer<Boolean>() {
-            @Override
-            public void onChanged(Boolean aBoolean) {
-                if (aBoolean) {
-                    mViewModelDetailActivity.removeUserFavoriteFromDatabase();
-                    mBinding.imageStar.setVisibility(View.INVISIBLE);
-                } else {
-                    mViewModelDetailActivity.addUserFavoriteToDatabase(getRestaurantId());
-                    mBinding.imageStar.setVisibility(View.VISIBLE);
-                }
-            }
-        });
+                    @Override
+                    public void onChanged(Boolean aBoolean) {
+                        if (aBoolean) {
+                            mViewModelDetailActivity.removeUserFavoriteFromDatabase();
+                            mBinding.imageStar.setVisibility(View.INVISIBLE);
+                        } else {
+                            mViewModelDetailActivity.addUserFavoriteToDatabase(getRestaurantId());
+                            mBinding.imageStar.setVisibility(View.VISIBLE);
+                        }
+                    }
+                });
     }
 
+    /**
+     * Update the UI based on whether the user has marked this restaurant as a favorite.
+     *
+     * @param user The current user's information.
+     */
     private void setUserFavStarUi(User user) {
         // We don't need a boolean from repository because the user is already updated when we go back to previous activity
         if (Objects.equals(user.getFavoritesRestaurant(), getRestaurantId())) {
@@ -292,6 +354,13 @@ private void setOnClickOnCallButton(Result result){
 
 
     //Notifications
+    /**
+     * Set up notifications for the chosen restaurant.
+     *
+     * @param restaurantName    The name of the restaurant.
+     * @param restaurantAddress The address of the restaurant.
+     * @param colleagues        List of colleagues to include in the notification.
+     */
     private void setNotifications(String restaurantName, String restaurantAddress, List<String> colleagues) {
         FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
         bool = true;
@@ -300,7 +369,6 @@ private void setOnClickOnCallButton(Result result){
             @Override
             public void onChanged(User user) {
                 if (Objects.equals(Objects.requireNonNull(user).getRestaurantChosenId(), getRestaurantId())) {
-                    Log.d("123", "setNotifications: " + restaurantAddress + restaurantName + colleagues);
                     bool = false;
                     createPendingIntent(restaurantName, restaurantAddress, colleagues);
                 }
@@ -309,6 +377,9 @@ private void setOnClickOnCallButton(Result result){
     }
 
 
+    /**
+     * Create a notification channel for this app (API 26+).
+     */
     private void createNotificationChannel() {
         // Create the NotificationChannel, but only on API 26+ because
         // the NotificationChannel class is new and not in the support library
@@ -325,8 +396,14 @@ private void setOnClickOnCallButton(Result result){
         }
     }
 
+    /**
+     * Create a pending intent for restaurant notifications.
+     *
+     * @param restaurantName    The name of the restaurant.
+     * @param restaurantAddress The address of the restaurant.
+     * @param colleagues        List of colleagues to include in the notification.
+     */
     private void createPendingIntent(String restaurantName, String restaurantAddress, List<String> colleagues) {
-        Log.d("123", "createPendingIntent: ");
         ArrayList<String> colleaguesArray = new ArrayList<>(colleagues);
 
         Intent notificationIntent = new Intent(this, NotificationReceiver.class);
@@ -343,35 +420,39 @@ private void setOnClickOnCallButton(Result result){
 
         Calendar notificationTime = Calendar.getInstance();
 
-        notificationTime.set(Calendar.HOUR_OF_DAY, 12);
-        notificationTime.set(Calendar.MINUTE, 0);
+        notificationTime.set(Calendar.HOUR_OF_DAY, 1);
+        notificationTime.set(Calendar.MINUTE, 40);
         notificationTime.set(Calendar.SECOND, 0);
 
         // Check if the Calendar time is in the past
         if (notificationTime.getTimeInMillis() < System.currentTimeMillis()) {
-            Log.e("setAlarm", "time is in past");
             notificationTime.add(Calendar.DAY_OF_YEAR, 1); // it will tell to run to next day
         }
 
         long triggerTime = notificationTime.getTimeInMillis();
         DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
         String formattedTime = formatter.format(new Date(triggerTime));
-
-        Log.d("123", "Alarm set for: " + formattedTime);
         // Set the alarm to trigger the pending intent at the specified time
         alarmManager.set(AlarmManager.RTC_WAKEUP, triggerTime, pendingIntent);
     }
 
+    /**
+     * Get restaurant details and set up notifications.
+     *
+     * @param colleagues List of colleagues who are eating at the same restaurant.
+     */
     private void getRestaurantDetail(List<String> colleagues) {
         mViewModelDetailActivity.getRestaurantsDetail().observe(this, new Observer<Result>() {
             @Override
             public void onChanged(Result result) {
-                Log.d("123", "on changed restaurant detail set notification " + result.getName() + result.getVicinity());
                 setNotifications(result.getName(), result.getVicinity(), colleagues);
             }
         });
     }
 
+    /**
+     * Add the current user to notification calls.
+     */
     private void addUserToNotificationsCalls() {
         mViewModelDetailActivity.getListOfColleaguesWhoEatWithCurrentUser(getRestaurantId())
                 .observe(this, new Observer<List<String>>() {
@@ -382,8 +463,10 @@ private void setOnClickOnCallButton(Result result){
                 });
     }
 
+    /**
+     * Remove the user from notification calls.
+     */
     private void removeUserFromNotificationCall() {
-        Log.d("123", "removeNotifications: ");
         bool = true;
         AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
         Intent notificationIntent = new Intent(this, NotificationReceiver.class);

@@ -17,6 +17,9 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.lodenou.go4lunchv4.R;
 import com.lodenou.go4lunchv4.databinding.ActivtySettingsBinding;
 
+/**
+ * SettingsActivity allows the user to configure app settings.
+ */
 public class SettingsActivity extends AppCompatActivity {
 
     ActivtySettingsBinding mBinding;
@@ -31,6 +34,9 @@ public class SettingsActivity extends AppCompatActivity {
         getPreferences();
     }
 
+    /**
+     * Set a click listener for the back button to finish the activity.
+     */
     private void setBackButton() {
         mBinding.backArrowSetting.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -40,6 +46,9 @@ public class SettingsActivity extends AppCompatActivity {
         });
     }
 
+    /**
+     * Retrieve and set the user's preferences, such as notifications settings.
+     */
     private void getPreferences(){
         ToggleButton tButton = mBinding.yesButton;
         SharedPreferences sharedPref = getSharedPreferences("1234",Context.MODE_PRIVATE);

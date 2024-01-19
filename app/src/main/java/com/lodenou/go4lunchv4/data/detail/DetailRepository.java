@@ -1,6 +1,5 @@
 package com.lodenou.go4lunchv4.data.detail;
 
-import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -64,7 +63,16 @@ public class DetailRepository implements IDetailRepository {
     private String userEmail;
 
 
-    // Constructor for injection
+    /**
+     * Gets an instance of DetailRepository with injection.
+     *
+     * @param userCallData The UserCallData instance for user-related operations.
+     * @param idUser       The user's unique ID.
+     * @param userName     The user's name.
+     * @param userPhotoUrl The user's photo URL.
+     * @param userEmail    The user's email.
+     * @param data         MutableLiveData for restaurant details.
+     */
     private DetailRepository(UserCallData userCallData, String idUser, String userName, String userPhotoUrl, String userEmail,
                              MutableLiveData<com.lodenou.go4lunchv4.model.detail.Result> data) {
         this.userCallData = userCallData;
@@ -75,7 +83,17 @@ public class DetailRepository implements IDetailRepository {
         this.userEmail = userEmail;
     }
 
-    // Singleton model with injection used for ROOM
+    /**
+     * Gets an instance of DetailRepository with injection.
+     *
+     * @param userCallData The UserCallData instance for user-related operations.
+     * @param idUser       The user's unique ID.
+     * @param userName     The user's name.
+     * @param userPhotoUrl The user's photo URL.
+     * @param userEmail    The user's email.
+     * @param dataDetail   MutableLiveData for restaurant details.
+     * @return An instance of DetailRepository.
+     */
     public static synchronized DetailRepository getInstance(UserCallData userCallData, String idUser, String userName,
                                                             String userPhotoUrl, String userEmail,
                                                             MutableLiveData<com.lodenou.go4lunchv4.
@@ -86,11 +104,19 @@ public class DetailRepository implements IDetailRepository {
         return instance;
     }
 
-    // To reset idUser and avoid unwanted behaviors
+    /**
+     * Resets the instance of DetailRepository.
+     */
     public static void resetInstance() {
         instance = null;
     }
 
+    /**
+     * Retrieves restaurant details for a given restaurant ID.
+     *
+     * @param restaurantId The ID of the restaurant.
+     * @return MutableLiveData containing the restaurant details.
+     */
     public MutableLiveData<com.lodenou.go4lunchv4.model.detail.Result> getRestaurantDetails(String restaurantId) {
         Go4LunchApi.retrofit.create(Go4LunchApi.class).getPlaceDetails(restaurantId)
                 .subscribeOn(Schedulers.io())
@@ -120,6 +146,11 @@ public class DetailRepository implements IDetailRepository {
         return dataDetail;
     }
 
+    /**
+     * Retrieves user information.
+     *
+     * @return MutableLiveData containing the user information.
+     */
     public MutableLiveData<User> getUser() {
 
         userCallData.getUser(idUser).addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
@@ -133,6 +164,12 @@ public class DetailRepository implements IDetailRepository {
     }
 
 
+    /**
+     * Retrieves a list of users eating at a specific restaurant.
+     *
+     * @param restaurantId The ID of the restaurant.
+     * @return MutableLiveData containing the list of users.
+     */
     public MutableLiveData<List<User>> getUsersEatingHere(String restaurantId) {
 
         datasetUsers.clear();
@@ -141,22 +178,24 @@ public class DetailRepository implements IDetailRepository {
             public void onComplete(@NonNull Task<QuerySnapshot> task) {
                 if (task.isSuccessful()) {
                     for (QueryDocumentSnapshot document : task.getResult()) {
-                        Log.d("123", document.getId() + " => " + document.getData());
                         mUser = document.toObject(User.class);
                         if (Objects.equals(mUser.getRestaurantChosenId(), restaurantId)) {
                             datasetUsers.add(mUser);
-                                     Log.d("123", "onComplete: user add to recyclerView ");
-        }
-    }
-                    dataUsers.setValue(datasetUsers);
-}
-            }
-                    });
-                    return dataUsers;
+                        }
                     }
+                    dataUsers.setValue(datasetUsers);
+                }
+            }
+        });
+        return dataUsers;
+    }
 
-
-public void addUserChoiceToDatabase(String restaurantId) {
+    /**
+     * Adds the user's choice of a restaurant to the database.
+     *
+     * @param restaurantId The ID of the chosen restaurant.
+     */
+    public void addUserChoiceToDatabase(String restaurantId) {
         if (idUser != null) {
 
             String restaurantName = Objects.requireNonNull(dataDetail.getValue()).getName();
@@ -171,17 +210,18 @@ public void addUserChoiceToDatabase(String restaurantId) {
                 public void onComplete(@NonNull Task<Void> task) {
                     //UPDATE USER
                     getUser();
-                    Log.d("123", "DocumentSnapshot successfully written!");
                 }
             }).addOnFailureListener(new OnFailureListener() {
                 @Override
                 public void onFailure(@NonNull Exception e) {
-                    Log.d("123", "Error writing document", e);
                 }
             });
         }
     }
 
+    /**
+     * Removes the user's choice of a restaurant from the database.
+     */
     public void removeUserChoiceFromDatabase() {
         if (idUser != null) {
             Map<String, Object> chosenRestaurant = new HashMap<>();
@@ -193,17 +233,20 @@ public void addUserChoiceToDatabase(String restaurantId) {
                 public void onComplete(@NonNull Task<Void> task) {
                     //UPDATE USER
                     getUser();
-                    Log.d("123", "DocumentSnapshot successfully unwritten!");
                 }
             }).addOnFailureListener(new OnFailureListener() {
                 @Override
                 public void onFailure(@NonNull Exception e) {
-                    Log.d("123", "Error writing document", e);
                 }
             });
         }
     }
-
+    /**
+     * Checks if the current user has chosen a specific restaurant.
+     *
+     * @param restaurantId The ID of the restaurant.
+     * @return MutableLiveData indicating whether the current user has chosen the restaurant.
+     */
     public MutableLiveData<Boolean> isCurrentUserHasChosenThisRestaurant(String restaurantId) {
 
         DocumentReference docRef = userCallData.getAllUsers().getFirestore().collection("users").document(idUser);
@@ -218,6 +261,9 @@ public void addUserChoiceToDatabase(String restaurantId) {
         return dataCurrent;
     }
 
+    /**
+     * Updates the user list based on the current user's presence.
+     */
     public void updateUserList() {
         User currentUserMapped = new User(idUser, userName, userPhotoUrl, userEmail, "", "", "");
         DocumentReference docRef = userCallData.getAllUsers().getFirestore().collection("users")
@@ -250,6 +296,11 @@ public void addUserChoiceToDatabase(String restaurantId) {
     }
 
 
+    /**
+     * Checks if a restaurant has been chosen by the current user.
+     *
+     * @param restaurantId The ID of the restaurant.
+     */
     public void isRestaurantChosen(String restaurantId) {
         DocumentReference docRef = userCallData.getAllUsers().getFirestore().collection("users").document(idUser);
         docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
@@ -260,16 +311,19 @@ public void addUserChoiceToDatabase(String restaurantId) {
                     String userRestaurantChosenId = task.getResult().getString("restaurantChosenId");
                     if (Objects.equals(userRestaurantChosenId, restaurantId)) {
                         dataCurrent.setValue(true);
-                        Log.d("123", "onComplete: Value set to true");
                     } else {
                         dataCurrent.setValue(false);
-                        Log.d("123", "onComplete: Value set to false");
                     }
                 }
             }
         });
     }
 
+    /**
+     * Adds a user's favorite restaurant to the database.
+     *
+     * @param restaurantId The ID of the favorite restaurant.
+     */
     public void addUserFavoriteToDatabase(String restaurantId) {
         if (idUser != null) {
             Map<String, Object> favoriteRestaurant = new HashMap<>();
@@ -278,17 +332,18 @@ public void addUserChoiceToDatabase(String restaurantId) {
             docRef.set(favoriteRestaurant, SetOptions.merge()).addOnCompleteListener(new OnCompleteListener<Void>() {
                 @Override
                 public void onComplete(@NonNull Task<Void> task) {
-                    Log.d("123", "DocumentSnapshot successfully written!");
                 }
             }).addOnFailureListener(new OnFailureListener() {
                 @Override
                 public void onFailure(@NonNull Exception e) {
-                    Log.d("123", "Error writing document", e);
                 }
             });
         }
     }
 
+    /**
+     * Removes a user's favorite restaurant from the database.
+     */
     public void removeUserFavoriteFromDatabase() {
         if (idUser != null) {
             Map<String, Object> favoriteRestaurant = new HashMap<>();
@@ -297,17 +352,22 @@ public void addUserChoiceToDatabase(String restaurantId) {
             docRef.set(favoriteRestaurant, SetOptions.merge()).addOnCompleteListener(new OnCompleteListener<Void>() {
                 @Override
                 public void onComplete(@NonNull Task<Void> task) {
-                    Log.d("123", "DocumentSnapshot successfully unwritten!");
                 }
             }).addOnFailureListener(new OnFailureListener() {
                 @Override
                 public void onFailure(@NonNull Exception e) {
-                    Log.d("123", "Error writing document", e);
                 }
             });
         }
     }
 
+
+    /**
+     * Checks if a restaurant is equal to the user's favorite restaurant.
+     *
+     * @param restaurantId The ID of the restaurant.
+     * @return MutableLiveData indicating whether the restaurant is the user's favorite.
+     */
     public MutableLiveData<Boolean> isRestaurantEqualToUserFavorite(String restaurantId) {
         if (Objects.equals(Objects.requireNonNull(getUser().getValue()).getFavoritesRestaurant(), restaurantId)) {
             dataIsFav.setValue(true);
@@ -317,6 +377,12 @@ public void addUserChoiceToDatabase(String restaurantId) {
         return dataIsFav;
     }
 
+    /**
+     * Gets a list of colleagues who are eating at the same restaurant as the current user.
+     *
+     * @param restaurantId The ID of the restaurant.
+     * @return MutableLiveData containing the list of colleague names.
+     */
     public MutableLiveData<List<String>> getListOfColleaguesWhoEatWithCurrentUser(String restaurantId) {
         datasetColleagues.clear();
         userCallData.getAllUsers().get()
@@ -331,7 +397,6 @@ public void addUserChoiceToDatabase(String restaurantId) {
                                 if (Objects.equals(mUser.getRestaurantChosenId(), restaurantId) &&
                                         !Objects.equals(mUser.getUid(), Objects.requireNonNull(idUser))) {
                                     datasetColleagues.add(mUser.getUserName());
-                                    Log.d("123", "onComplete: user add to recyclerView ");
                                 }
                             }
                             if (datasetColleagues != null) {
@@ -346,6 +411,4 @@ public void addUserChoiceToDatabase(String restaurantId) {
                 });
         return dataColleagues;
     }
-
-
 }

@@ -27,6 +27,4 @@ public class ViewModelWorkmates extends ViewModel {
     public LiveData<List<User>> getUsers(){
         return mMutableLiveData;
     }
-
-
 }

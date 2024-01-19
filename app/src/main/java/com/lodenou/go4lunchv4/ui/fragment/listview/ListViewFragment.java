@@ -33,20 +33,21 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 
+/**
+ * ListViewFragment displays a list of restaurants in a RecyclerView with search functionality.
+ */
 public class ListViewFragment extends Fragment implements SearchView.OnQueryTextListener{
 
     FragmentListViewBinding mBinding;
     ListViewRecyclerViewAdapter mAdapter;
-    ViewModelListView mViewModelListView;
     ViewModelMainActivity mViewModelMainActivity;
     List<Restaurant> restaurantList = new ArrayList<>();
 
+    /**
+     * Default constructor.
+     */
     public ListViewFragment() {
         // Required empty public constructor
-    }
-
-    public static ListViewFragment newInstance() {
-        return new ListViewFragment();
     }
 
     @Override
@@ -74,15 +75,20 @@ public class ListViewFragment extends Fragment implements SearchView.OnQueryText
 
 
 
+    /**
+     * Initializes the RecyclerView for displaying restaurant items.
+     */
     private void initRecyclerView(){
-        mAdapter = new ListViewRecyclerViewAdapter(getContext(), new ArrayList<>());
+        mAdapter = new ListViewRecyclerViewAdapter(getContext());
         mBinding.recyclerViewListView.setLayoutManager(new LinearLayoutManager(this.getContext()));
         mBinding.recyclerViewListView.setAdapter(this.mAdapter);
     }
 
+    /**
+     * Initializes the ViewModel and fetches restaurant data.
+     */
     private void initViewModel(Boolean permission, Task task){
         initViewModelMain();
-        mViewModelListView = new ViewModelProvider(this).get(ViewModelListView.class);
         mViewModelMainActivity.fetchAllRestaurants(task, permission, getContext());
 
         mViewModelMainActivity.getAllRestaurants().observe(getViewLifecycleOwner(), new Observer<List<Restaurant>>() {
@@ -96,12 +102,21 @@ public class ListViewFragment extends Fragment implements SearchView.OnQueryText
         });
     }
 
+    /**
+     * Initializes the main ViewModel.
+     */
     private void initViewModelMain(){
-        mViewModelMainActivity = ViewModelProvider.AndroidViewModelFactory.getInstance(getActivity().getApplication()).create(ViewModelMainActivity.class);
+        mViewModelMainActivity = ViewModelProvider.AndroidViewModelFactory.getInstance(getActivity().getApplication())
+                .create(ViewModelMainActivity.class);
         mViewModelMainActivity.init();
     }
 
-    // Can't be in the repository because of the context requirement
+    //
+    /**
+     * Can't be in the repository because of the context requirement
+     * Checks if location permission is granted.
+     * @return True if permission is granted, false otherwise.
+     */
    private Boolean getPermission() {
 
        Boolean isPermission = ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) !=
@@ -113,6 +128,11 @@ public class ListViewFragment extends Fragment implements SearchView.OnQueryText
        return isPermissionOk;
    }
 
+    /**
+     * Gets the last known location task.
+     *
+     * @return The task for fetching the last known location.
+     */
     private Task getTask() {
         FusedLocationProviderClient fusedLocationProviderClient = LocationServices
                 .getFusedLocationProviderClient(requireContext());
@@ -127,12 +147,22 @@ public class ListViewFragment extends Fragment implements SearchView.OnQueryText
 
 
 
+    /**
+     * Called when the fragment resumes its execution.
+     * It initializes the ViewModel and fetches location permission and task.
+     */
     @Override
     public void onResume() {
         super.onResume();
         initViewModel(getPermission(),getTask());
     }
 
+    /**
+     * Creates the options menu for the fragment.
+     *
+     * @param menu     The menu to inflate.
+     * @param inflater The MenuInflater to use for inflation.
+     */
     @Override
     public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
         inflater.inflate(R.menu.searchview_menu, menu);
@@ -143,11 +173,24 @@ public class ListViewFragment extends Fragment implements SearchView.OnQueryText
     }
 
 
+    /**
+     * Called when a query is submitted to the search view.
+     *
+     * @param s The query text.
+     * @return Always returns false.
+     */
     @Override
     public boolean onQueryTextSubmit(String s) {
         return false;
     }
 
+    /**
+     * Called when the query text in the search view changes.
+     * Filters the restaurant list based on the entered text.
+     *
+     * @param s The new query text.
+     * @return Always returns true.
+     */
     @Override
     public boolean onQueryTextChange(String s) {
         ArrayList<Restaurant> restaurantToFetch = new ArrayList<>();

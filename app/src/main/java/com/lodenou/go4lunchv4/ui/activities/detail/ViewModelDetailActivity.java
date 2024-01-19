@@ -1,6 +1,5 @@
 package com.lodenou.go4lunchv4.ui.activities.detail;
 
-import android.util.Log;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
@@ -12,7 +11,6 @@ import com.lodenou.go4lunchv4.data.detail.DetailRepository;
 import com.lodenou.go4lunchv4.data.user.UserCallData;
 import com.lodenou.go4lunchv4.model.User;
 import com.lodenou.go4lunchv4.model.detail.Result;
-
 import java.util.List;
 
 public class ViewModelDetailActivity extends ViewModel {

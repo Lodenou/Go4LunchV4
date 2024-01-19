@@ -38,11 +38,9 @@ public class ListViewRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerVi
     private Context mContext;
 
 
-    public ListViewRecyclerViewAdapter(Context context, List<Restaurant> restaurants) {
-        mRestaurants = restaurants;
+    public ListViewRecyclerViewAdapter(Context context) {
         mContext = context;
     }
-
 
     @NonNull
     @Override
@@ -58,29 +56,44 @@ public class ListViewRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerVi
         final Restaurant restaurant = mRestaurants.get(position);
 
 
-        ImageView restaurantImage = ((ListViewViewHolder) holder).mRestaurantImage;
 
         // Restaurant address
-        ((ListViewViewHolder) holder).mRestaurantAddress.setText(restaurant.getVicinity());
+        String restaurantAddress = restaurant.getVicinity();
+        int maxAddressLength = 40;
+        if (restaurantAddress.length() > maxAddressLength) {
+            // if restaurant address is longer than maxNameLength , add "..."
+            restaurantAddress = restaurantAddress.substring(0, maxAddressLength - 3) + "...";
+        }
+
+        ((ListViewViewHolder) holder).mRestaurantAddress.setText(restaurantAddress);
         // Restaurant photo
+        ImageView restaurantImage = ((ListViewViewHolder) holder).mRestaurantImage;
             if (restaurant.getPhoto() != null && !Objects.equals(restaurant.getPhoto(), "")) {
                 Glide.with(mContext).load(restaurant.getPhoto())
                         .into(restaurantImage);
             }
-//        }
+
         else {
             restaurantImage.setImageResource(R.drawable.no_image_found);
         }
 
+
         // Restaurant name
-        ((ListViewViewHolder) holder).mContentView.setText(restaurant.getName());
+        String restaurantName = restaurant.getName();
+        int maxNameLength = 28;
+        if (restaurantName.length() > maxNameLength) {
+            // if restaurant name is longer than maxNameLength , add "..."
+            restaurantName = restaurantName.substring(0, maxNameLength - 3) + "...";
+        }
+        ((ListViewViewHolder) holder).mContentView.setText(restaurantName);
 
         // Distance
         ((ListViewViewHolder) holder).mDistance.setText(restaurant.getPlaceId());
 
         FusedLocationProviderClient fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(mContext);
         if (ActivityCompat.checkSelfPermission(mContext, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager
-                .PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(mContext, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                .PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(mContext, Manifest.permission
+                .ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             return;
         }
         Task<Location> task = fusedLocationProviderClient.getLastLocation();
@@ -108,7 +121,6 @@ public class ListViewRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerVi
         ((ListViewViewHolder) holder).mOpeningHours.setText(restaurant.getOpeningHours());
 
         //Workmates number
-
         ((ListViewViewHolder) holder).mWorkmatesNumber.setText(String.valueOf(restaurant.getRestaurantUserNumber()));
 
         // click

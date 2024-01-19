@@ -5,33 +5,23 @@ import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
-import androidx.core.app.ActivityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
-
-
-import android.Manifest;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
-
 import com.bumptech.glide.Glide;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
-import com.google.android.gms.location.FusedLocationProviderClient;
-import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.tasks.Task;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
@@ -54,6 +44,11 @@ import com.lodenou.go4lunchv4.ui.fragment.workmates.WorkmatesFragment;
 
 import java.util.Objects;
 
+/**
+ * This class represents the main activity of the application.
+ * It handles navigation between fragments, configures the toolbar,
+ * and the navigation drawer
+ */
 public class MainActivity extends AppCompatActivity {
 
     ActivityMainBinding mBinding;
@@ -85,40 +80,51 @@ public class MainActivity extends AppCompatActivity {
         observeGetUser();
     }
 
+    /**
+     * Called when the activity is starting.
+     * It checks if the user is already signed in and updates the UI accordingly.
+     */
     @Override
     public void onStart() {
         super.onStart();
         // Check if user is signed in (non-null) and update UI accordingly.
         FirebaseUser currentUser = mAuth.getCurrentUser();
-        if (currentUser != null){
-            Log.d("connected user", "onStart: you are auth with "+currentUser.getEmail());
-        }
         if (currentUser == null) {
             reload();
         }
     }
 
-    // Reset share pref when app start for fetchAllRestaurants() in RestaurantRepository
-    private void resetSharePref(){
+    /**
+     * Reset share pref when app start for fetchAllRestaurants() in RestaurantRepository
+     */
+    private void resetSharePref() {
         SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
-         editor = settings.edit();
+        editor = settings.edit();
         editor.clear();
         editor.apply();
     }
 
 
-    // restart connexion activity if the user isn't connected
+    /**
+     * Redirects the user to the login screen if they are not authenticated.
+     */
     private void reload() {
         // User not logged in
         startActivity(new Intent(this, ConnexionActivity.class));
         finish();
     }
 
+    /**
+     * Sets up the bottom navigation view and initializes the default fragment.
+     */
     private void setBottomNavigationView() {
         mBinding.bottomNavigation.setOnNavigationItemSelectedListener(navListener);
         getSupportFragmentManager().beginTransaction().replace(mBinding.fragmentContainer.getId(), new MapFragment()).commit();
     }
 
+    /**
+     * Handles bottom navigation item selection and replaces the current fragment accordingly.
+     */
     private final BottomNavigationView.OnNavigationItemSelectedListener navListener = item -> {
         // By using switch we can easily get
         // the selected fragment
@@ -140,14 +146,18 @@ public class MainActivity extends AppCompatActivity {
         return true;
     };
 
-    // 1 - Configure Toolbar
+    /**
+     * Configures the toolbar at the top of the main activity.
+     */
     private void setToolBar() {
         this.toolbar = mBinding.activityMainToolbar;
         toolbar.setTitleTextColor(Color.WHITE);
         setSupportActionBar(toolbar);
     }
 
-    // 2 - Configure Drawer Layout
+    /**
+     * Configures the drawer layout, enabling the navigation drawer.
+     */
     private void setDrawerLayout() {
         this.drawerLayout = mBinding.activityMainDrawerLayout;
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar,
@@ -157,7 +167,9 @@ public class MainActivity extends AppCompatActivity {
         toggle.syncState();
     }
 
-    // 3 - Configure NavigationView
+    /**
+     * Configures click listeners for items in the navigation drawer.
+     */
     private void setNavigationViewClickListener() {
         this.navigationView = mBinding.activityMainNavView;
         navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
@@ -188,12 +200,18 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    /**
+     * Initializes the view model for the main activity.
+     */
     private void initViewModel() {
         mViewModelMainActivity = ViewModelProvider.AndroidViewModelFactory.getInstance(getApplication()).create(ViewModelMainActivity.class);
         mViewModelMainActivity.init();
     }
 
 
+    /**
+     * Handles cleanup of room db when the activity is destroyed.
+     */
     @Override
     public void onDestroy() {
         super.onDestroy();
@@ -202,6 +220,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
+    /**
+     * Observes changes in the user data and updates the UI accordingly.
+     */
     private void observeGetUser() {
         mViewModelMainActivity.getUser().observe(this, new Observer<User>() {
             @Override
@@ -212,6 +233,9 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    /**
+     * Resumes the activity, used to get updated user info after changing it in DetailActivity.
+     */
     @Override
     protected void onResume() {
         super.onResume();
@@ -219,15 +243,19 @@ public class MainActivity extends AppCompatActivity {
         observeGetUser();
     }
 
+    /**
+     * Handles the "Your Lunch" button click, navigating to the DetailActivity if a restaurant is chosen.
+     * Displays a message if no restaurant is chosen.
+     */
     private void clickYourLunch() {
         if (bool) {
-            Log.d("123", "onChanged: if");
+
             new AlertDialog.Builder(MainActivity.this)
                     .setTitle("Oops")
                     .setMessage(R.string.nav_you_didnt_chose_restaurant)
                     .show();
         } else {
-            Log.d("123", "onChanged: elseif");
+
             Intent intent = new Intent(MainActivity.this, DetailActivity.class);
             if (mUser != null) {
                 intent.putExtra("idrestaurant", mUser.getRestaurantChosenId());
@@ -237,6 +265,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
+    /**
+     * Sets up the navigation drawer header with user information.
+     */
     private void setNavigationView() {
         this.navigationView = mBinding.activityMainNavView;
         FirebaseFirestore firebaseFirestore = FirebaseFirestore.getInstance();
@@ -262,22 +293,26 @@ public class MainActivity extends AppCompatActivity {
                 .into(mUserPhoto);
     }
 
-private void logOut() {
-    // FIREBASE LOGOUT
-    FirebaseAuth.getInstance().signOut();
+    /**
+     * Logs the user out by signing out from Firebase and Google accounts.
+     * Redirects to the login screen.
+     */
+    private void logOut() {
+        // FIREBASE LOGOUT
+        FirebaseAuth.getInstance().signOut();
 
-    // GOOGLE LOGOUT
-    GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN).build();
-    GoogleSignInClient googleSignInClient = GoogleSignIn.getClient(MainActivity.this, gso);
-    googleSignInClient.signOut();
+        // GOOGLE LOGOUT
+        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN).build();
+        GoogleSignInClient googleSignInClient = GoogleSignIn.getClient(MainActivity.this, gso);
+        googleSignInClient.signOut();
 
-    Intent intent = new Intent(MainActivity.this, ConnexionActivity.class);
+        Intent intent = new Intent(MainActivity.this, ConnexionActivity.class);
 
-    // To avoid unwanted behavior from singleton variables like idUser in detail activity
-    DetailRepository.resetInstance();
+        // To avoid unwanted behavior from singleton variables like idUser in detail activity
+        DetailRepository.resetInstance();
 
-    finish();
+        finish();
 
-    startActivity(intent);
-}
+        startActivity(intent);
+    }
 }

@@ -19,6 +19,9 @@ import com.lodenou.go4lunchv4.model.Message;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * ChatActivity is responsible for managing the chat interface and user interactions.
+ */
 public class ChatActivity extends AppCompatActivity  {
 
     ActivityChatBinding mBinding;
@@ -39,6 +42,9 @@ public class ChatActivity extends AppCompatActivity  {
         onClickSendMessages();
     }
 
+    /**
+     * Set up the back button to finish the activity when clicked.
+     */
     private void setBackButton(){
         mBinding.activityChatBackButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -49,6 +55,9 @@ public class ChatActivity extends AppCompatActivity  {
     }
 
 
+    /**
+     * Handle the logic for sending messages when the send button is clicked.
+     */
     public void onClickSendMessages() {
         Button mButton = findViewById(R.id.activity_chat_send_button);
         mButton.setOnClickListener(new View.OnClickListener() {
@@ -62,31 +71,44 @@ public class ChatActivity extends AppCompatActivity  {
                     getListOfMessages();
                     // 3 - Reset text field
                     editTextMessage.setText("");
-
                 }
             }
         });
     }
 
+    /**
+     * Get the current Firebase user.
+     *
+     * @return The current Firebase user.
+     */
     @Nullable
     public FirebaseUser getCurrentUser() {
         return FirebaseAuth.getInstance().getCurrentUser();
     }
 
+    /**
+     * Configure the RecyclerView for displaying chat messages.
+     */
     private void configureRecyclerView() {
         //Track current chat name
         //Configure Adapter & RecyclerView
-        this.mChatAdapter = new ChatAdapter(this,  new ArrayList<>());
+        this.mChatAdapter = new ChatAdapter(this);
         mBinding.activityChatRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         mBinding.activityChatRecyclerView.setAdapter(this.mChatAdapter);
     }
 
+    /**
+     * Initialize the ViewModel for managing chat data.
+     */
     private void initViewModel(){
         mViewModelChat = new ViewModelProvider(this).get(ViewModelChat.class);
         mViewModelChat.init();
         getListOfMessages();
     }
 
+    /**
+     * Get the list of chat messages and update the UI accordingly.
+     */
     private void getListOfMessages(){
         mViewModelChat.getAllMessageForChat().observe(this, new Observer<List<Message>>() {
             @Override

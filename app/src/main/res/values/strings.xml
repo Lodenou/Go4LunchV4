@@ -44,5 +44,10 @@
     <string name="logout">Logout</string>
     <string name="chat">Chat</string>
 
+    <string name="You_are_going_to_eat">You are going to eat at\u00A0 </string>
+    <string name="with"> \u00A0with\u00A0 </string>
+    <string name="alone"> \u00A0alone</string>
+    <string name="im_hungry"> I\'m hungry</string>
+    <string name="url_map" translatable="false">https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&amp;maxheight=400&amp;photoreference=</string>
 
 </resources>
